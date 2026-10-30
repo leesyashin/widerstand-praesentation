@@ -1,0 +1,386 @@
+{
+  "title": "Studio Brand-Kit",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "colors": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[a-zA-Z][a-zA-Z0-9]*$"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$"
+      }
+    },
+    "fonts": {
+      "type": "object",
+      "properties": {
+        "display": {
+          "type": "object",
+          "properties": {
+            "family": {
+              "type": "string",
+              "minLength": 1
+            },
+            "fallback": {
+              "type": "string"
+            },
+            "files": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "src": {
+                    "type": "string",
+                    "pattern": "^fonts\\/[^\\s]+\\.(woff2|woff|otf|ttf)$"
+                  },
+                  "weight": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 100,
+                        "maximum": 900
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[1-9]00 [1-9]00$"
+                      }
+                    ]
+                  },
+                  "style": {
+                    "type": "string",
+                    "enum": [
+                      "normal",
+                      "italic"
+                    ]
+                  }
+                },
+                "required": [
+                  "src",
+                  "weight"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "family"
+          ],
+          "additionalProperties": false
+        },
+        "text": {
+          "type": "object",
+          "properties": {
+            "family": {
+              "type": "string",
+              "minLength": 1
+            },
+            "fallback": {
+              "type": "string"
+            },
+            "files": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "src": {
+                    "type": "string",
+                    "pattern": "^fonts\\/[^\\s]+\\.(woff2|woff|otf|ttf)$"
+                  },
+                  "weight": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 100,
+                        "maximum": 900
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[1-9]00 [1-9]00$"
+                      }
+                    ]
+                  },
+                  "style": {
+                    "type": "string",
+                    "enum": [
+                      "normal",
+                      "italic"
+                    ]
+                  }
+                },
+                "required": [
+                  "src",
+                  "weight"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "family"
+          ],
+          "additionalProperties": false
+        },
+        "mono": {
+          "type": "object",
+          "properties": {
+            "family": {
+              "type": "string",
+              "minLength": 1
+            },
+            "fallback": {
+              "type": "string"
+            },
+            "files": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "src": {
+                    "type": "string",
+                    "pattern": "^fonts\\/[^\\s]+\\.(woff2|woff|otf|ttf)$"
+                  },
+                  "weight": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 100,
+                        "maximum": 900
+                      },
+                      {
+                        "type": "string",
+                        "pattern": "^[1-9]00 [1-9]00$"
+                      }
+                    ]
+                  },
+                  "style": {
+                    "type": "string",
+                    "enum": [
+                      "normal",
+                      "italic"
+                    ]
+                  }
+                },
+                "required": [
+                  "src",
+                  "weight"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "family"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "display",
+        "text"
+      ],
+      "additionalProperties": false
+    },
+    "logo": {
+      "type": "object",
+      "properties": {
+        "primary": {
+          "type": "string"
+        },
+        "mono": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "motion": {
+      "type": "object",
+      "properties": {
+        "intensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "build": {
+          "type": "string",
+          "enum": [
+            "fade",
+            "rise",
+            "blurRise",
+            "scaleIn",
+            "maskReveal",
+            "wordByWord",
+            "lineByLine",
+            "drawLine",
+            "countUp",
+            "kenBurns",
+            "grow"
+          ]
+        },
+        "transition": {
+          "type": "string",
+          "enum": [
+            "none",
+            "dissolve",
+            "blurDissolve",
+            "push",
+            "zoom",
+            "magicMove",
+            "camera",
+            "maskReveal",
+            "lightLeak",
+            "whipPan"
+          ]
+        }
+      },
+      "required": [
+        "intensity"
+      ],
+      "additionalProperties": false
+    },
+    "signature": {
+      "type": "object",
+      "properties": {
+        "background": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "const": "color"
+                },
+                "color": {
+                  "type": "string",
+                  "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+                }
+              },
+              "required": [
+                "type",
+                "color"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "const": "gradient"
+                },
+                "from": {
+                  "type": "string",
+                  "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+                },
+                "to": {
+                  "type": "string",
+                  "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+                },
+                "angle": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "type",
+                "from",
+                "to"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "const": "meshGradient"
+                },
+                "preset": {
+                  "type": "string"
+                },
+                "colors": {
+                  "minItems": 2,
+                  "maxItems": 6,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+                  }
+                },
+                "animate": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "type"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "const": "image"
+                },
+                "src": {
+                  "type": "string",
+                  "pattern": "^(assets|brand)\\/[^\\s]+$"
+                },
+                "fit": {
+                  "type": "string",
+                  "enum": [
+                    "cover",
+                    "contain"
+                  ]
+                }
+              },
+              "required": [
+                "type",
+                "src"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "const": "video"
+                },
+                "src": {
+                  "type": "string",
+                  "pattern": "^(assets|brand)\\/[^\\s]+$"
+                },
+                "poster": {
+                  "type": "string",
+                  "pattern": "^(assets|brand)\\/[^\\s]+$"
+                }
+              },
+              "required": [
+                "type",
+                "src"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "name",
+    "colors",
+    "fonts"
+  ],
+  "additionalProperties": false
+}

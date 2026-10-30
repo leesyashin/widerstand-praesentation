@@ -1,0 +1,17 @@
+{
+  "$schema": "../../src/schema/layout.schema.json",
+  "name": "statement",
+  "label": "Statement",
+  "description": "Eine Aussage oder ein Zitat, Wort für Wort aufgebaut.",
+  "surface": "content",
+  "width": 1920,
+  "height": 1080,
+  "elements": [
+    { "id": "zitat", "type": "text", "style": "title", "content": "Eine Aussage, die *bleibt.*",
+      "frame": { "x": 160, "y": 380, "w": 1400, "h": 260 },
+      "build": { "in": { "preset": "wordByWord" }, "trigger": "afterPrevious" } },
+    { "id": "quelle", "type": "text", "style": "caption", "content": "— Quelle",
+      "frame": { "x": 160, "y": 680, "w": 1000, "h": 40 },
+      "build": { "in": { "preset": "fade" }, "trigger": "click" } }
+  ]
+}

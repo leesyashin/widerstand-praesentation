@@ -1,0 +1,39 @@
+{
+  "$schema": "../src/schema/brand.schema.json",
+  "name": "Vincent – Silbergelatine",
+  "colors": {
+    "background": "#0b0b0c",
+    "surface": "#1a1a1c",
+    "text": "#f2f1ee",
+    "textMuted": "#9a9894",
+    "accent": "#e4ddcc",
+    "accent2": "#4a4844",
+    "light": "#f4f2ed",
+    "ink": "#121212"
+  },
+  "fonts": {
+    "display": {
+      "family": "Bricolage Grotesque",
+      "fallback": "-apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+      "files": [{ "src": "fonts/BricolageGrotesque-Variable.woff2", "weight": "200 800" }]
+    },
+    "text": {
+      "family": "DM Sans",
+      "fallback": "-apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+      "files": [
+        { "src": "fonts/DMSans-Variable.woff2", "weight": "100 900" },
+        { "src": "fonts/DMSans-Variable-Italic.woff2", "weight": "100 900", "style": "italic" }
+      ]
+    },
+    "mono": { "family": "SF Mono", "fallback": "ui-monospace, Menlo, monospace" }
+  },
+  "logo": { "primary": "logo.svg", "mono": "logo-mono.svg" },
+  "motion": { "intensity": 0.3, "build": "blurRise", "transition": "blurDissolve" },
+  "signature": {
+    "background": {
+      "type": "meshGradient",
+      "colors": ["brand.background", "brand.accent2", "brand.accent", "brand.surface"],
+      "animate": true
+    }
+  }
+}

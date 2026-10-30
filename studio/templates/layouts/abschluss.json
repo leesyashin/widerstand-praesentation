@@ -1,0 +1,20 @@
+{
+  "$schema": "../../src/schema/layout.schema.json",
+  "name": "abschluss",
+  "label": "Abschluss",
+  "description": "Helle Schlussfolie mit Logo und Kontakt.",
+  "surface": "light",
+  "width": 1920,
+  "height": 1080,
+  "elements": [
+    { "id": "logo", "name": "Logo", "type": "icon", "icon": "brand/logo-mono.svg", "color": "brand.ink",
+      "frame": { "x": 843, "y": 340, "w": 234, "h": 60 },
+      "build": { "in": { "preset": "blurRise" }, "trigger": "afterPrevious" } },
+    { "id": "danke", "type": "text", "style": "title", "color": "brand.ink", "align": "center", "content": "Danke.",
+      "frame": { "x": 160, "y": 480, "w": 1600, "h": 130 },
+      "build": { "in": { "preset": "blurRise" }, "trigger": "afterPrevious" } },
+    { "id": "kontakt", "type": "text", "style": "subtitle", "align": "center", "content": "name@beispiel.de",
+      "frame": { "x": 160, "y": 630, "w": 1600, "h": 70 },
+      "build": { "in": { "preset": "fade" }, "trigger": "afterPrevious" } }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "../../src/schema/layout.schema.json",
+  "name": "bild-text",
+  "label": "Bild + Text",
+  "description": "Bild rechts, Headline und Text links.",
+  "surface": "content",
+  "width": 1920,
+  "height": 1080,
+  "elements": [
+    { "id": "bild", "type": "image", "src": "brand/platzhalter.svg", "fit": "cover", "radius": 24,
+      "frame": { "x": 1000, "y": 120, "w": 760, "h": 840 },
+      "build": { "in": { "preset": "maskReveal", "direction": "up" }, "trigger": "afterPrevious" } },
+    { "id": "headline", "match": "headline", "type": "text", "style": "title", "content": "Headline",
+      "frame": { "x": 160, "y": 360, "w": 760, "h": 130 },
+      "build": { "in": { "preset": "blurRise" }, "trigger": "withPrevious" } },
+    { "id": "text", "type": "text", "style": "body", "color": "brand.textMuted",
+      "content": "Zwei, drei Sätze Kontext. Nicht mehr.",
+      "frame": { "x": 160, "y": 520, "w": 720, "h": 200 },
+      "build": { "in": { "preset": "rise" }, "trigger": "click" } }
+  ]
+}

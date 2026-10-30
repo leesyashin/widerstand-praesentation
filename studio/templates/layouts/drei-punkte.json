@@ -1,0 +1,31 @@
+{
+  "$schema": "../../src/schema/layout.schema.json",
+  "name": "drei-punkte",
+  "label": "Drei Punkte",
+  "description": "Headline und drei Karten, die nacheinander erscheinen.",
+  "surface": "content",
+  "width": 1920,
+  "height": 1080,
+  "elements": [
+    { "id": "headline", "match": "headline", "type": "text", "style": "title", "content": "Drei Gedanken.",
+      "frame": { "x": 160, "y": 140, "w": 1600, "h": 130 } },
+    { "id": "karte-1", "type": "shape", "shape": "rect", "fill": "brand.surface", "radius": 28,
+      "frame": { "x": 160, "y": 400, "w": 500, "h": 480 }, "build": { "in": { "preset": "rise" }, "trigger": "click" } },
+    { "id": "karte-1-titel", "type": "text", "style": "heading", "content": "Eins",
+      "frame": { "x": 220, "y": 460, "w": 380, "h": 80 }, "build": { "in": { "preset": "rise" }, "trigger": "withPrevious" } },
+    { "id": "karte-1-text", "type": "text", "style": "body", "color": "brand.textMuted", "content": "Kurzer Gedanke.",
+      "frame": { "x": 220, "y": 560, "w": 380, "h": 200 }, "build": { "in": { "preset": "rise" }, "trigger": "withPrevious" } },
+    { "id": "karte-2", "type": "shape", "shape": "rect", "fill": "brand.surface", "radius": 28,
+      "frame": { "x": 710, "y": 400, "w": 500, "h": 480 }, "build": { "in": { "preset": "rise" }, "trigger": "click" } },
+    { "id": "karte-2-titel", "type": "text", "style": "heading", "content": "Zwei",
+      "frame": { "x": 770, "y": 460, "w": 380, "h": 80 }, "build": { "in": { "preset": "rise" }, "trigger": "withPrevious" } },
+    { "id": "karte-2-text", "type": "text", "style": "body", "color": "brand.textMuted", "content": "Kurzer Gedanke.",
+      "frame": { "x": 770, "y": 560, "w": 380, "h": 200 }, "build": { "in": { "preset": "rise" }, "trigger": "withPrevious" } },
+    { "id": "karte-3", "type": "shape", "shape": "rect", "fill": "brand.surface", "radius": 28,
+      "frame": { "x": 1260, "y": 400, "w": 500, "h": 480 }, "build": { "in": { "preset": "rise" }, "trigger": "click" } },
+    { "id": "karte-3-titel", "type": "text", "style": "heading", "content": "Drei",
+      "frame": { "x": 1320, "y": 460, "w": 380, "h": 80 }, "build": { "in": { "preset": "rise" }, "trigger": "withPrevious" } },
+    { "id": "karte-3-text", "type": "text", "style": "body", "color": "brand.textMuted", "content": "Kurzer Gedanke.",
+      "frame": { "x": 1320, "y": 560, "w": 380, "h": 200 }, "build": { "in": { "preset": "rise" }, "trigger": "withPrevious" } }
+  ]
+}

@@ -1,0 +1,36 @@
+.issues {
+  border: var(--hairline) solid color-mix(in srgb, var(--warning) 50%, transparent);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--warning) 9%, var(--surface));
+  padding: var(--space-3) var(--space-4);
+  max-width: 720px;
+}
+
+.issues__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--warning);
+}
+
+.issues__head strong {
+  color: var(--text);
+}
+
+.issues ul {
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.issues li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.issues code {
+  color: var(--text-2);
+}
