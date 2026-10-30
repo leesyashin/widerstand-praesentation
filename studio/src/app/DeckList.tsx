@@ -2,6 +2,7 @@ import type { DeckSummary } from '../api/client'
 import { useDeck, useDeckList } from '../api/live'
 import { SlideView } from '../engine/SlideView'
 import { Stage } from '../engine/Stage'
+import { ThemeScope } from '../engine/ThemeScope'
 import type { Issue } from '../schema/issues'
 import { Icon } from '../ui/Icon'
 import { IssueList } from '../ui/IssueList'
@@ -52,15 +53,17 @@ function DeckCard({ summary }: { summary: DeckSummary }) {
     <a className="deck-card" href={href({ page: 'deck', name: summary.name })}>
       <div className="deck-card__thumb">
         {deck.value && first ? (
-          <Stage format={deck.value.format}>
-            <SlideView
-              slide={first}
-              deckName={summary.name}
-              mode="thumb"
-              width={deck.value.format.width}
-              height={deck.value.format.height}
-            />
-          </Stage>
+          <ThemeScope theme={deck.value.theme}>
+            <Stage format={deck.value.format}>
+              <SlideView
+                slide={first}
+                deckName={summary.name}
+                mode="thumb"
+                width={deck.value.format.width}
+                height={deck.value.format.height}
+              />
+            </Stage>
+          </ThemeScope>
         ) : (
           <div className="deck-card__blank" />
         )}

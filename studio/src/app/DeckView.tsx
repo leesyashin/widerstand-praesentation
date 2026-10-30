@@ -1,64 +1,28 @@
-import { useEffect, useRef, useState } from 'react'
-import { api } from '../api/client'
-import { useDeck } from '../api/live'
+import { gsap } from 'gsap'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useBrand, useLayouts, useTheme } from '../api/live'
+import { Canvas } from '../editor/Canvas'
+import { Inspector, type InspectorTab } from '../editor/Inspector'
+import { LayoutPicker } from '../editor/LayoutPicker'
+import { duplicateElement, duplicateSlide, newElement, slideFromLayout, type NewElementKind } from '../editor/model'
+import { useEditor, type Editor } from '../editor/useEditor'
 import { SlideView } from '../engine/SlideView'
 import { Stage } from '../engine/Stage'
-import type { Deck, Element, Slide } from '../schema/deck'
+import { ThemeScope } from '../engine/ThemeScope'
+import { createSlideTimeline } from '../engine/timeline'
+import type { Deck, Element } from '../schema/deck'
 import type { Issue } from '../schema/issues'
-import { Icon } from '../ui/Icon'
+import type { Layout } from '../schema/layout'
+import { Icon, type IconName } from '../ui/Icon'
 import { IssueList } from '../ui/IssueList'
 import { Toast } from '../ui/Toast'
 import { href, navigate } from './route'
 import './DeckView.css'
+import '../editor/Editor.css'
 
 export function DeckView({ name, slideId, brandIssues }: { name: string; slideId?: string; brandIssues: Issue[] }) {
-  const live = useDeck(name)
-  const deck = live.value
-  // Eigene Speicherungen sollen keinen „von außen geändert“-Hinweis auslösen.
-  const ownSave = useRef<string | null>(null)
-  const [toast, setToast] = useState(0)
-  const [saveIssues, setSaveIssues] = useState<Issue[]>([])
-
-  const index = deck ? Math.max(0, deck.slides.findIndex((s) => s.id === slideId)) : 0
-  const slide = deck?.slides[index]
-
-  useEffect(() => {
-    if (!live.externalUpdates || !deck) return
-    const text = JSON.stringify(deck)
-    if (ownSave.current === text) return
-    setToast((t) => t + 1)
-  }, [live.externalUpdates, deck])
-
-  // Pfeiltasten wechseln die Folie (außer beim Tippen).
-  useEffect(() => {
-    if (!deck) return
-    const onKey = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement
-      if (target.closest('input, textarea, [contenteditable]')) return
-      const last = deck.slides.length - 1
-      const next =
-        e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'PageDown'
-          ? Math.min(last, index + 1)
-          : e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp'
-            ? Math.max(0, index - 1)
-            : e.key === 'Home'
-              ? 0
-              : e.key === 'End'
-                ? last
-                : null
-      if (next === null || next === index) return
-      e.preventDefault()
-      navigate({ page: 'deck', name, slideId: deck.slides[next]?.id }, true)
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [deck, index, name])
-
-  const save = async (next: Deck) => {
-    ownSave.current = JSON.stringify(next)
-    const result = await api.saveDeck(name, next)
-    setSaveIssues(result.ok ? [] : result.issues)
-  }
+  const editor = useEditor(name)
+  const { live, doc } = editor
 
   if (live.status === 'missing') {
     return (
@@ -70,13 +34,183 @@ export function DeckView({ name, slideId, brandIssues }: { name: string; slideId
       </div>
     )
   }
+  return (
+    <ThemeScope theme={doc?.theme}>
+      <EditorShell name={name} slideId={slideId} editor={editor} brandIssues={brandIssues} />
+    </ThemeScope>
+  )
+}
+
+const INSERT: { kind: NewElementKind; icon: IconName; label: string }[] = [
+  { kind: 'text', icon: 'text', label: 'Text' },
+  { kind: 'rect', icon: 'shape', label: 'Form' },
+  { kind: 'line', icon: 'line', label: 'Linie' },
+  { kind: 'icon', icon: 'icon', label: 'Icon' },
+  { kind: 'image', icon: 'image', label: 'Bild' },
+]
+
+function EditorShell({
+  name,
+  slideId,
+  editor,
+  brandIssues,
+}: {
+  name: string
+  slideId?: string
+  editor: Editor
+  brandIssues: Issue[]
+}) {
+  const { live, doc: deck, edit } = editor
+  const brand = useBrand()
+  const layouts = useLayouts()
+  const theme = useTheme(deck?.theme)
+  const [selection, setSelection] = useState<{ slide: string; id: string } | null>(null)
+  const [editing, setEditing] = useState<string | null>(null)
+  const [tab, setTab] = useState<InspectorTab>('folie')
+  const [picker, setPicker] = useState(false)
+  const clipboard = useRef<Element | null>(null)
+  const canvasRef = useRef<HTMLDivElement>(null)
+
+  const index = deck ? Math.max(0, deck.slides.findIndex((s) => s.id === slideId)) : 0
+  const slide = deck?.slides[index]
+  const selected = selection && slide && selection.slide === slide.id ? selection.id : null
+  const element = slide?.elements.find((e) => e.id === selected)
+
+  const select = useCallback(
+    (id: string | null) => {
+      setSelection(id && slide ? { slide: slide.id, id } : null)
+      if (id) setTab((t) => (t === 'folie' ? 'stil' : t))
+    },
+    [slide],
+  )
+  const goToSlide = useCallback((id: string | undefined) => navigate({ page: 'deck', name, slideId: id }, true), [name])
+
+  /** Änderung an der aktuellen Folie. */
+  const editSlide = useCallback(
+    (recipe: (s: Deck['slides'][number]) => void, merge?: string) =>
+      edit((d) => {
+        const s = d.slides[index]
+        if (s) recipe(s)
+      }, merge),
+    [edit, index],
+  )
+
+  const insert = (kind: NewElementKind) => {
+    if (!deck || !slide) return
+    const el = newElement(kind, slide, deck)
+    editSlide((s) => void s.elements.push(el))
+    setSelection({ slide: slide.id, id: el.id })
+    setTab('stil')
+    if (kind === 'text') setEditing(el.id)
+  }
+
+  const addSlide = (layout: Layout) => {
+    if (!deck) return
+    const s = slideFromLayout(layout, deck, theme.value)
+    edit((d) => void d.slides.splice(index + 1, 0, s))
+    setPicker(false)
+    goToSlide(s.id)
+  }
+
+  const removeSlide = (i: number) => {
+    if (!deck || deck.slides.length <= 1) return
+    const neighbor = deck.slides[i + 1] ?? deck.slides[i - 1]
+    edit((d) => void d.slides.splice(i, 1))
+    if (i === index) goToSlide(neighbor?.id)
+  }
+
+  const copySlide = (i: number) => {
+    const original = deck?.slides[i]
+    if (!deck || !original) return
+    const s = duplicateSlide(original, deck)
+    edit((d) => void d.slides.splice(i + 1, 0, s))
+    goToSlide(s.id)
+  }
+
+  const play = () => {
+    void document.documentElement.requestFullscreen?.().catch(() => {})
+    navigate({ page: 'present', name, slideId: slide?.id })
+  }
+
+  /** Spielt alle Builds der Folie auf der Arbeitsfläche ab und stellt danach den Endzustand wieder her. */
+  const preview = () => {
+    const root = canvasRef.current?.querySelector<HTMLElement>('.editor-stage .slide')
+    if (!root || !slide) return
+    select(null)
+    const tl = createSlideTimeline(root, slide)
+    tl.timeline.eventCallback('onComplete', () => {
+      window.setTimeout(() => {
+        tl.kill()
+        gsap.set(root.querySelectorAll('.el-anim, .el-anim .w, .el-anim .ln, .el-anim svg *'), { clearProps: 'all' })
+      }, 600)
+    })
+    tl.timeline.play(0)
+  }
+
+  // Tastenkürzel im Editor
+  useEffect(() => {
+    if (!deck || !slide) return
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement
+      if (target.closest('input, textarea, select, [contenteditable]') || editing) return
+      const mod = e.metaKey || e.ctrlKey
+      const key = e.key.toLowerCase()
+
+      if (mod && key === 'z') {
+        if (e.shiftKey) editor.redo()
+        else editor.undo()
+      } else if (mod && key === 'y') editor.redo()
+      else if (mod && e.altKey && key === 'p') play()
+      else if (mod && key === 'd' && element) {
+        const copy = duplicateElement(element, slide)
+        editSlide((s) => void s.elements.push(copy))
+        select(copy.id)
+      } else if (mod && key === 'c' && element) clipboard.current = structuredClone(element)
+      else if (mod && key === 'v' && clipboard.current) {
+        const copy = duplicateElement(clipboard.current, slide)
+        editSlide((s) => void s.elements.push(copy))
+        select(copy.id)
+      } else if ((e.key === 'Backspace' || e.key === 'Delete') && element) {
+        editSlide((s) => void (s.elements = s.elements.filter((x) => x.id !== element.id)))
+        select(null)
+      } else if (e.key === 'Enter' && element?.type === 'text') setEditing(element.id)
+      else if (e.key === 'Escape') select(null)
+      else if (e.key.startsWith('Arrow') && element) {
+        const step = e.shiftKey ? 10 : 1
+        const dx = e.key === 'ArrowLeft' ? -step : e.key === 'ArrowRight' ? step : 0
+        const dy = e.key === 'ArrowUp' ? -step : e.key === 'ArrowDown' ? step : 0
+        editSlide((s) => {
+          const el = s.elements.find((x) => x.id === element.id)
+          if (el) el.frame = { ...el.frame, x: el.frame.x + dx, y: el.frame.y + dy }
+        }, `nudge-${element.id}`)
+      } else if (['ArrowDown', 'ArrowRight', 'PageDown'].includes(e.key)) {
+        goToSlide(deck.slides[Math.min(deck.slides.length - 1, index + 1)]?.id)
+      } else if (['ArrowUp', 'ArrowLeft', 'PageUp'].includes(e.key)) {
+        goToSlide(deck.slides[Math.max(0, index - 1)]?.id)
+      } else return
+      e.preventDefault()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  })
+
+  const status = { saved: 'Gespeichert', saving: 'Speichert …', error: 'Nicht gespeichert' }[editor.status]
+  const brandColors = brand.value?.colors ?? {}
 
   return (
     <div className="deck">
       <header className="deck__toolbar material">
-        <a className="btn btn--plain" href={href({ page: 'decks' })}>
-          <Icon name="chevronLeft" /> Decks
-        </a>
+        <div className="toolbar__group">
+          <a className="btn btn--plain" href={href({ page: 'decks' })}>
+            <Icon name="chevronLeft" /> Decks
+          </a>
+          <button className="btn btn--plain btn--icon" title="Rückgängig (⌘Z)" disabled={!editor.canUndo} onClick={editor.undo}>
+            <Icon name="undo" />
+          </button>
+          <button className="btn btn--plain btn--icon" title="Wiederholen (⇧⌘Z)" disabled={!editor.canRedo} onClick={editor.redo}>
+            <Icon name="redo" />
+          </button>
+        </div>
         <div className="deck__title">
           <strong>{deck?.title ?? name}</strong>
           {deck && (
@@ -85,40 +219,77 @@ export function DeckView({ name, slideId, brandIssues }: { name: string; slideId
             </span>
           )}
         </div>
-        <button className="btn btn--primary" disabled title="Präsentationsmodus kommt in Phase 1">
-          <Icon name="play" size={12} /> Abspielen
-        </button>
+        <div className="toolbar__group toolbar__group--end">
+          <div className="toolbar__insert">
+            {INSERT.map((t) => (
+              <button key={t.kind} className="tool" title={`${t.label} einfügen`} onClick={() => insert(t.kind)} disabled={!slide}>
+                <Icon name={t.icon} />
+                <span>{t.label}</span>
+              </button>
+            ))}
+          </div>
+          <span className={`save-status save-status--${editor.status}`} title={editor.saveIssues.map((i) => i.message).join('\n')}>
+            {status}
+          </span>
+          <button className="btn btn--primary" onClick={play} disabled={!slide} title="Abspielen (⌥⌘P)">
+            <Icon name="play" size={12} /> Abspielen
+          </button>
+        </div>
       </header>
 
       <nav className="deck__navigator material" aria-label="Folien">
         {deck?.slides.map((s, i) => (
-          <a
-            key={s.id}
-            className={`nav-slide ${i === index ? 'is-active' : ''} ${s.skip ? 'is-skipped' : ''}`}
-            href={href({ page: 'deck', name, slideId: s.id })}
-            onClick={(e) => {
-              e.preventDefault()
-              navigate({ page: 'deck', name, slideId: s.id }, true)
-            }}
-            aria-current={i === index}
-          >
+          <div key={s.id} className={`nav-slide ${i === index ? 'is-active' : ''} ${s.skip ? 'is-skipped' : ''}`}>
             <span className="nav-slide__number">{i + 1}</span>
-            <div className="nav-slide__thumb" style={{ aspectRatio: `${deck.format.width} / ${deck.format.height}` }}>
+            <a
+              className="nav-slide__thumb"
+              style={{ aspectRatio: `${deck.format.width} / ${deck.format.height}` }}
+              href={href({ page: 'deck', name, slideId: s.id })}
+              onClick={(e) => {
+                e.preventDefault()
+                goToSlide(s.id)
+              }}
+              aria-current={i === index}
+            >
               <Stage format={deck.format}>
-                <SlideView
-                  slide={s}
-                  deckName={name}
-                  mode="thumb"
-                  width={deck.format.width}
-                  height={deck.format.height}
-                />
+                <SlideView slide={s} deckName={name} mode="thumb" width={deck.format.width} height={deck.format.height} />
               </Stage>
-            </div>
-          </a>
+            </a>
+            <span className="nav-slide__actions">
+              <button className="btn btn--icon btn--mini" title="Folie duplizieren" onClick={() => copySlide(i)}>
+                <Icon name="copy" size={12} />
+              </button>
+              <button
+                className="btn btn--icon btn--mini"
+                title="Folie löschen"
+                disabled={deck.slides.length <= 1}
+                onClick={() => removeSlide(i)}
+              >
+                <Icon name="trash" size={12} />
+              </button>
+            </span>
+          </div>
         ))}
+        {deck && (
+          <div className="nav-add">
+            <button className="btn nav-add__btn" onClick={() => setPicker((p) => !p)}>
+              <Icon name="plus" /> Neue Folie
+            </button>
+            {picker && (
+              <LayoutPicker
+                deck={deck}
+                deckName={name}
+                layouts={layouts.value ?? []}
+                theme={theme.value}
+                onPick={addSlide}
+                onClose={() => setPicker(false)}
+              />
+            )}
+          </div>
+        )}
       </nav>
 
-      <main className="deck__canvas">
+      <main className="deck__canvas" ref={canvasRef}>
         {(live.status === 'invalid' || live.status === 'offline') && (
           <div className="deck__banner">
             <IssueList
@@ -140,139 +311,37 @@ export function DeckView({ name, slideId, brandIssues }: { name: string; slideId
         )}
         {deck && slide && (
           <div className="deck__stage">
-            <Stage format={deck.format}>
-              <SlideView
-                key={slide.id}
-                slide={slide}
-                deckName={name}
-                mode="view"
-                width={deck.format.width}
-                height={deck.format.height}
-              />
-            </Stage>
+            <Canvas
+              deck={deck}
+              deckName={name}
+              slide={slide}
+              selected={selected}
+              onSelect={select}
+              editing={editing}
+              onEditText={setEditing}
+              edit={edit}
+            />
           </div>
         )}
       </main>
 
       <aside className="deck__inspector material" aria-label="Inspector">
         {deck && slide && (
-          <SlideInspector key={slide.id} deck={deck} slide={slide} onSave={save} saveIssues={saveIssues} />
+          <Inspector
+            deck={deck}
+            slide={slide}
+            element={element}
+            tab={tab}
+            onTab={setTab}
+            edit={edit}
+            brand={brandColors}
+            onPreview={preview}
+            saveIssues={editor.saveIssues}
+          />
         )}
       </aside>
 
-      <Toast message="Aktualisiert" token={toast} />
+      <Toast message="Von außen aktualisiert" token={editor.externalUpdates} />
     </div>
-  )
-}
-
-const ELEMENT_LABEL: Record<Element['type'], string> = {
-  text: 'Text',
-  image: 'Bild',
-  video: 'Video',
-  shape: 'Form',
-  icon: 'Icon',
-  custom: 'Komponente',
-}
-
-const TRANSITION_LABEL: Record<string, string> = {
-  none: 'Keiner',
-  dissolve: 'Überblenden',
-  blurDissolve: 'Blur-Überblenden',
-  push: 'Schieben',
-  zoom: 'Zoom',
-  magicMove: 'Magic Move',
-  camera: 'Kamerafahrt',
-  maskReveal: 'Mask-Reveal',
-  lightLeak: 'Light Leak',
-  whipPan: 'Whip-Pan',
-}
-
-function SlideInspector({
-  deck,
-  slide,
-  onSave,
-  saveIssues,
-}: {
-  deck: Deck
-  slide: Slide
-  onSave: (deck: Deck) => Promise<void>
-  saveIssues: Issue[]
-}) {
-  return (
-    <div className="inspector">
-      <section>
-        <h3 className="section-title">Folie</h3>
-        <dl className="props">
-          <dt>ID</dt>
-          <dd className="mono">{slide.id}</dd>
-          <dt>Layout</dt>
-          <dd>{slide.layout ?? '—'}</dd>
-          <dt>Hintergrund</dt>
-          <dd>{slide.background?.type ?? 'color'}</dd>
-          <dt>Übergang</dt>
-          <dd>{slide.transition ? TRANSITION_LABEL[slide.transition.type] : '—'}</dd>
-          <dt>Effekte</dt>
-          <dd>{slide.effects?.map((e) => e.type).join(', ') || '—'}</dd>
-        </dl>
-      </section>
-
-      <section>
-        <h3 className="section-title">
-          <Icon name="stack" size={12} /> Elemente
-        </h3>
-        <ul className="layers">
-          {[...slide.elements].reverse().map((el) => (
-            <li key={el.id} className={el.hidden ? 'is-hidden' : ''}>
-              <span className="layers__type">{ELEMENT_LABEL[el.type]}</span>
-              <span className="layers__name">{el.name ?? el.id}</span>
-              {el.match && <span className="layers__tag" title="Magic-Move-Partner">↔</span>}
-              {el.build && <span className="layers__tag" title="Hat einen Build">◆</span>}
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section>
-        <h3 className="section-title">Notizen</h3>
-        <NotesField deck={deck} slide={slide} onSave={onSave} />
-        {saveIssues.length > 0 && <IssueList title="Speichern fehlgeschlagen" issues={saveIssues} />}
-      </section>
-    </div>
-  )
-}
-
-/** Notizen werden direkt in die deck.json gespeichert – der erste Weg vom Editor in die Datei. */
-function NotesField({ deck, slide, onSave }: { deck: Deck; slide: Slide; onSave: (deck: Deck) => Promise<void> }) {
-  // Während des Tippens gilt der lokale Entwurf, sonst der Stand aus der Datei.
-  const [draft, setDraft] = useState<string | null>(null)
-  const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
-
-  const commit = (text: string) => {
-    clearTimeout(timer.current)
-    if (text === (slide.notes ?? '')) return
-    const slides = deck.slides.map((s) => (s.id === slide.id ? { ...s, notes: text || undefined } : s))
-    void onSave({ ...deck, slides })
-  }
-
-  useEffect(() => () => clearTimeout(timer.current), [])
-
-  return (
-    <textarea
-      className="field"
-      rows={6}
-      placeholder="Notizen für die Referentenansicht …"
-      value={draft ?? slide.notes ?? ''}
-      onFocus={() => setDraft(slide.notes ?? '')}
-      onChange={(e) => {
-        const text = e.target.value
-        setDraft(text)
-        clearTimeout(timer.current)
-        timer.current = setTimeout(() => commit(text), 600)
-      }}
-      onBlur={() => {
-        if (draft !== null) commit(draft)
-        setDraft(null)
-      }}
-    />
   )
 }

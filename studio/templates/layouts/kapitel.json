@@ -1,0 +1,17 @@
+{
+  "$schema": "../../src/schema/layout.schema.json",
+  "name": "kapitel",
+  "label": "Kapitel",
+  "description": "Kapitel-Trenner mit Nummer und Titel.",
+  "surface": "title",
+  "width": 1920,
+  "height": 1080,
+  "elements": [
+    { "id": "nummer", "type": "text", "style": "label", "content": "Kapitel 01",
+      "frame": { "x": 160, "y": 500, "w": 800, "h": 40 },
+      "build": { "in": { "preset": "fade" }, "trigger": "afterPrevious" } },
+    { "id": "titel", "match": "kapitel-titel", "type": "text", "style": "title", "content": "Kapitelname",
+      "frame": { "x": 160, "y": 556, "w": 1600, "h": 130 },
+      "build": { "in": { "preset": "blurRise" }, "trigger": "withPrevious" } }
+  ]
+}

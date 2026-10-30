@@ -5,6 +5,8 @@ import { fileURLToPath } from 'node:url'
 import { Brand } from '../src/schema/brand'
 import { Deck } from '../src/schema/deck'
 import { formatPath, fromZod, type Issue } from '../src/schema/issues'
+import { Layout } from '../src/schema/layout'
+import { Theme } from '../src/schema/theme'
 
 export const STUDIO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 export const DECKS_DIR = path.join(STUDIO_ROOT, 'decks')
@@ -99,6 +101,10 @@ export async function checkDeck(name: string, deck: Deck): Promise<Issue[]> {
     }
   })
 
+  if (deck.theme && !existsSync(path.join(STUDIO_ROOT, 'templates', 'themes', `${deck.theme}.json`))) {
+    issues.push({ path: 'theme', message: `Theme fehlt: templates/themes/${deck.theme}.json` })
+  }
+
   deck.slides.forEach((slide, si) => {
     slide.elements.forEach((el, ei) => {
       if (el.type !== 'custom') return
@@ -154,4 +160,56 @@ export async function writeDeck(name: string, value: unknown): Promise<DeckResul
   await writeFile(tmp, text, 'utf8')
   await rename(tmp, file)
   return { ...result, text }
+}
+
+/* ---------- Templates: Themes & Layouts ---------- */
+
+export const TEMPLATES_DIR = path.join(STUDIO_ROOT, 'templates')
+
+export type ThemeResult = { ok: true; theme: Theme } | { ok: false; issues: Issue[] }
+
+export async function readTheme(name: string): Promise<ThemeResult> {
+  if (!isDeckName(name)) return { ok: false, issues: [{ path: '', message: `Ungültiger Theme-Name: ${name}` }] }
+  const file = path.join(TEMPLATES_DIR, 'themes', `${name}.json`)
+  if (!existsSync(file)) return { ok: false, issues: [{ path: '', message: `Theme fehlt: templates/themes/${name}.json` }] }
+  const json = parseJson(await readFile(file, 'utf8'))
+  if (!json.ok) return json
+  const parsed = Theme.safeParse(json.value)
+  return parsed.success ? { ok: true, theme: parsed.data } : { ok: false, issues: fromZod(parsed.error) }
+}
+
+export async function listThemeNames(): Promise<string[]> {
+  const dir = path.join(TEMPLATES_DIR, 'themes')
+  if (!existsSync(dir)) return []
+  return (await readdir(dir)).filter((f) => f.endsWith('.json')).map((f) => f.slice(0, -5)).sort()
+}
+
+export type LayoutEntry = { file: string; layout: Layout | null; issues: Issue[] }
+
+export async function readLayouts(): Promise<LayoutEntry[]> {
+  const dir = path.join(TEMPLATES_DIR, 'layouts')
+  if (!existsSync(dir)) return []
+  const files = (await readdir(dir)).filter((f) => f.endsWith('.json')).sort()
+  return Promise.all(
+    files.map(async (file) => {
+      const json = parseJson(await readFile(path.join(dir, file), 'utf8'))
+      if (!json.ok) return { file, layout: null, issues: json.issues }
+      const parsed = Layout.safeParse(json.value)
+      if (!parsed.success) return { file, layout: null, issues: fromZod(parsed.error) }
+      const issues: Issue[] = []
+      walkStrings(parsed.data, [], (s, at) => {
+        const key = at[at.length - 1]
+        if ((key === 'src' || key === 'icon') && s.startsWith('brand/') && !existsSync(path.join(STUDIO_ROOT, s))) {
+          issues.push({ path: formatPath(at), message: `Datei fehlt: ${s}` })
+        }
+        if (s.startsWith('assets/') && (key === 'src' || key === 'icon')) {
+          issues.push({ path: formatPath(at), message: 'Layouts dürfen nur brand/-Dateien nutzen' })
+        }
+      })
+      if (parsed.data.name !== file.slice(0, -5)) {
+        issues.push({ path: 'name', message: `name muss dem Dateinamen entsprechen ("${file.slice(0, -5)}")` })
+      }
+      return { file, layout: issues.length ? null : parsed.data, issues }
+    }),
+  )
 }

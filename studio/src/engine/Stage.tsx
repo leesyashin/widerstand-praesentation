@@ -1,5 +1,8 @@
-import { useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import { createContext, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
 import type { Deck } from '../schema/deck'
+
+/** Aktueller Zoomfaktor der Bühne (Bildschirm-Pixel pro logischem Pixel). */
+export const StageScaleContext = createContext(1)
 
 /**
  * Bühne in festen logischen Pixeln (z. B. 1920×1080), skaliert auf den verfügbaren Platz.
@@ -40,7 +43,7 @@ export function Stage({
           className="stage__surface"
           style={{ width: format.width, height: format.height, transform: `scale(${scale})` }}
         >
-          {children}
+          <StageScaleContext.Provider value={scale || 1}>{children}</StageScaleContext.Provider>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 import type { Brand } from '../schema/brand'
 import type { TextStyle } from '../schema/deck'
+import type { TextStyleDef, Theme } from '../schema/theme'
 
 /** Wird genutzt, solange brand/brand.json fehlt oder ungültig ist – die Folien bleiben sichtbar. */
 export const FALLBACK_BRAND: Brand = {
@@ -53,18 +54,8 @@ export function brandFontFaces(brand: Brand): string {
     .join('\n')
 }
 
-type StyleDef = {
-  font: 'display' | 'text' | 'mono'
-  size: number
-  weight: number
-  lineHeight: number
-  letterSpacing: number
-  color: string
-  uppercase?: boolean
-}
-
-/** Typografie-Skala in logischen Pixeln (für 1080 px Folienhöhe). Wird später durch Themes ersetzbar. */
-export const TEXT_STYLES: Record<TextStyle, StyleDef> = {
+/** Typografie-Skala in logischen Pixeln (für 1080 px Folienhöhe) – Standard, wenn ein Deck kein Theme hat. */
+export const TEXT_STYLES: Record<TextStyle, TextStyleDef> = {
   display: { font: 'display', size: 156, weight: 700, lineHeight: 1.0, letterSpacing: -0.035, color: 'brand.text' },
   title: { font: 'display', size: 100, weight: 650, lineHeight: 1.05, letterSpacing: -0.025, color: 'brand.text' },
   heading: { font: 'display', size: 60, weight: 600, lineHeight: 1.1, letterSpacing: -0.015, color: 'brand.text' },
@@ -80,4 +71,14 @@ export const TEXT_STYLES: Record<TextStyle, StyleDef> = {
     color: 'brand.textMuted',
     uppercase: true,
   },
+}
+
+export type TextStyles = Record<TextStyle, TextStyleDef>
+
+/** Standard-Skala, überschrieben durch die Werte des Themes. */
+export function mergeTextStyles(theme: Theme | null | undefined): TextStyles {
+  if (!theme) return TEXT_STYLES
+  const merged = { ...TEXT_STYLES }
+  for (const key of Object.keys(merged) as TextStyle[]) merged[key] = { ...merged[key], ...theme.textStyles[key] }
+  return merged
 }

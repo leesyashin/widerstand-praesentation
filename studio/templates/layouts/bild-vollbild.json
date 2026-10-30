@@ -1,0 +1,19 @@
+{
+  "$schema": "../../src/schema/layout.schema.json",
+  "name": "bild-vollbild",
+  "label": "Bild Vollbild",
+  "description": "Randloses Bild mit Kinobalken und Text unten links.",
+  "surface": "content",
+  "width": 1920,
+  "height": 1080,
+  "elements": [
+    { "id": "bild", "type": "image", "src": "brand/platzhalter.svg", "fit": "cover",
+      "frame": { "x": 0, "y": 0, "w": 1920, "h": 1080 },
+      "build": { "in": { "preset": "kenBurns" }, "trigger": "afterPrevious" } },
+    { "id": "verlauf", "name": "Verlauf", "type": "shape", "shape": "rect", "fill": "rgba(0,0,0,0.45)",
+      "frame": { "x": 0, "y": 640, "w": 1920, "h": 440 } },
+    { "id": "titel", "type": "text", "style": "heading", "content": "Bildtitel",
+      "frame": { "x": 160, "y": 820, "w": 1200, "h": 80 },
+      "build": { "in": { "preset": "blurRise" }, "trigger": "click" } }
+  ]
+}

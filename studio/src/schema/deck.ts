@@ -64,6 +64,8 @@ export const Build = z.strictObject({
   out: Animation.optional(),
   /** click: wartet auf Klick · withPrevious: gleichzeitig mit dem vorigen Build · afterPrevious: direkt danach */
   trigger: z.enum(['click', 'withPrevious', 'afterPrevious']).optional(),
+  /** Reihenfolge der Builds auf der Folie. Ohne Angabe gilt die Reihenfolge der Elemente. */
+  order: z.number().optional(),
 })
 
 const elementBase = {
@@ -318,4 +320,6 @@ export type Background = z.infer<typeof Background>
 export type Effect = z.infer<typeof Effect>
 export type Transition = z.infer<typeof Transition>
 export type Frame = z.infer<typeof Frame>
+export type Animation = z.infer<typeof Animation>
+export type Build = z.infer<typeof Build>
 export type TextStyle = z.infer<typeof TextStyle>

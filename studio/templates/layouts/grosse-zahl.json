@@ -1,0 +1,17 @@
+{
+  "$schema": "../../src/schema/layout.schema.json",
+  "name": "grosse-zahl",
+  "label": "Große Zahl",
+  "description": "Eine Kennzahl, die hochzählt, mit kurzer Erklärung.",
+  "surface": "content",
+  "width": 1920,
+  "height": 1080,
+  "elements": [
+    { "id": "zahl", "type": "text", "style": "display", "content": "250", "fontSize": 280,
+      "frame": { "x": 160, "y": 300, "w": 1600, "h": 300 },
+      "build": { "in": { "preset": "countUp" }, "trigger": "afterPrevious" } },
+    { "id": "erklaerung", "type": "text", "style": "subtitle", "content": "Projekte in den letzten fünf Jahren",
+      "frame": { "x": 160, "y": 640, "w": 1200, "h": 70 },
+      "build": { "in": { "preset": "rise" }, "trigger": "afterPrevious" } }
+  ]
+}

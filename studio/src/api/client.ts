@@ -1,6 +1,8 @@
 import type { Brand } from '../schema/brand'
 import type { Deck } from '../schema/deck'
 import type { Issue } from '../schema/issues'
+import type { Layout } from '../schema/layout'
+import type { Theme } from '../schema/theme'
 
 export type Result<T> = { ok: true; value: T } | { ok: false; status: number; issues: Issue[] }
 
@@ -35,6 +37,8 @@ export const api = {
       body: JSON.stringify(deck),
     }),
   getBrand: () => request('/api/brand', (b) => b.brand as Brand),
+  getTheme: (name: string) => request(`/api/themes/${encodeURIComponent(name)}`, (b) => b.theme as Theme),
+  listLayouts: () => request('/api/layouts', (b) => b.layouts as Layout[]),
 }
 
 /**

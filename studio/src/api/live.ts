@@ -2,8 +2,10 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Brand } from '../schema/brand'
 import type { Deck } from '../schema/deck'
 import type { Issue } from '../schema/issues'
+import type { Layout } from '../schema/layout'
+import type { Theme } from '../schema/theme'
 import { api, type DeckSummary, type Result } from './client'
-import { BRAND_CHANGED, DECK_CHANGED, type DeckChangedData } from './events'
+import { BRAND_CHANGED, DECK_CHANGED, TEMPLATES_CHANGED, type DeckChangedData } from './events'
 
 export type Live<T> = {
   /** Letzter gültiger Stand – bleibt erhalten, wenn die Datei kurzzeitig ungültig ist. */
@@ -74,4 +76,18 @@ export function useDeck(name: string): Live<Deck> {
 
 export function useBrand(): Live<Brand> {
   return useLive(api.getBrand, subscribeBrand)
+}
+
+const subscribeTemplates = (refresh: () => void) => onServerEvent(TEMPLATES_CHANGED, refresh)
+
+const noTheme = () => Promise.resolve({ ok: true as const, value: null })
+
+/** Theme eines Decks (null, wenn das Deck keins angibt). */
+export function useTheme(name: string | undefined): Live<Theme | null> {
+  const load = useCallback(() => (name ? api.getTheme(name) : noTheme()), [name])
+  return useLive<Theme | null>(load, subscribeTemplates)
+}
+
+export function useLayouts(): Live<Layout[]> {
+  return useLive(api.listLayouts, subscribeTemplates)
 }

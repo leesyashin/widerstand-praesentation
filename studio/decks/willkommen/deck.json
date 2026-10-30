@@ -2,405 +2,137 @@
   "$schema": "../../src/schema/deck.schema.json",
   "version": 1,
   "title": "Willkommen in Studio",
-  "format": {
-    "preset": "16:9",
-    "width": 1920,
-    "height": 1080
-  },
+  "format": { "preset": "16:9", "width": 1920, "height": 1080 },
+  "theme": "silber",
   "intensity": 0.3,
   "slides": [
     {
       "id": "intro",
-      "layout": "title",
-      "background": {
-        "type": "meshGradient",
-        "colors": [
-          "brand.background",
-          "brand.accent2",
-          "brand.accent",
-          "brand.surface"
-        ],
-        "animate": true
-      },
-      "effects": [
-        {
-          "type": "grain",
-          "amount": 0.12
-        },
-        {
-          "type": "vignette",
-          "amount": 0.35
-        }
-      ],
+      "layout": "titel",
+      "background": { "type": "meshGradient", "colors": ["brand.background", "brand.accent2", "brand.accent", "brand.surface"], "animate": true },
+      "effects": [{ "type": "grain", "amount": 0.1 }, { "type": "vignette", "amount": 0.3 }],
       "elements": [
-        {
-          "id": "kicker",
-          "type": "text",
-          "style": "label",
-          "content": "Studio · Silbergelatine",
-          "color": "brand.accent",
-          "align": "center",
-          "frame": {
-            "x": 160,
-            "y": 380,
-            "w": 1600,
-            "h": 40
-          }
-        },
-        {
-          "id": "headline",
-          "match": "headline",
-          "type": "text",
-          "style": "display",
-          "content": "Licht. Bewegung.\nGeschichte.",
-          "align": "center",
-          "frame": {
-            "x": 160,
-            "y": 440,
-            "w": 1600,
-            "h": 340
-          },
-          "build": {
-            "in": {
-              "preset": "blurRise",
-              "duration": 800
-            },
-            "trigger": "click"
-          }
-        },
-        {
-          "id": "logo",
-          "name": "Logo",
-          "type": "image",
-          "src": "brand/logo.svg",
-          "fit": "contain",
-          "frame": {
-            "x": 160,
-            "y": 930,
-            "w": 234,
-            "h": 60
-          }
-        }
+        { "id": "kicker", "type": "text", "style": "label", "content": "Studio · Phase 1", "align": "center",
+          "frame": { "x": 160, "y": 380, "w": 1600, "h": 40 },
+          "build": { "in": { "preset": "fade", "duration": 700 }, "trigger": "afterPrevious" } },
+        { "id": "headline", "match": "headline", "type": "text", "style": "display", "content": "Licht. Bewegung.\nGeschichte.", "align": "center",
+          "frame": { "x": 160, "y": 440, "w": 1600, "h": 340 },
+          "build": { "in": { "preset": "blurRise", "duration": 1100, "delay": 150 }, "trigger": "withPrevious" } },
+        { "id": "logo", "name": "Logo", "type": "image", "src": "brand/logo.svg", "fit": "contain",
+          "frame": { "x": 160, "y": 930, "w": 234, "h": 60 },
+          "build": { "in": { "preset": "fade", "duration": 900 }, "trigger": "afterPrevious" } }
       ],
-      "notes": "Diese Folie kommt direkt aus decks/willkommen/deck.json."
+      "notes": "Alles auf dieser Folie läuft automatisch. Klick → Magic Move."
     },
     {
       "id": "idee",
-      "transition": {
-        "type": "magicMove",
-        "duration": 900,
-        "easing": "spring"
-      },
-      "background": {
-        "type": "color",
-        "color": "brand.background"
-      },
+      "transition": { "type": "magicMove", "duration": 1100 },
+      "background": { "type": "color", "color": "brand.background" },
       "elements": [
-        {
-          "id": "headline",
-          "match": "headline",
-          "type": "text",
-          "style": "title",
-          "content": "Eine Datei. Drei Wege.",
-          "frame": {
-            "x": 160,
-            "y": 140,
-            "w": 1600,
-            "h": 130
-          }
-        },
-        {
-          "id": "linie",
-          "type": "shape",
-          "shape": "line",
-          "stroke": {
-            "color": "brand.accent",
-            "width": 4
-          },
-          "frame": {
-            "x": 160,
-            "y": 300,
-            "w": 160,
-            "h": 4
-          }
-        },
-        {
-          "id": "karte-1",
-          "type": "shape",
-          "shape": "rect",
-          "fill": "brand.surface",
-          "radius": 28,
-          "frame": {
-            "x": 160,
-            "y": 400,
-            "w": 500,
-            "h": 480
-          },
-          "build": {
-            "in": {
-              "preset": "rise"
-            },
-            "trigger": "click"
-          }
-        },
-        {
-          "id": "karte-1-titel",
-          "type": "text",
-          "style": "heading",
-          "content": "Claude",
-          "frame": {
-            "x": 220,
-            "y": 460,
-            "w": 380,
-            "h": 80
-          },
-          "build": {
-            "in": {
-              "preset": "rise"
-            },
-            "trigger": "withPrevious"
-          }
-        },
-        {
-          "id": "karte-1-text",
-          "type": "text",
-          "style": "body",
-          "color": "brand.textMuted",
-          "content": "Schreibt und ändert die deck.json direkt.",
-          "frame": {
-            "x": 220,
-            "y": 560,
-            "w": 380,
-            "h": 200
-          },
-          "build": {
-            "in": {
-              "preset": "rise"
-            },
-            "trigger": "withPrevious"
-          }
-        },
-        {
-          "id": "karte-2",
-          "type": "shape",
-          "shape": "rect",
-          "fill": "brand.surface",
-          "radius": 28,
-          "frame": {
-            "x": 710,
-            "y": 400,
-            "w": 500,
-            "h": 480
-          },
-          "build": {
-            "in": {
-              "preset": "rise"
-            },
-            "trigger": "afterPrevious"
-          }
-        },
-        {
-          "id": "karte-2-titel",
-          "type": "text",
-          "style": "heading",
-          "content": "Editor",
-          "frame": {
-            "x": 770,
-            "y": 460,
-            "w": 380,
-            "h": 80
-          },
-          "build": {
-            "in": {
-              "preset": "rise"
-            },
-            "trigger": "withPrevious"
-          }
-        },
-        {
-          "id": "karte-2-text",
-          "type": "text",
-          "style": "body",
-          "color": "brand.textMuted",
-          "content": "Du bearbeitest visuell – gespeichert wird in dieselbe Datei.",
-          "frame": {
-            "x": 770,
-            "y": 560,
-            "w": 380,
-            "h": 200
-          },
-          "build": {
-            "in": {
-              "preset": "rise"
-            },
-            "trigger": "withPrevious"
-          }
-        },
-        {
-          "id": "karte-3",
-          "type": "shape",
-          "shape": "rect",
-          "fill": "brand.surface",
-          "radius": 28,
-          "frame": {
-            "x": 1260,
-            "y": 400,
-            "w": 500,
-            "h": 480
-          },
-          "build": {
-            "in": {
-              "preset": "rise"
-            },
-            "trigger": "afterPrevious"
-          }
-        },
-        {
-          "id": "karte-3-titel",
-          "type": "text",
-          "style": "heading",
-          "content": "Bühne",
-          "frame": {
-            "x": 1320,
-            "y": 460,
-            "w": 380,
-            "h": 80
-          },
-          "build": {
-            "in": {
-              "preset": "rise"
-            },
-            "trigger": "withPrevious"
-          }
-        },
-        {
-          "id": "karte-3-text",
-          "type": "text",
-          "style": "body",
-          "color": "brand.textMuted",
-          "content": "Präsentiert live – mit **Motion** und Effekten.",
-          "frame": {
-            "x": 1320,
-            "y": 560,
-            "w": 380,
-            "h": 200
-          },
-          "build": {
-            "in": {
-              "preset": "rise"
-            },
-            "trigger": "withPrevious"
-          }
-        }
+        { "id": "headline", "match": "headline", "type": "text", "style": "title", "content": "Eine Datei. Drei Wege.",
+          "frame": { "x": 160, "y": 140, "w": 1600, "h": 130 } },
+        { "id": "linie", "type": "shape", "shape": "line", "stroke": { "color": "brand.accent", "width": 4 },
+          "frame": { "x": 160, "y": 300, "w": 160, "h": 4 },
+          "build": { "in": { "preset": "drawLine", "duration": 700 }, "trigger": "afterPrevious" } },
+        { "id": "karte-1", "type": "shape", "shape": "rect", "fill": "brand.surface", "radius": 28,
+          "frame": { "x": 160, "y": 400, "w": 500, "h": 480 }, "build": { "in": { "preset": "rise" }, "trigger": "click" } },
+        { "id": "karte-1-icon", "type": "icon", "icon": "sparkles", "color": "brand.accent", "strokeWidth": 1.25,
+          "frame": { "x": 220, "y": 460, "w": 64, "h": 64 }, "build": { "in": { "preset": "drawLine", "duration": 900 }, "trigger": "withPrevious" } },
+        { "id": "karte-1-titel", "type": "text", "style": "heading", "content": "Claude",
+          "frame": { "x": 220, "y": 560, "w": 380, "h": 80 }, "build": { "in": { "preset": "rise" }, "trigger": "withPrevious" } },
+        { "id": "karte-1-text", "type": "text", "style": "body", "color": "brand.textMuted", "content": "Schreibt und ändert die deck.json direkt.",
+          "frame": { "x": 220, "y": 660, "w": 380, "h": 160 }, "build": { "in": { "preset": "rise" }, "trigger": "withPrevious" } },
+        { "id": "karte-2", "type": "shape", "shape": "rect", "fill": "brand.surface", "radius": 28,
+          "frame": { "x": 710, "y": 400, "w": 500, "h": 480 }, "build": { "in": { "preset": "rise", "delay": 120 }, "trigger": "withPrevious" } },
+        { "id": "karte-2-icon", "type": "icon", "icon": "mouse-pointer-2", "color": "brand.accent", "strokeWidth": 1.25,
+          "frame": { "x": 770, "y": 460, "w": 64, "h": 64 }, "build": { "in": { "preset": "drawLine", "duration": 900 }, "trigger": "withPrevious" } },
+        { "id": "karte-2-titel", "type": "text", "style": "heading", "content": "Editor",
+          "frame": { "x": 770, "y": 560, "w": 380, "h": 80 }, "build": { "in": { "preset": "rise" }, "trigger": "withPrevious" } },
+        { "id": "karte-2-text", "type": "text", "style": "body", "color": "brand.textMuted", "content": "Du bearbeitest visuell – gespeichert wird in dieselbe Datei.",
+          "frame": { "x": 770, "y": 660, "w": 380, "h": 160 }, "build": { "in": { "preset": "rise" }, "trigger": "withPrevious" } },
+        { "id": "karte-3", "type": "shape", "shape": "rect", "fill": "brand.surface", "radius": 28,
+          "frame": { "x": 1260, "y": 400, "w": 500, "h": 480 }, "build": { "in": { "preset": "rise", "delay": 120 }, "trigger": "withPrevious" } },
+        { "id": "karte-3-icon", "type": "icon", "icon": "presentation", "color": "brand.accent", "strokeWidth": 1.25,
+          "frame": { "x": 1320, "y": 460, "w": 64, "h": 64 }, "build": { "in": { "preset": "drawLine", "duration": 900 }, "trigger": "withPrevious" } },
+        { "id": "karte-3-titel", "type": "text", "style": "heading", "content": "Bühne",
+          "frame": { "x": 1320, "y": 560, "w": 380, "h": 80 }, "build": { "in": { "preset": "rise" }, "trigger": "withPrevious" } },
+        { "id": "karte-3-text", "type": "text", "style": "body", "color": "brand.textMuted", "content": "Präsentiert live – mit **Motion** und Effekten.",
+          "frame": { "x": 1320, "y": 660, "w": 380, "h": 160 }, "build": { "in": { "preset": "rise" }, "trigger": "withPrevious" } }
       ],
-      "notes": "Magic Move: die Headline fließt von Folie 1 hierher (ab Phase 1)."
+      "notes": "Die Headline ist per Magic Move von Folie 1 gekommen. Ein Klick baut die drei Karten auf."
     },
     {
-      "id": "bild",
-      "transition": {
-        "type": "blurDissolve",
-        "duration": 700
-      },
-      "background": {
-        "type": "image",
-        "src": "assets/horizont.svg"
-      },
-      "effects": [
-        {
-          "type": "letterbox",
-          "amount": 0.6
-        },
-        {
-          "type": "colorLook",
-          "look": "mono",
-          "amount": 1
-        },
-        {
-          "type": "grain",
-          "amount": 0.12
-        }
-      ],
+      "id": "statement",
+      "layout": "statement",
+      "transition": { "type": "blurDissolve" },
+      "background": { "type": "color", "color": "brand.background" },
       "elements": [
-        {
-          "id": "zitat",
-          "type": "text",
-          "style": "title",
-          "content": "Jedes Bild erzählt\n*eine Bewegung.*",
-          "frame": {
-            "x": 160,
-            "y": 300,
-            "w": 1100,
-            "h": 260
-          },
-          "build": {
-            "in": {
-              "preset": "maskReveal",
-              "direction": "right",
-              "duration": 900
-            },
-            "trigger": "click"
-          }
-        }
+        { "id": "zitat", "type": "text", "style": "title", "content": "Bewegung ist kein Effekt.\nSie ist *Bedeutung.*",
+          "frame": { "x": 160, "y": 380, "w": 1500, "h": 260 },
+          "build": { "in": { "preset": "wordByWord", "duration": 1400 }, "trigger": "afterPrevious" } },
+        { "id": "quelle", "type": "text", "style": "caption", "content": "— Stil-Bibel, Grundsatz 1",
+          "frame": { "x": 160, "y": 690, "w": 1000, "h": 40 },
+          "build": { "in": { "preset": "fade" }, "trigger": "click" } }
       ]
     },
     {
-      "id": "ende",
-      "transition": {
-        "type": "dissolve"
-      },
-      "background": {
-        "type": "gradient",
-        "from": "brand.light",
-        "to": "#e8e8ed",
-        "angle": 180
-      },
+      "id": "zahl",
+      "layout": "grosse-zahl",
+      "transition": { "type": "push", "direction": "left" },
+      "background": { "type": "color", "color": "brand.background" },
       "elements": [
-        {
-          "id": "logo",
-          "name": "Logo",
-          "type": "icon",
-          "icon": "brand/logo-mono.svg",
-          "color": "brand.ink",
-          "frame": {
-            "x": 843,
-            "y": 320,
-            "w": 234,
-            "h": 60
-          },
-          "build": {
-            "in": {
-              "preset": "blurRise"
-            }
-          }
-        },
-        {
-          "id": "danke",
-          "type": "text",
-          "style": "title",
-          "color": "brand.ink",
-          "align": "center",
-          "content": "Bereit für Phase 1.",
-          "frame": {
-            "x": 160,
-            "y": 480,
-            "w": 1600,
-            "h": 130
-          }
-        },
-        {
-          "id": "hinweis",
-          "type": "text",
-          "style": "subtitle",
-          "color": "brand.textMuted",
-          "align": "center",
-          "content": "Ändere diese Datei – die App aktualisiert sich sofort.",
-          "frame": {
-            "x": 160,
-            "y": 620,
-            "w": 1600,
-            "h": 70
-          }
-        }
+        { "id": "zahl", "type": "text", "style": "display", "content": "1.250", "fontSize": 280,
+          "frame": { "x": 160, "y": 300, "w": 1600, "h": 300 },
+          "build": { "in": { "preset": "countUp", "duration": 1800 }, "trigger": "afterPrevious" } },
+        { "id": "erklaerung", "type": "text", "style": "subtitle", "content": "Bilder, die in dieser Präsentation stecken könnten",
+          "frame": { "x": 160, "y": 640, "w": 1400, "h": 70 },
+          "build": { "in": { "preset": "rise" }, "trigger": "afterPrevious" } }
+      ]
+    },
+    {
+      "id": "bild",
+      "transition": { "type": "whipPan", "direction": "left" },
+      "background": { "type": "image", "src": "assets/horizont.svg" },
+      "effects": [{ "type": "letterbox", "amount": 0.6 }, { "type": "colorLook", "look": "mono", "amount": 1 }, { "type": "grain", "amount": 0.12 }],
+      "elements": [
+        { "id": "zitat", "type": "text", "style": "title", "content": "Jedes Bild erzählt\n*eine Bewegung.*",
+          "frame": { "x": 160, "y": 300, "w": 1100, "h": 260 },
+          "build": { "in": { "preset": "maskReveal", "direction": "right", "duration": 1100 }, "trigger": "click" } }
+      ]
+    },
+    {
+      "id": "werkzeuge",
+      "transition": { "type": "blurDissolve" },
+      "background": { "type": "color", "color": "brand.background" },
+      "elements": [
+        { "id": "titel", "type": "text", "style": "label", "content": "Eigene Komponente",
+          "frame": { "x": 160, "y": 200, "w": 1600, "h": 40 },
+          "build": { "in": { "preset": "fade" }, "trigger": "afterPrevious" } },
+        { "id": "headline", "type": "text", "style": "title", "content": "Wenn das Format nicht reicht,\nschreibt Claude Code.",
+          "frame": { "x": 160, "y": 260, "w": 1600, "h": 230 },
+          "build": { "in": { "preset": "blurRise" }, "trigger": "withPrevious" } },
+        { "id": "film", "name": "Filmstreifen", "type": "custom", "component": "FilmStrip",
+          "props": { "images": ["assets/horizont.svg", "brand/platzhalter.svg"], "frames": 5, "speed": 0.6 },
+          "frame": { "x": 0, "y": 620, "w": 1920, "h": 300 },
+          "build": { "in": { "preset": "fade", "duration": 900 }, "trigger": "click" } }
+      ],
+      "notes": "Der Filmstreifen ist custom/FilmStrip.tsx – React-Code mit eigenen Reglern (props)."
+    },
+    {
+      "id": "ende",
+      "layout": "abschluss",
+      "transition": { "type": "dissolve", "duration": 900 },
+      "background": { "type": "color", "color": "brand.light" },
+      "elements": [
+        { "id": "logo", "name": "Logo", "type": "icon", "icon": "brand/logo-mono.svg", "color": "brand.ink",
+          "frame": { "x": 843, "y": 340, "w": 234, "h": 60 },
+          "build": { "in": { "preset": "blurRise" }, "trigger": "afterPrevious" } },
+        { "id": "danke", "type": "text", "style": "title", "color": "brand.ink", "align": "center", "content": "Bereit für Phase 2.",
+          "frame": { "x": 160, "y": 480, "w": 1600, "h": 130 },
+          "build": { "in": { "preset": "blurRise" }, "trigger": "afterPrevious" } },
+        { "id": "hinweis", "type": "text", "style": "subtitle", "align": "center", "content": "Ändere diese Datei – die App aktualisiert sich sofort.",
+          "frame": { "x": 160, "y": 630, "w": 1600, "h": 70 },
+          "build": { "in": { "preset": "fade" }, "trigger": "afterPrevious" } }
       ]
     }
   ]

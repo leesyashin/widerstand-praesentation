@@ -1,15 +1,20 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { assetUrl } from '../api/client'
 import type { Background, Effect, Element, Slide } from '../schema/deck'
-import { resolveColor, TEXT_STYLES } from './brand'
+import { resolveColor, type TextStyles } from './brand'
+import { useTextStyles } from './context'
+import { CUSTOM_COMPONENTS } from './custom'
+import { findIcon, LucideIcon } from './icons'
 import { renderInline } from './text'
 import './engine.css'
 
 /**
- * Statische Darstellung einer Folie im Endzustand (alle Builds sichtbar).
- * Builds, Übergänge und Magic Move kommen in Phase 1 über die Timeline-Engine dazu.
+ * Darstellung einer Folie im Endzustand (alle Builds sichtbar).
+ * Animationen setzen später auf diesem DOM auf (siehe timeline.ts, transitions.ts):
+ *   .el      Position/Drehung aus `frame` – Ziel von Magic Move
+ *   .el-anim volle Größe darin – Ziel der Builds
  */
-export type RenderMode = 'view' | 'thumb'
+export type RenderMode = 'view' | 'thumb' | 'present' | 'render'
 
 type Ctx = { deckName: string; mode: RenderMode; width: number; height: number }
 
@@ -34,10 +39,18 @@ export function SlideView({
         <BackgroundView background={slide.background} ctx={ctx} />
         {slide.elements.map((el) => (el.hidden ? null : <ElementView key={el.id} element={el} ctx={ctx} />))}
       </div>
-      {slide.effects?.map((effect, i) => <EffectView key={i} effect={effect} ctx={ctx} />)}
+      {slide.effects && (
+        <div className="slide__fx">
+          {slide.effects.map((effect, i) => (
+            <EffectView key={i} effect={effect} ctx={ctx} />
+          ))}
+        </div>
+      )}
     </div>
   )
 }
+
+const isLive = (mode: RenderMode) => mode === 'view' || mode === 'present'
 
 /* ---------- Hintergründe ---------- */
 
@@ -66,7 +79,7 @@ function BackgroundView({ background, ctx }: { background: Background | undefine
       return (
         <div className="slide__bg" style={{ background: resolveColor(base), overflow: 'hidden' }}>
           <div
-            className={`mesh ${bg.animate && ctx.mode === 'view' ? 'mesh--animate' : ''}`}
+            className={`mesh ${bg.animate && isLive(ctx.mode) ? 'mesh--animate' : ''}`}
             style={{ backgroundImage: layers.join(', ') }}
           />
         </div>
@@ -91,8 +104,8 @@ function BackgroundView({ background, ctx }: { background: Background | undefine
           muted
           loop
           playsInline
-          autoPlay={ctx.mode === 'view'}
-          preload={ctx.mode === 'view' ? 'auto' : 'metadata'}
+          autoPlay={isLive(ctx.mode)}
+          preload={ctx.mode === 'thumb' ? 'metadata' : 'auto'}
           style={{ objectFit: 'cover' }}
         />
       )
@@ -113,32 +126,23 @@ function ElementView({ element, ctx }: { element: Element; ctx: Ctx }) {
   }
   return (
     <div className={`el el--${element.type}`} style={style} data-element-id={element.id}>
-      <ElementBody element={element} ctx={ctx} />
+      <div className="el-anim">
+        <ElementBody element={element} ctx={ctx} />
+      </div>
     </div>
   )
 }
 
 function ElementBody({ element: el, ctx }: { element: Element; ctx: Ctx }): ReactNode {
+  const styles = useTextStyles()
   switch (el.type) {
     case 'text': {
-      const s = TEXT_STYLES[el.style ?? 'body']
       const justify = { top: 'flex-start', middle: 'center', bottom: 'flex-end' }[el.verticalAlign ?? 'top']
+      const preset = el.build?.in?.preset
+      const split = preset === 'wordByWord' ? 'word' : preset === 'lineByLine' ? 'line' : 'none'
       return (
-        <div
-          className="el-text"
-          style={{
-            justifyContent: justify,
-            textAlign: el.align ?? 'left',
-            fontFamily: `var(--font-${el.font ?? s.font})`,
-            fontSize: el.fontSize ?? s.size,
-            fontWeight: el.fontWeight ?? s.weight,
-            lineHeight: el.lineHeight ?? s.lineHeight,
-            letterSpacing: `${el.letterSpacing ?? s.letterSpacing}em`,
-            color: resolveColor(el.color ?? s.color),
-            textTransform: s.uppercase ? 'uppercase' : undefined,
-          }}
-        >
-          <div>{renderInline(el.content)}</div>
+        <div className="el-text" style={{ justifyContent: justify, ...textCss(el, styles) }}>
+          <div>{renderInline(el.content, split, preset === 'countUp')}</div>
         </div>
       )
     }
@@ -165,28 +169,58 @@ function ElementBody({ element: el, ctx }: { element: Element; ctx: Ctx }): Reac
           poster={el.poster && assetUrl(ctx.deckName, el.poster)}
           muted={p.muted ?? true}
           loop={p.loop ?? false}
-          autoPlay={ctx.mode === 'view' && (p.autoplay ?? false)}
+          autoPlay={isLive(ctx.mode) && (p.autoplay ?? false)}
           playsInline
-          preload={ctx.mode === 'view' ? 'auto' : 'metadata'}
+          preload={ctx.mode === 'thumb' ? 'metadata' : 'auto'}
           style={{ objectFit: el.fit ?? 'cover', borderRadius: el.radius }}
         />
       )
     }
     case 'shape':
       return <ShapeBody el={el} />
-    case 'icon':
+    case 'icon': {
+      const color = resolveColor(el.color ?? 'brand.text') ?? 'currentColor'
       if (el.icon.startsWith('assets/') || el.icon.startsWith('brand/')) {
         const url = `url("${assetUrl(ctx.deckName, el.icon)}")`
-        return (
-          <div
-            className="el-icon"
-            style={{ backgroundColor: resolveColor(el.color ?? 'brand.text'), maskImage: url, WebkitMaskImage: url }}
-          />
-        )
+        return <div className="el-icon" style={{ backgroundColor: color, maskImage: url, WebkitMaskImage: url }} />
       }
-      return <Placeholder label={`Icon „${el.icon}“`} note="Icon-Bibliothek ab Phase 1" />
-    case 'custom':
-      return <Placeholder label={`Komponente ${el.component}`} note="Eigene Komponenten ab Phase 1" />
+      const node = findIcon(el.icon)
+      if (!node) return <Placeholder label={`Icon „${el.icon}“`} note="Unbekannt – Namen siehe lucide.dev/icons" />
+      return <LucideIcon node={node} color={color} strokeWidth={el.strokeWidth ?? 1.5} />
+    }
+    case 'custom': {
+      const mod = CUSTOM_COMPONENTS[el.component]
+      if (!mod) return <Placeholder label={`Komponente ${el.component}`} note={`custom/${el.component}.tsx fehlt`} />
+      const parsed = mod.schema ? mod.schema.safeParse(el.props ?? {}) : { success: true as const, data: el.props ?? {} }
+      if (!parsed.success) {
+        return <Placeholder label={`Komponente ${el.component}`} note={parsed.error.issues[0]?.message ?? 'Ungültige props'} />
+      }
+      const Component = mod.default
+      return (
+        <Component
+          props={parsed.data as Record<string, unknown>}
+          mode={ctx.mode}
+          width={el.frame.w}
+          height={el.frame.h}
+          assetUrl={(src) => assetUrl(ctx.deckName, src)}
+        />
+      )
+    }
+  }
+}
+
+/** Typografie eines Text-Elements als CSS – auch für das Bearbeitungsfeld im Editor. */
+export function textCss(el: Extract<Element, { type: 'text' }>, styles: TextStyles): CSSProperties {
+  const s = styles[el.style ?? 'body']
+  return {
+    textAlign: el.align ?? 'left',
+    fontFamily: `var(--font-${el.font ?? s.font})`,
+    fontSize: el.fontSize ?? s.size,
+    fontWeight: el.fontWeight ?? s.weight,
+    lineHeight: el.lineHeight ?? s.lineHeight,
+    letterSpacing: `${el.letterSpacing ?? s.letterSpacing}em`,
+    color: resolveColor(el.color ?? s.color),
+    textTransform: s.uppercase ? 'uppercase' : undefined,
   }
 }
 
@@ -232,10 +266,7 @@ function EffectView({ effect, ctx }: { effect: Effect; ctx: Ctx }) {
   switch (effect.type) {
     case 'grain':
       return (
-        <div
-          className={`fx-grain ${ctx.mode === 'view' ? 'fx-grain--animate' : ''}`}
-          style={{ opacity: effect.amount * 0.6 }}
-        />
+        <div className={`fx-grain ${isLive(ctx.mode) ? 'fx-grain--animate' : ''}`} style={{ opacity: effect.amount * 0.6 }} />
       )
     case 'vignette':
       return (

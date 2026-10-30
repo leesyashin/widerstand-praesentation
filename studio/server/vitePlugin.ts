@@ -7,11 +7,14 @@ import {
   isDeckName,
   listDeckNames,
   readBrand,
+  readLayouts,
+  readTheme,
+  TEMPLATES_DIR,
   readDeck,
   summarizeDeck,
   writeDeck,
 } from './decks'
-import { BRAND_CHANGED, DECK_CHANGED } from '../src/api/events'
+import { BRAND_CHANGED, DECK_CHANGED, TEMPLATES_CHANGED } from '../src/api/events'
 
 const MAX_BODY = 10 * 1024 * 1024
 
@@ -46,6 +49,21 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<boolea
   if (parts[1] === 'brand' && parts.length === 2 && req.method === 'GET') {
     const result = await readBrand()
     send(res, result.ok ? 200 : 422, result)
+    return true
+  }
+
+  if (parts[1] === 'themes' && parts.length === 3 && req.method === 'GET') {
+    const result = await readTheme(parts[2] ?? '')
+    send(res, result.ok ? 200 : 404, result)
+    return true
+  }
+
+  if (parts[1] === 'layouts' && parts.length === 2 && req.method === 'GET') {
+    const entries = await readLayouts()
+    send(res, 200, {
+      layouts: entries.flatMap((e) => (e.layout ? [e.layout] : [])),
+      issues: entries.flatMap((e) => e.issues.map((i) => ({ ...i, path: `${e.file}: ${i.path}` }))),
+    })
     return true
   }
 
@@ -95,7 +113,7 @@ function deckForFile(file: string): string | null {
 }
 
 function watchFiles(server: ViteDevServer) {
-  server.watcher.add([DECKS_DIR, BRAND_DIR])
+  server.watcher.add([DECKS_DIR, BRAND_DIR, TEMPLATES_DIR])
   const timers = new Map<string, ReturnType<typeof setTimeout>>()
   // Mehrere Dateiereignisse kurz hintereinander (z. B. Editor speichert atomar) → ein Event.
   const notify = (event: string, data: Record<string, string>) => {
@@ -112,6 +130,7 @@ function watchFiles(server: ViteDevServer) {
   const onFile = (file: string) => {
     // Alles im Brand-Ordner (brand.json, Logo, Schriften) betrifft alle Decks.
     if (!path.relative(BRAND_DIR, path.resolve(file)).startsWith('..')) return notify(BRAND_CHANGED, {})
+    if (!path.relative(TEMPLATES_DIR, path.resolve(file)).startsWith('..')) return notify(TEMPLATES_CHANGED, {})
     const name = deckForFile(path.resolve(file))
     if (name) notify(DECK_CHANGED, { name })
   }

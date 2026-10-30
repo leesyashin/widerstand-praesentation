@@ -541,6 +541,9 @@
                             "withPrevious",
                             "afterPrevious"
                           ]
+                        },
+                        "order": {
+                          "type": "number"
                         }
                       },
                       "additionalProperties": false
@@ -796,6 +799,9 @@
                             "withPrevious",
                             "afterPrevious"
                           ]
+                        },
+                        "order": {
+                          "type": "number"
                         }
                       },
                       "additionalProperties": false
@@ -1030,6 +1036,9 @@
                             "withPrevious",
                             "afterPrevious"
                           ]
+                        },
+                        "order": {
+                          "type": "number"
                         }
                       },
                       "additionalProperties": false
@@ -1260,6 +1269,9 @@
                             "withPrevious",
                             "afterPrevious"
                           ]
+                        },
+                        "order": {
+                          "type": "number"
                         }
                       },
                       "additionalProperties": false
@@ -1491,6 +1503,9 @@
                             "withPrevious",
                             "afterPrevious"
                           ]
+                        },
+                        "order": {
+                          "type": "number"
                         }
                       },
                       "additionalProperties": false
@@ -1699,6 +1714,9 @@
                             "withPrevious",
                             "afterPrevious"
                           ]
+                        },
+                        "order": {
+                          "type": "number"
                         }
                       },
                       "additionalProperties": false

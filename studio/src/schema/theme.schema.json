@@ -1,0 +1,318 @@
+{
+  "title": "Studio Theme",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "textStyles": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "enum": [
+          "display",
+          "title",
+          "heading",
+          "subtitle",
+          "body",
+          "caption",
+          "label"
+        ]
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "font": {
+            "type": "string",
+            "enum": [
+              "display",
+              "text",
+              "mono"
+            ]
+          },
+          "size": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "weight": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 900
+          },
+          "lineHeight": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "letterSpacing": {
+            "type": "number"
+          },
+          "color": {
+            "type": "string",
+            "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+          },
+          "uppercase": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "backgrounds": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "enum": [
+          "title",
+          "content",
+          "light"
+        ]
+      },
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "color"
+              },
+              "color": {
+                "type": "string",
+                "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+              }
+            },
+            "required": [
+              "type",
+              "color"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "gradient"
+              },
+              "from": {
+                "type": "string",
+                "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+              },
+              "to": {
+                "type": "string",
+                "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+              },
+              "angle": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "type",
+              "from",
+              "to"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "meshGradient"
+              },
+              "preset": {
+                "type": "string"
+              },
+              "colors": {
+                "minItems": 2,
+                "maxItems": 6,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+                }
+              },
+              "animate": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "image"
+              },
+              "src": {
+                "type": "string",
+                "pattern": "^(assets|brand)\\/[^\\s]+$"
+              },
+              "fit": {
+                "type": "string",
+                "enum": [
+                  "cover",
+                  "contain"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "src"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "video"
+              },
+              "src": {
+                "type": "string",
+                "pattern": "^(assets|brand)\\/[^\\s]+$"
+              },
+              "poster": {
+                "type": "string",
+                "pattern": "^(assets|brand)\\/[^\\s]+$"
+              }
+            },
+            "required": [
+              "type",
+              "src"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      }
+    },
+    "effects": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "enum": [
+          "title",
+          "content",
+          "light"
+        ]
+      },
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "const": "grain"
+                },
+                "amount": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              },
+              "required": [
+                "type",
+                "amount"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "const": "vignette"
+                },
+                "amount": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              },
+              "required": [
+                "type",
+                "amount"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "const": "letterbox"
+                },
+                "amount": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              },
+              "required": [
+                "type",
+                "amount"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "const": "colorLook"
+                },
+                "look": {
+                  "type": "string",
+                  "enum": [
+                    "warm",
+                    "cool",
+                    "tealOrange",
+                    "muted",
+                    "mono"
+                  ]
+                },
+                "amount": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              },
+              "required": [
+                "type",
+                "look"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      }
+    }
+  },
+  "required": [
+    "name",
+    "label",
+    "textStyles",
+    "backgrounds"
+  ],
+  "additionalProperties": false
+}

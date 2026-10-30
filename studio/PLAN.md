@@ -350,7 +350,7 @@ Jede Phase endet mit etwas, das du **wirklich benutzen** kannst.
   Deck-Übersicht, Deck-Ansicht mit Navigator und Inspector, Notizen werden direkt in die `deck.json` gespeichert,
   statischer Renderer inkl. CSS-Vorschau von Grain, Vignette, Letterbox und Farblooks, Beispiel-Deck `decks/willkommen`.
 
-### Phase 1: MVP: Bauen & Präsentieren
+### Phase 1: MVP: Bauen & Präsentieren ✅ erledigt
 - Renderer: Text, Bild, Video, Form, Linie, Icon/SVG; Skalierung auf 16:9, 4:3 und eigene Formate
 - Builds (Klick + automatische Folge) mit den ersten Presets: Fade, Rise, Blur-Rise, Scale-In, Mask-Reveal, Wort für Wort
 - Übergänge: Blur-Dissolve, Push und **Magic Move v1**
@@ -360,6 +360,12 @@ Jede Phase endet mit etwas, das du **wirklich benutzen** kannst.
 - Erste Version der Erweiterung über eigene Komponenten (`custom/`)
 - `npm run shots` für Claudes visuelle Kontrolle
 - **Ergebnis:** Claude baut aus einem Briefing ein Deck, du feilst im Editor nach und hältst den Vortrag damit.
+- *Umgesetzt:* GSAP-Timeline-Engine (Klick/Automatik-Schritte, 10 Presets inkl. Wort für Wort, Hochzählen, Linie zeichnen),
+  Übergänge Blur-Dissolve, Dissolve, Push, Zoom, Kreis-Reveal, Whip-Pan und Magic Move (misst die sichtbare Textkante),
+  Präsentationsmodus (Vollbild, Tastatur/Clicker, Schwarzbild, Ende-Bildschirm), Editor (Auswahl, Ziehen, Skalieren,
+  Text direkt bearbeiten, Inspector mit Stil/Animation/Folie, Undo/Redo, Autosave, Kopieren/Einfügen, Folien aus Layouts,
+  duplizieren, löschen, Vorschau), Theme `silber`, 8 Layouts, Lucide-Icons, eigene Komponenten (`custom/FilmStrip.tsx`),
+  `npm run shots`. Bewusst nach Phase 2 verschoben: Mehrfachauswahl und Drehen per Griff.
 
 ### Phase 2: Editor wie Keynote
 - Hilfslinien & Einrasten, Mehrfachauswahl, Drehen

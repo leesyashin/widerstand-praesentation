@@ -153,3 +153,34 @@
   background: #000;
   pointer-events: none;
 }
+
+/* Animationsebene und Textzerlegung für Builds */
+.el-anim {
+  position: absolute;
+  inset: 0;
+}
+
+.slide__fx {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.el-text .w {
+  display: inline-block;
+}
+
+.el-text .ln {
+  display: block;
+}
+
+.el-text .count {
+  font-variant-numeric: tabular-nums;
+}
+
+.el-icon-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
