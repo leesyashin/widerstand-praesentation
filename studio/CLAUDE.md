@@ -13,6 +13,7 @@ Gesamtplan und Phasen: `PLAN.md`. Gestaltungsregeln: `STYLE.md` – **vor jedem 
 | `npm run schema` | JSON-Schemas neu erzeugen – **nach jeder Änderung in `src/schema/*.ts`**. |
 | `npm run check` | Alles: Schema aktuell, Typen, Lint, Decks. Muss vor jedem Commit grün sein. |
 | `npm run publish -- <name>` | Web-Player nach `published/<name>/` (eigenständig, mit Animationen). `--preview` zum Ansehen. |
+| `npm run build:cloud` | Gehostete App (Vercel) nach `dist/` – speichert über die GitHub-API, siehe „Studio unterwegs“. |
 | `npm run pptx -- <name>` | PowerPoint nach `exports/<name>.pptx` (Text/Bilder/Formen/Notizen nativ, Effekte als Bild). |
 
 ## Präsentationen bauen und ändern
@@ -145,6 +146,22 @@ optional `schema` (Zod für `props` – wird geprüft, Fehler erscheinen als Pla
   verteilt alles über seine Live-Verbindung (`server/showPlugin.ts`) – auch an Geräte im WLAN (`npm run dev:remote`).
 - Probe-Zeiten liegen in `decks/<deck>/rehearsal.json` (Schema `src/schema/rehearsal.ts`), nicht in der `deck.json`.
   Die Datei nicht von Hand anlegen – sie entsteht beim Proben. `targetMinutes` = geplante Gesamtdauer.
+
+## Studio unterwegs (Phase 7)
+
+- `npm run build:cloud` (`--mode cloud`, `.env.cloud`) baut die gehostete App für Vercel (`vercel.json`, Root `studio`).
+  Dort gibt es keinen Dev-Server: `src/api/client.ts` schaltet mit `CLOUD` auf `src/api/cloud/backend.ts` um, das
+  dieselbe API über die GitHub-REST-API umsetzt (Dateibaum + Blobs lesen, Contents-API schreiben, ein Commit pro
+  Datei). Live-Events ersetzt ein Abgleich alle 15 s (`onCloudEvent`). Speichern im Editor dort nach 2,5 s.
+- Medien laufen unterwegs über den Service Worker `public/sw.js` (lädt mit dem Schlüssel aus dem privaten Repo,
+  `?v=<blob-sha>` = dauerhaft im Cache, Range-Antworten für Safari-Videos). Datei-URLs deshalb immer über
+  `assetUrl()` bilden.
+- Anmeldung: `src/app/CloudLogin.tsx`, Schlüssel nur in `localStorage` (`studio.cloud`). Repo/Branch kommen beim
+  Vercel-Build aus `VERCEL_GIT_*` (siehe `vite.config.ts`).
+- Handy-Layout: Media Query in `src/app/DeckView.css` (≤ 760 px oder flaches Touch-Gerät), `.compact-only` für
+  Knöpfe nur auf dem Handy. Doppeltippen = Doppelklick (`Canvas.tsx`).
+- Was Claude an Decks pusht, erscheint unterwegs nach ≤ 15 s. Was am Handy gespeichert wurde, liegt als Commit
+  auf `main` – vor eigenen Änderungen also `git pull`.
 
 ## Teilen & Export (Phase 6)
 

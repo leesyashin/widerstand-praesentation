@@ -62,6 +62,31 @@ Medien (Fotos, Videos, Lottie) ziehst du einfach auf die Folie oder in die Medie
 auf max. 3840 px optimiert, Videos bekommen ein Posterbild. Eigene Schriften lädst du im Folie-Tab unter
 „Textstile → Schriften …“ hoch.
 
+## Studio unterwegs (Handy, ohne Mac)
+
+Die App kann auch gehostet laufen – dann speichert sie direkt in dieses GitHub-Repo (jede Änderung ein Commit)
+und funktioniert überall, auch ohne laufenden Mac. Einmal einrichten:
+
+1. **Vercel:** Auf [vercel.com/new](https://vercel.com/new) mit GitHub anmelden und dieses Repo importieren.
+   *Root Directory* auf `studio` stellen – alles andere kommt aus `studio/vercel.json`. Deploy.
+   Ab dann baut Vercel bei jedem Push neu.
+2. **Zugangsschlüssel:** Auf [github.com/settings/personal-access-tokens/new](https://github.com/settings/personal-access-tokens/new)
+   einen *Fine-grained token* anlegen: Repository access → *Only select repositories* → dieses Repo,
+   Permissions → *Contents: Read and write*. Ablaufdatum z. B. 1 Jahr.
+3. **Handy:** Die Vercel-Adresse öffnen, Schlüssel einfügen, „Anmelden“. In Safari über Teilen →
+   **Zum Home-Bildschirm** wird Studio eine Vollbild-App.
+
+Auf dem Handy: Folien im Streifen unten antippen, Elemente antippen und ziehen, **Doppeltippen** bearbeitet Text,
+**Details** öffnet Stil/Animation/Folie (inkl. Notizen), Folien mit ‹ › verschieben, duplizieren, löschen,
+„Neue Folie“ aus Layouts, Abspielen mit Wischen. Gespeichert wird 2,5 s nach der letzten Änderung (und sofort,
+wenn du die App verlässt). Änderungen von Claude oder vom Mac erscheinen nach spätestens 15 s.
+
+Gut zu wissen:
+- Der Schlüssel bleibt nur auf dem Gerät. Die Vercel-Adresse selbst ist öffentlich, zeigt ohne Schlüssel aber
+  nichts aus dem Repo. Abmelden in der Deck-Übersicht.
+- Nur am Mac: Web-Player und PowerPoint bauen, Handy-Fernbedienung über WLAN, Medien über 50 MB.
+- Am Mac danach `git pull`, damit du die Änderungen vom Handy hast.
+
 ## Teilen: Web-Link und PowerPoint
 
 Im Editor oben rechts **Teilen**:

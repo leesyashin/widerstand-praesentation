@@ -1,9 +1,16 @@
 import type { Issue } from '../schema/issues'
 import { Rehearsal, type RehearsalRun } from '../schema/rehearsal'
+import { cloudApi } from '../api/cloud/backend'
+import { CLOUD } from '../api/cloud/config'
 
 /** Probe-Zeiten und Netzwerk-Adressen (server/showPlugin.ts). */
 
 export async function loadRehearsal(name: string): Promise<Rehearsal> {
+  if (CLOUD) {
+    const r = await cloudApi.getRehearsal(name)
+    const parsed = Rehearsal.safeParse(r.ok ? r.value : null)
+    return parsed.success ? parsed.data : { runs: [] }
+  }
   try {
     const res = await fetch(`/api/decks/${encodeURIComponent(name)}/rehearsal`, { cache: 'no-store' })
     const body = (await res.json()) as { rehearsal?: unknown }
@@ -15,6 +22,10 @@ export async function loadRehearsal(name: string): Promise<Rehearsal> {
 }
 
 export async function saveRehearsal(name: string, rehearsal: Rehearsal): Promise<Issue[]> {
+  if (CLOUD) {
+    const r = await cloudApi.saveRehearsal(name, rehearsal)
+    return r.ok ? [] : r.issues
+  }
   try {
     const res = await fetch(`/api/decks/${encodeURIComponent(name)}/rehearsal`, {
       method: 'PUT',
@@ -36,6 +47,7 @@ export function withRun(rehearsal: Rehearsal, run: RehearsalRun): Rehearsal {
 
 /** Adressen, unter denen andere Geräte im WLAN den Dev-Server erreichen. */
 export async function loadNetworkUrls(): Promise<string[]> {
+  if (CLOUD) return [] // gehostet: kein Dev-Server im WLAN
   try {
     const res = await fetch('/api/show/info', { cache: 'no-store' })
     const body = (await res.json()) as { network?: string[] }

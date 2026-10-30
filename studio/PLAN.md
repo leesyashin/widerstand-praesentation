@@ -444,6 +444,22 @@ Jede Phase endet mit etwas, das du **wirklich benutzen** kannst.
   Entscheidung Web-Links: kein eigener Passwortschutz – wer ihn braucht, schaltet ihn bei Netlify/Vercel ein.
   Bewusst offen: automatisches Hochladen (braucht Zugangsdaten auf deinem Mac), Charts als native PowerPoint-Diagramme.
 
+### Phase 7: Studio unterwegs ✅ erledigt
+- Studio läuft gehostet auf Vercel und funktioniert auf dem Handy – überall, ohne Mac.
+- Speicher bleibt das GitHub-Repo (eine Wahrheit für Mac, Handy und Claude), Anmeldung mit einem persönlichen
+  Zugangsschlüssel nur für dieses Repo.
+- Leichtes Bearbeiten auf dem Handy: Folien blättern, Text ändern, Elemente antippen/verschieben/löschen, Notizen,
+  Folien sortieren/duplizieren/anlegen, präsentieren.
+- *Umgesetzt:* GitHub-Backend für die komplette App-API (Decks, Brand-Kit, Themes, Layouts, Bausteine, Vorlagen,
+  Medien, Schriften, Proben) mit Inhalts-Cache über Blob-SHAs, ein Commit pro Speichern, Abgleich alle 15 s.
+  Service Worker lädt Medien aus dem privaten Repo (inkl. Video-Range für Safari). Anmeldeseite mit Prüfung der
+  Schreibrechte, Abmelden. Handy-Layout: große Folie, Werkzeugleiste zum Wischen, Folienstreifen mit ‹ › /
+  Duplizieren / Löschen, Details als Blatt von unten, Doppeltippen für Text, große Griffe, Mini-Toolbar bleibt im
+  Bild, Wischen beim Präsentieren. Web-App-Manifest und Icon für „Zum Home-Bildschirm“. Getestet gegen eine
+  nachgebaute GitHub-API (Anmelden, Laden, Medien, Speichern als Commit, Änderung von außen) im iPhone-Format.
+  Bewusst offen: Handy-Fernbedienung über das Internet, PowerPoint/Web-Player ohne Mac, Uploads über 50 MB,
+  echtes Zusammenführen bei gleichzeitigen Änderungen (zuletzt gespeichert gewinnt, Konflikte werden gemeldet).
+
 ---
 
 ## 10. Später möglich (Architektur ist vorbereitet)

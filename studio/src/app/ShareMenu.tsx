@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { CLOUD } from '../api/cloud/config'
 import type { Issue } from '../schema/issues'
 import { Icon } from '../ui/Icon'
 import './ShareMenu.css'
@@ -87,11 +88,14 @@ export function ShareMenu({ name, disabled }: { name: string; disabled?: boolean
       </button>
       {open && (
         <div className="share__menu material" role="menu">
-          <button className="share__item" role="menuitem" disabled={busy} onClick={() => void publish()}>
+          {CLOUD && (
+            <p className="share__hint">Web-Player und PowerPoint baut der Mac (npm run dev) – unterwegs fehlt dafür der Rechner.</p>
+          )}
+          <button className="share__item" role="menuitem" disabled={busy || CLOUD} onClick={() => void publish()}>
             <strong>Web-Player bauen</strong>
             <span>Eigenständige Seite mit allen Animationen – zum Hochladen als Link.</span>
           </button>
-          <button className="share__item" role="menuitem" disabled={busy} onClick={() => void pptx()}>
+          <button className="share__item" role="menuitem" disabled={busy || CLOUD} onClick={() => void pptx()}>
             <strong>PowerPoint (.pptx)</strong>
             <span>Text, Bilder, Formen und Notizen bleiben bearbeitbar, Effekte als Bild.</span>
           </button>

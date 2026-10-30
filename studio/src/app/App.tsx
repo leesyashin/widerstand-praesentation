@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import { CLOUD, loadConfig } from '../api/cloud/config'
 import { useBrand } from '../api/live'
 import { FALLBACK_BRAND } from '../engine/brand'
 import { BrandScope } from '../engine/BrandScope'
@@ -5,11 +7,18 @@ import { Present } from '../present/Present'
 import { Presenter } from '../present/Presenter'
 import { Remote } from '../present/Remote'
 import { RenderView } from '../present/RenderView'
+import { CloudLogin } from './CloudLogin'
 import { DeckList } from './DeckList'
 import { DeckView } from './DeckView'
 import { useRoute } from './route'
 
 export function App() {
+  const [signedIn, setSignedIn] = useState(() => !CLOUD || loadConfig() !== null)
+  if (!signedIn) return <CloudLogin onDone={() => setSignedIn(true)} />
+  return <StudioApp />
+}
+
+function StudioApp() {
   const route = useRoute()
   const brand = useBrand()
   return (
