@@ -1,0 +1,96 @@
+{
+  "$schema": "../../src/schema/block.schema.json",
+  "name": "kapitel-trenner",
+  "label": "Kapitel-Trenner",
+  "description": "Große Kapitelnummer, Linie, Titel – mit Light Leak beim Hereinkommen.",
+  "kind": "slide",
+  "surface": "title",
+  "width": 1920,
+  "height": 1080,
+  "transition": {
+    "type": "lightLeak",
+    "duration": 1400
+  },
+  "elements": [
+    {
+      "id": "kapitel-nummer",
+      "type": "text",
+      "style": "display",
+      "content": "01",
+      "frame": {
+        "x": 160,
+        "y": 260,
+        "w": 800,
+        "h": 240
+      },
+      "color": "brand.accent",
+      "build": {
+        "in": {
+          "preset": "blurRise",
+          "duration": 1000
+        },
+        "trigger": "afterPrevious"
+      }
+    },
+    {
+      "id": "kapitel-linie",
+      "type": "shape",
+      "shape": "line",
+      "stroke": {
+        "color": "brand.accent",
+        "width": 3
+      },
+      "frame": {
+        "x": 160,
+        "y": 540,
+        "w": 160,
+        "h": 4
+      },
+      "build": {
+        "in": {
+          "preset": "drawLine",
+          "duration": 700
+        },
+        "trigger": "afterPrevious"
+      }
+    },
+    {
+      "id": "kapitel-titel",
+      "type": "text",
+      "style": "title",
+      "content": "Kapitelname",
+      "frame": {
+        "x": 160,
+        "y": 590,
+        "w": 1600,
+        "h": 130
+      },
+      "build": {
+        "in": {
+          "preset": "maskReveal",
+          "direction": "right",
+          "delay": 200
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "kapitel-text",
+      "type": "text",
+      "style": "subtitle",
+      "content": "Worum es in diesem Kapitel geht.",
+      "frame": {
+        "x": 160,
+        "y": 740,
+        "w": 1200,
+        "h": 60
+      },
+      "build": {
+        "in": {
+          "preset": "fade"
+        },
+        "trigger": "afterPrevious"
+      }
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "$schema": "../../src/schema/block.schema.json",
+  "name": "intro",
+  "label": "Intro",
+  "description": "Eröffnung, die von selbst läuft: Kicker, Headline Wort für Wort, Untertitel, Logo – mit Licht-Sweep.",
+  "kind": "slide",
+  "surface": "title",
+  "width": 1920,
+  "height": 1080,
+  "effects": [
+    {
+      "type": "grain",
+      "amount": 0.1
+    },
+    {
+      "type": "vignette",
+      "amount": 0.3
+    },
+    {
+      "type": "lightSweep",
+      "amount": 0.4
+    }
+  ],
+  "elements": [
+    {
+      "id": "intro-kicker",
+      "type": "text",
+      "style": "label",
+      "content": "Präsentation · 2027",
+      "frame": {
+        "x": 160,
+        "y": 360,
+        "w": 1600,
+        "h": 40
+      },
+      "align": "center",
+      "build": {
+        "in": {
+          "preset": "fade",
+          "duration": 700
+        },
+        "trigger": "afterPrevious"
+      }
+    },
+    {
+      "id": "intro-headline",
+      "type": "text",
+      "style": "display",
+      "content": "Licht. Bewegung.\nGeschichte.",
+      "frame": {
+        "x": 160,
+        "y": 420,
+        "w": 1600,
+        "h": 320
+      },
+      "align": "center",
+      "match": "headline",
+      "build": {
+        "in": {
+          "preset": "wordByWord",
+          "duration": 1200
+        },
+        "trigger": "afterPrevious"
+      }
+    },
+    {
+      "id": "intro-untertitel",
+      "type": "text",
+      "style": "subtitle",
+      "content": "Ein Untertitel in einer Zeile.",
+      "frame": {
+        "x": 160,
+        "y": 770,
+        "w": 1600,
+        "h": 60
+      },
+      "align": "center",
+      "build": {
+        "in": {
+          "preset": "blurRise"
+        },
+        "trigger": "afterPrevious"
+      }
+    },
+    {
+      "id": "intro-logo",
+      "name": "Logo",
+      "type": "icon",
+      "icon": "brand/logo-mono.svg",
+      "color": "brand.text",
+      "frame": {
+        "x": 843,
+        "y": 930,
+        "w": 234,
+        "h": 60
+      },
+      "build": {
+        "in": {
+          "preset": "fade",
+          "duration": 900
+        },
+        "trigger": "afterPrevious"
+      }
+    }
+  ]
+}

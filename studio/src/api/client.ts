@@ -1,3 +1,4 @@
+import type { Block } from '../schema/block'
 import type { Brand } from '../schema/brand'
 import type { Deck } from '../schema/deck'
 import type { Issue } from '../schema/issues'
@@ -39,6 +40,15 @@ export const api = {
   getBrand: () => request('/api/brand', (b) => b.brand as Brand),
   getTheme: (name: string) => request(`/api/themes/${encodeURIComponent(name)}`, (b) => b.theme as Theme),
   listLayouts: () => request('/api/layouts', (b) => b.layouts as Layout[]),
+  listThemes: () => request('/api/themes', (b) => b.themes as Theme[]),
+  listBlocks: () => request('/api/blocks', (b) => b.blocks as Block[]),
+  listTemplates: () => request('/api/templates', (b) => b.templates as { name: string; deck: Deck }[]),
+  createDeck: (name: string, deck: Deck) =>
+    request('/api/decks', (b) => b.name as string, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, deck }),
+    }),
   listAssets: (name: string) => request(`/api/decks/${encodeURIComponent(name)}/assets`, (b) => b.assets as AssetInfo[]),
   listBrandAssets: () => request('/api/brand/assets', (b) => b.assets as AssetInfo[]),
   uploadAsset: (name: string, file: Blob, fileName: string) =>

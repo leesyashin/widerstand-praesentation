@@ -1,0 +1,922 @@
+{
+  "$schema": "../../src/schema/deck.schema.json",
+  "version": 1,
+  "title": "Vortrag",
+  "description": "Vortrag oder Workshop: Kapitel, Thesen, Beispiele, Fazit. Theme Papier.",
+  "format": {
+    "preset": "16:9",
+    "width": 1920,
+    "height": 1080
+  },
+  "theme": "papier",
+  "intensity": 0.3,
+  "slides": [
+    {
+      "id": "titel",
+      "layout": "titel",
+      "background": {
+        "type": "meshGradient",
+        "colors": [
+          "brand.background",
+          "brand.accent2",
+          "brand.surface",
+          "brand.background"
+        ],
+        "animate": true
+      },
+      "effects": [
+        {
+          "type": "grain",
+          "amount": 0.06
+        }
+      ],
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Vortrag · Ort, Datum",
+          "align": "center",
+          "frame": {
+            "x": 160,
+            "y": 380,
+            "w": 1600,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade",
+              "duration": 600
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "headline",
+          "match": "headline",
+          "type": "text",
+          "style": "display",
+          "content": "Bewegung ist\nBedeutung.",
+          "align": "center",
+          "frame": {
+            "x": 160,
+            "y": 440,
+            "w": 1600,
+            "h": 320
+          },
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "logo",
+          "name": "Logo",
+          "type": "icon",
+          "icon": "brand/logo-mono.svg",
+          "color": "brand.text",
+          "frame": {
+            "x": 160,
+            "y": 930,
+            "w": 234,
+            "h": 60
+          }
+        }
+      ]
+    },
+    {
+      "id": "agenda",
+      "layout": "agenda",
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Agenda",
+          "frame": {
+            "x": 160,
+            "y": 160,
+            "w": 800,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "punkt-1-nummer",
+          "type": "text",
+          "style": "heading",
+          "content": "01",
+          "frame": {
+            "x": 160,
+            "y": 260,
+            "w": 160,
+            "h": 80
+          },
+          "color": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 0
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "punkt-1-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Warum Bewegung?",
+          "frame": {
+            "x": 360,
+            "y": 260,
+            "w": 1000,
+            "h": 80
+          },
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 0
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "punkt-2-nummer",
+          "type": "text",
+          "style": "heading",
+          "content": "02",
+          "frame": {
+            "x": 160,
+            "y": 420,
+            "w": 160,
+            "h": 80
+          },
+          "color": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 90
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "punkt-2-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Drei Prinzipien",
+          "frame": {
+            "x": 360,
+            "y": 420,
+            "w": 1000,
+            "h": 80
+          },
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 90
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "punkt-3-nummer",
+          "type": "text",
+          "style": "heading",
+          "content": "03",
+          "frame": {
+            "x": 160,
+            "y": 580,
+            "w": 160,
+            "h": 80
+          },
+          "color": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 180
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "punkt-3-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Beispiele",
+          "frame": {
+            "x": 360,
+            "y": 580,
+            "w": 1000,
+            "h": 80
+          },
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 180
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "punkt-4-nummer",
+          "type": "text",
+          "style": "heading",
+          "content": "04",
+          "frame": {
+            "x": 160,
+            "y": 740,
+            "w": 160,
+            "h": 80
+          },
+          "color": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 270
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "punkt-4-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Fazit",
+          "frame": {
+            "x": 360,
+            "y": 740,
+            "w": 1000,
+            "h": 80
+          },
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 270
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "trenner-1",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.surface",
+            "width": 2
+          },
+          "frame": {
+            "x": 160,
+            "y": 380,
+            "w": 1600,
+            "h": 4
+          }
+        },
+        {
+          "id": "trenner-2",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.surface",
+            "width": 2
+          },
+          "frame": {
+            "x": 160,
+            "y": 540,
+            "w": 1600,
+            "h": 4
+          }
+        },
+        {
+          "id": "trenner-3",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.surface",
+            "width": 2
+          },
+          "frame": {
+            "x": 160,
+            "y": 700,
+            "w": 1600,
+            "h": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "kapitel-1",
+      "layout": "kapitel",
+      "background": {
+        "type": "meshGradient",
+        "colors": [
+          "brand.background",
+          "brand.accent2",
+          "brand.surface",
+          "brand.background"
+        ],
+        "animate": true
+      },
+      "effects": [
+        {
+          "type": "grain",
+          "amount": 0.06
+        }
+      ],
+      "transition": {
+        "type": "camera"
+      },
+      "elements": [
+        {
+          "id": "nummer",
+          "type": "text",
+          "style": "label",
+          "content": "Kapitel 01",
+          "frame": {
+            "x": 160,
+            "y": 500,
+            "w": 800,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "titel",
+          "match": "kapitel-titel",
+          "type": "text",
+          "style": "title",
+          "content": "Warum Bewegung?",
+          "frame": {
+            "x": 160,
+            "y": 556,
+            "w": 1600,
+            "h": 130
+          },
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ]
+    },
+    {
+      "id": "these",
+      "layout": "statement",
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "zitat",
+          "type": "text",
+          "style": "title",
+          "content": "Bewegung lenkt den Blick – *bevor* wir lesen.",
+          "frame": {
+            "x": 160,
+            "y": 380,
+            "w": 1400,
+            "h": 260
+          },
+          "build": {
+            "in": {
+              "preset": "wordByWord"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "quelle",
+          "type": "text",
+          "style": "caption",
+          "content": "— These",
+          "frame": {
+            "x": 160,
+            "y": 680,
+            "w": 1000,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "click"
+          }
+        }
+      ]
+    },
+    {
+      "id": "beispiel",
+      "layout": "bild-text",
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "bild",
+          "type": "image",
+          "src": "brand/platzhalter.svg",
+          "fit": "cover",
+          "radius": 24,
+          "frame": {
+            "x": 1000,
+            "y": 120,
+            "w": 760,
+            "h": 840
+          },
+          "build": {
+            "in": {
+              "preset": "maskReveal",
+              "direction": "up"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "headline",
+          "match": "headline",
+          "type": "text",
+          "style": "title",
+          "content": "Ein Beispiel.",
+          "frame": {
+            "x": 160,
+            "y": 360,
+            "w": 760,
+            "h": 130
+          },
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "text",
+          "type": "text",
+          "style": "body",
+          "color": "brand.textMuted",
+          "content": "Was man sieht, was passiert, was man daraus lernt.",
+          "frame": {
+            "x": 160,
+            "y": 520,
+            "w": 720,
+            "h": 200
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "click"
+          }
+        }
+      ]
+    },
+    {
+      "id": "kapitel-2",
+      "layout": "kapitel",
+      "background": {
+        "type": "meshGradient",
+        "colors": [
+          "brand.background",
+          "brand.accent2",
+          "brand.surface",
+          "brand.background"
+        ],
+        "animate": true
+      },
+      "effects": [
+        {
+          "type": "grain",
+          "amount": 0.06
+        }
+      ],
+      "transition": {
+        "type": "camera"
+      },
+      "elements": [
+        {
+          "id": "nummer",
+          "type": "text",
+          "style": "label",
+          "content": "Kapitel 02",
+          "frame": {
+            "x": 160,
+            "y": 500,
+            "w": 800,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "titel",
+          "match": "kapitel-titel",
+          "type": "text",
+          "style": "title",
+          "content": "Drei Prinzipien",
+          "frame": {
+            "x": 160,
+            "y": 556,
+            "w": 1600,
+            "h": 130
+          },
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ]
+    },
+    {
+      "id": "prinzipien",
+      "layout": "drei-punkte",
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "headline",
+          "match": "headline",
+          "type": "text",
+          "style": "title",
+          "content": "Drei Regeln.",
+          "frame": {
+            "x": 160,
+            "y": 140,
+            "w": 1600,
+            "h": 130
+          }
+        },
+        {
+          "id": "karte-1",
+          "type": "shape",
+          "shape": "rect",
+          "fill": "brand.surface",
+          "radius": 28,
+          "frame": {
+            "x": 160,
+            "y": 400,
+            "w": 500,
+            "h": 480
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "karte-1-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Fokus",
+          "frame": {
+            "x": 220,
+            "y": 460,
+            "w": 380,
+            "h": 80
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "karte-1-text",
+          "type": "text",
+          "style": "body",
+          "color": "brand.textMuted",
+          "content": "Pro Moment trägt eine Bewegung.",
+          "frame": {
+            "x": 220,
+            "y": 560,
+            "w": 380,
+            "h": 200
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "karte-2",
+          "type": "shape",
+          "shape": "rect",
+          "fill": "brand.surface",
+          "radius": 28,
+          "frame": {
+            "x": 710,
+            "y": 400,
+            "w": 500,
+            "h": 480
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "karte-2-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Ruhig",
+          "frame": {
+            "x": 770,
+            "y": 460,
+            "w": 380,
+            "h": 80
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "karte-2-text",
+          "type": "text",
+          "style": "body",
+          "color": "brand.textMuted",
+          "content": "Federn statt Hüpfen.",
+          "frame": {
+            "x": 770,
+            "y": 560,
+            "w": 380,
+            "h": 200
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "karte-3",
+          "type": "shape",
+          "shape": "rect",
+          "fill": "brand.surface",
+          "radius": 28,
+          "frame": {
+            "x": 1260,
+            "y": 400,
+            "w": 500,
+            "h": 480
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "karte-3-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Lesrichtung",
+          "frame": {
+            "x": 1320,
+            "y": 460,
+            "w": 380,
+            "h": 80
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "karte-3-text",
+          "type": "text",
+          "style": "body",
+          "color": "brand.textMuted",
+          "content": "Erst die Aussage, dann das Detail.",
+          "frame": {
+            "x": 1320,
+            "y": 560,
+            "w": 380,
+            "h": 200
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ]
+    },
+    {
+      "id": "zitat",
+      "layout": "zitat",
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "anfuehrung",
+          "type": "text",
+          "style": "display",
+          "content": "„",
+          "frame": {
+            "x": 160,
+            "y": 170,
+            "w": 200,
+            "h": 200
+          },
+          "color": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "zitat",
+          "type": "text",
+          "style": "title",
+          "content": "*Gute Bewegung bemerkt man nicht.*\n*Man versteht nur schneller.*",
+          "frame": {
+            "x": 160,
+            "y": 360,
+            "w": 1500,
+            "h": 260
+          },
+          "build": {
+            "in": {
+              "preset": "maskReveal",
+              "direction": "right",
+              "delay": 150
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "linie",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.accent",
+            "width": 3
+          },
+          "frame": {
+            "x": 160,
+            "y": 700,
+            "w": 96,
+            "h": 4
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine"
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "quelle",
+          "type": "text",
+          "style": "caption",
+          "content": "Name, Rolle",
+          "frame": {
+            "x": 290,
+            "y": 684,
+            "w": 1000,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ]
+    },
+    {
+      "id": "danke",
+      "layout": "abschluss",
+      "background": {
+        "type": "color",
+        "color": "brand.light"
+      },
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "logo",
+          "name": "Logo",
+          "type": "icon",
+          "icon": "brand/logo-mono.svg",
+          "color": "brand.ink",
+          "frame": {
+            "x": 843,
+            "y": 340,
+            "w": 234,
+            "h": 60
+          },
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "danke",
+          "type": "text",
+          "style": "title",
+          "color": "brand.ink",
+          "align": "center",
+          "content": "Danke.",
+          "frame": {
+            "x": 160,
+            "y": 480,
+            "w": 1600,
+            "h": 130
+          },
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "kontakt",
+          "type": "text",
+          "style": "subtitle",
+          "align": "center",
+          "content": "name@beispiel.de · beispiel.de",
+          "frame": {
+            "x": 160,
+            "y": 630,
+            "w": 1600,
+            "h": 70
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        }
+      ]
+    }
+  ]
+}

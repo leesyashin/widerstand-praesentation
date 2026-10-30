@@ -1,0 +1,125 @@
+{
+  "$schema": "../../src/schema/block.schema.json",
+  "name": "counter",
+  "label": "Counter",
+  "description": "Drei Kennzahlen zählen gleichzeitig hoch, Beschriftungen folgen.",
+  "kind": "elements",
+  "width": 1920,
+  "height": 1080,
+  "elements": [
+    {
+      "id": "counter-1",
+      "type": "text",
+      "style": "display",
+      "content": "120",
+      "frame": {
+        "x": 160,
+        "y": 360,
+        "w": 506,
+        "h": 200
+      },
+      "build": {
+        "in": {
+          "preset": "countUp",
+          "delay": 0
+        },
+        "trigger": "click"
+      }
+    },
+    {
+      "id": "counter-1-label",
+      "type": "text",
+      "style": "caption",
+      "content": "Projekte",
+      "frame": {
+        "x": 160,
+        "y": 580,
+        "w": 506,
+        "h": 40
+      },
+      "build": {
+        "in": {
+          "preset": "fade",
+          "delay": 600
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "counter-2",
+      "type": "text",
+      "style": "display",
+      "content": "38",
+      "frame": {
+        "x": 707,
+        "y": 360,
+        "w": 506,
+        "h": 200
+      },
+      "build": {
+        "in": {
+          "preset": "countUp",
+          "delay": 90
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "counter-2-label",
+      "type": "text",
+      "style": "caption",
+      "content": "Kunden",
+      "frame": {
+        "x": 707,
+        "y": 580,
+        "w": 506,
+        "h": 40
+      },
+      "build": {
+        "in": {
+          "preset": "fade",
+          "delay": 690
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "counter-3",
+      "type": "text",
+      "style": "display",
+      "content": "1.250",
+      "frame": {
+        "x": 1254,
+        "y": 360,
+        "w": 506,
+        "h": 200
+      },
+      "build": {
+        "in": {
+          "preset": "countUp",
+          "delay": 180
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "counter-3-label",
+      "type": "text",
+      "style": "caption",
+      "content": "Stunden Film",
+      "frame": {
+        "x": 1254,
+        "y": 580,
+        "w": 506,
+        "h": 40
+      },
+      "build": {
+        "in": {
+          "preset": "fade",
+          "delay": 780
+        },
+        "trigger": "withPrevious"
+      }
+    }
+  ]
+}

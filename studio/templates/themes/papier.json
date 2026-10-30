@@ -1,0 +1,33 @@
+{
+  "$schema": "../../src/schema/theme.schema.json",
+  "name": "papier",
+  "label": "Papier",
+  "description": "Hell und luftig: warmes Papierweiß, tiefschwarze Schrift, viel Weißraum. Für Vorträge und Workshops.",
+  "colors": {
+    "background": "#f4f2ed",
+    "surface": "#e9e5dc",
+    "text": "#141414",
+    "textMuted": "#6b6862",
+    "accent": "#3d3a34",
+    "accent2": "#d6cfbf",
+    "light": "#141414",
+    "ink": "#f4f2ed"
+  },
+  "textStyles": {
+    "display": { "font": "display", "size": 148, "weight": 600, "lineHeight": 1, "letterSpacing": -0.04, "color": "brand.text" },
+    "title": { "font": "display", "size": 96, "weight": 600, "lineHeight": 1.04, "letterSpacing": -0.03, "color": "brand.text" },
+    "heading": { "font": "display", "size": 58, "weight": 560, "lineHeight": 1.1, "letterSpacing": -0.02, "color": "brand.text" },
+    "subtitle": { "font": "text", "size": 40, "weight": 400, "lineHeight": 1.32, "letterSpacing": -0.01, "color": "brand.textMuted" },
+    "body": { "font": "text", "size": 32, "weight": 400, "lineHeight": 1.5, "letterSpacing": 0, "color": "brand.text" },
+    "caption": { "font": "text", "size": 24, "weight": 400, "lineHeight": 1.4, "letterSpacing": 0.005, "color": "brand.textMuted" },
+    "label": { "font": "text", "size": 21, "weight": 600, "lineHeight": 1.2, "letterSpacing": 0.16, "color": "brand.accent", "uppercase": true }
+  },
+  "backgrounds": {
+    "title": { "type": "meshGradient", "colors": ["brand.background", "brand.accent2", "brand.surface", "brand.background"], "animate": true },
+    "content": { "type": "color", "color": "brand.background" },
+    "light": { "type": "color", "color": "brand.light" }
+  },
+  "effects": {
+    "title": [{ "type": "grain", "amount": 0.06 }]
+  }
+}

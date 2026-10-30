@@ -19,8 +19,11 @@ erscheint sofort im Browser – egal ob Claude sie macht oder du.
 
 - `decks/<name>/deck.json` – deine Präsentationen, Medien in `decks/<name>/assets/`
 - `brand/brand.json` – dein Brand-Kit (Farben, Schriften, Logo)
-- `templates/` – Themes, Layouts, Vorlagen, Bausteine (ab Phase 1/5)
+- `templates/` – Themes, Layouts, Bausteine und Deck-Vorlagen (erweitern: [EXTENDING.md](EXTENDING.md))
 - `custom/` – eigene Komponenten für Spezialeffekte
+
+Neues Deck: auf der Startseite „Neues Deck“ – leer mit Theme oder aus einer Vorlage (Portfolio, Angebot, Pitch,
+Vortrag). Oder in Claude Code `/deck` mit einem kurzen Briefing.
 
 ## Bedienen
 

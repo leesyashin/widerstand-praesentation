@@ -1,0 +1,230 @@
+{
+  "$schema": "../../src/schema/layout.schema.json",
+  "name": "agenda",
+  "label": "Agenda",
+  "description": "Inhaltsübersicht mit vier nummerierten Punkten.",
+  "surface": "content",
+  "width": 1920,
+  "height": 1080,
+  "elements": [
+    {
+      "id": "kicker",
+      "type": "text",
+      "style": "label",
+      "content": "Agenda",
+      "frame": {
+        "x": 160,
+        "y": 160,
+        "w": 800,
+        "h": 40
+      },
+      "build": {
+        "in": {
+          "preset": "fade"
+        },
+        "trigger": "afterPrevious"
+      }
+    },
+    {
+      "id": "punkt-1-nummer",
+      "type": "text",
+      "style": "heading",
+      "content": "01",
+      "frame": {
+        "x": 160,
+        "y": 260,
+        "w": 160,
+        "h": 80
+      },
+      "color": "brand.accent",
+      "build": {
+        "in": {
+          "preset": "rise",
+          "delay": 0
+        },
+        "trigger": "afterPrevious"
+      }
+    },
+    {
+      "id": "punkt-1-titel",
+      "type": "text",
+      "style": "heading",
+      "content": "Ausgangslage",
+      "frame": {
+        "x": 360,
+        "y": 260,
+        "w": 1000,
+        "h": 80
+      },
+      "build": {
+        "in": {
+          "preset": "rise",
+          "delay": 0
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "punkt-2-nummer",
+      "type": "text",
+      "style": "heading",
+      "content": "02",
+      "frame": {
+        "x": 160,
+        "y": 420,
+        "w": 160,
+        "h": 80
+      },
+      "color": "brand.accent",
+      "build": {
+        "in": {
+          "preset": "rise",
+          "delay": 90
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "punkt-2-titel",
+      "type": "text",
+      "style": "heading",
+      "content": "Idee",
+      "frame": {
+        "x": 360,
+        "y": 420,
+        "w": 1000,
+        "h": 80
+      },
+      "build": {
+        "in": {
+          "preset": "rise",
+          "delay": 90
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "punkt-3-nummer",
+      "type": "text",
+      "style": "heading",
+      "content": "03",
+      "frame": {
+        "x": 160,
+        "y": 580,
+        "w": 160,
+        "h": 80
+      },
+      "color": "brand.accent",
+      "build": {
+        "in": {
+          "preset": "rise",
+          "delay": 180
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "punkt-3-titel",
+      "type": "text",
+      "style": "heading",
+      "content": "Umsetzung",
+      "frame": {
+        "x": 360,
+        "y": 580,
+        "w": 1000,
+        "h": 80
+      },
+      "build": {
+        "in": {
+          "preset": "rise",
+          "delay": 180
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "punkt-4-nummer",
+      "type": "text",
+      "style": "heading",
+      "content": "04",
+      "frame": {
+        "x": 160,
+        "y": 740,
+        "w": 160,
+        "h": 80
+      },
+      "color": "brand.accent",
+      "build": {
+        "in": {
+          "preset": "rise",
+          "delay": 270
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "punkt-4-titel",
+      "type": "text",
+      "style": "heading",
+      "content": "Nächste Schritte",
+      "frame": {
+        "x": 360,
+        "y": 740,
+        "w": 1000,
+        "h": 80
+      },
+      "build": {
+        "in": {
+          "preset": "rise",
+          "delay": 270
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "trenner-1",
+      "type": "shape",
+      "shape": "line",
+      "stroke": {
+        "color": "brand.surface",
+        "width": 2
+      },
+      "frame": {
+        "x": 160,
+        "y": 380,
+        "w": 1600,
+        "h": 4
+      }
+    },
+    {
+      "id": "trenner-2",
+      "type": "shape",
+      "shape": "line",
+      "stroke": {
+        "color": "brand.surface",
+        "width": 2
+      },
+      "frame": {
+        "x": 160,
+        "y": 540,
+        "w": 1600,
+        "h": 4
+      }
+    },
+    {
+      "id": "trenner-3",
+      "type": "shape",
+      "shape": "line",
+      "stroke": {
+        "color": "brand.surface",
+        "width": 2
+      },
+      "frame": {
+        "x": 160,
+        "y": 700,
+        "w": 1600,
+        "h": 4
+      }
+    }
+  ]
+}

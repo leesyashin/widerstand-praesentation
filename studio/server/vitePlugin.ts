@@ -14,6 +14,7 @@ import {
   summarizeDeck,
   writeDeck,
 } from './decks'
+import { createDeck, listThemes, readBlocks, readDeckTemplates } from './templates'
 import { deleteAsset, listAssets, listBrandAssets, uploadAsset, uploadFont, writeBrand } from './assets'
 import { BRAND_CHANGED, DECK_CHANGED, TEMPLATES_CHANGED } from '../src/api/events'
 
@@ -75,6 +76,43 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<boolea
 
   if (parts[1] === 'brand' && parts[2] === 'assets' && parts.length === 3 && req.method === 'GET') {
     send(res, 200, { assets: await listBrandAssets() })
+    return true
+  }
+
+  if (parts[1] === 'themes' && parts.length === 2 && req.method === 'GET') {
+    send(res, 200, await listThemes())
+    return true
+  }
+
+  if (parts[1] === 'blocks' && parts.length === 2 && req.method === 'GET') {
+    const entries = await readBlocks()
+    send(res, 200, {
+      blocks: entries.flatMap((e) => (e.block ? [e.block] : [])),
+      issues: entries.flatMap((e) => e.issues.map((i) => ({ ...i, path: `${e.file}: ${i.path}` }))),
+    })
+    return true
+  }
+
+  if (parts[1] === 'templates' && parts.length === 2 && req.method === 'GET') {
+    const entries = await readDeckTemplates()
+    send(res, 200, {
+      templates: entries.flatMap((e) => (e.template ? [e.template] : [])),
+      issues: entries.flatMap((e) => e.issues.map((i) => ({ ...i, path: `${e.file}: ${i.path}` }))),
+    })
+    return true
+  }
+
+  // Neues Deck: POST /api/decks { name, deck }
+  if (parts[1] === 'decks' && parts.length === 2 && req.method === 'POST') {
+    let body: { name?: unknown; deck?: unknown }
+    try {
+      body = JSON.parse(await readBody(req)) as typeof body
+    } catch (err) {
+      send(res, 400, { ok: false, issues: [{ path: '', message: (err as Error).message }] })
+      return true
+    }
+    const result = await createDeck(String(body.name ?? ''), body.deck)
+    send(res, result.ok ? 200 : 422, result)
     return true
   }
 

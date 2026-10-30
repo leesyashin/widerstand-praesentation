@@ -143,3 +143,76 @@
   letter-spacing: var(--track-small);
   font-variant-numeric: tabular-nums;
 }
+
+.decks__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+/* ---------- Neues Deck ---------- */
+
+.dialog--wide {
+  width: min(960px, calc(100vw - 32px));
+}
+
+.new-deck__title {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+}
+
+.new-deck__path {
+  grid-column: 2;
+  font-size: var(--text-xs);
+}
+
+.new-deck__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.new-deck__option {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font-size: var(--text-xs);
+  text-align: left;
+  cursor: default;
+}
+
+.new-deck__option strong {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.new-deck__thumb {
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--canvas);
+  box-shadow: 0 0 0 var(--hairline) var(--separator);
+  transition: box-shadow var(--dur-fast);
+}
+
+.new-deck__option:hover .new-deck__thumb {
+  box-shadow: 0 0 0 1px var(--text-3);
+}
+
+.new-deck__option.is-on .new-deck__thumb {
+  box-shadow: 0 0 0 3px var(--accent);
+}
+
+@media (max-width: 720px) {
+  .new-deck__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

@@ -1,5 +1,6 @@
 import type { Draft } from 'immer'
 import type { Deck, Element, Frame, Master, Slide } from '../schema/deck'
+import type { Block } from '../schema/block'
 import type { Layout } from '../schema/layout'
 import type { Theme } from '../schema/theme'
 
@@ -21,14 +22,19 @@ export function roundFrame(f: Frame): Frame {
   return { ...f, x: r(f.x), y: r(f.y), w: Math.max(1, r(f.w)), h: Math.max(1, r(f.h)) }
 }
 
-/** Neue Folie aus einem Layout – Elemente werden auf das Deck-Format skaliert, Hintergrund kommt vom Theme. */
-export function slideFromLayout(layout: Layout, deck: Deck, theme: Theme | null): Slide {
-  const sx = deck.format.width / layout.width
-  const sy = deck.format.height / layout.height
-  const elements = structuredClone(layout.elements).map((el) => ({
+/** Elemente einer Vorlage (Layout, Baustein) auf das Deck-Format skalieren. */
+function scaleElements(elements: Element[], from: { width: number; height: number }, deck: Deck): Element[] {
+  const sx = deck.format.width / from.width
+  const sy = deck.format.height / from.height
+  return structuredClone(elements).map((el) => ({
     ...el,
     frame: roundFrame({ ...el.frame, x: el.frame.x * sx, y: el.frame.y * sy, w: el.frame.w * sx, h: el.frame.h * sy }),
   }))
+}
+
+/** Neue Folie aus einem Layout – Elemente werden auf das Deck-Format skaliert, Hintergrund kommt vom Theme. */
+export function slideFromLayout(layout: Layout, deck: Deck, theme: Theme | null): Slide {
+  const elements = scaleElements(layout.elements, layout, deck)
   const slide: Slide = {
     id: uniqueId(layout.name, deck.slides.map((s) => s.id)),
     layout: layout.name,
@@ -318,4 +324,35 @@ export function mediaElement(
   }
   if (media.kind === 'lottie') return { id: uniqueId(base, taken), type: 'lottie', src: media.path, frame }
   return { id: uniqueId(base, taken), type: 'image', src: media.path, fit: 'cover', frame }
+}
+
+/* ---------- Bausteine ---------- */
+
+/** Baustein als neue Folie: eigener Hintergrund/Effekte oder die der Fläche aus dem Theme. */
+export function slideFromBlock(block: Block, deck: Deck, theme: Theme | null): Slide {
+  const surface = block.surface ?? 'content'
+  const slide: Slide = { id: uniqueId(block.name, deck.slides.map((s) => s.id)), elements: scaleElements(block.elements, block, deck) }
+  const background = block.background ?? theme?.backgrounds[surface]
+  if (background) slide.background = structuredClone(background)
+  const effects = block.effects ?? theme?.effects?.[surface]
+  if (effects?.length) slide.effects = structuredClone(effects)
+  if (deck.slides.length > 0) slide.transition = structuredClone(block.transition ?? { type: 'blurDissolve' })
+  return slide
+}
+
+/**
+ * Baustein-Elemente für eine bestehende Seite: eindeutige IDs, als Gruppe zusammengefasst.
+ * Ein `match`, den es auf der Seite schon gibt, fällt weg.
+ */
+export function elementsFromBlock(block: Block, page: Page, deck: Deck): Element[] {
+  const taken = page.elements.map((e) => e.id)
+  const matches = new Set(page.elements.flatMap((e) => (e.match ? [e.match] : [])))
+  const group = uniqueId(block.name, page.elements.flatMap((e) => (e.group ? [e.group] : [])))
+  return scaleElements(block.elements, block, deck).map((el) => {
+    const id = uniqueId(el.id, taken)
+    taken.push(id)
+    const copy: Element = { ...el, id, group }
+    if (copy.match && matches.has(copy.match)) delete copy.match
+    return copy
+  })
 }

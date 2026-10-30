@@ -3,6 +3,7 @@ import { readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { z } from 'zod'
 import { STUDIO_ROOT } from '../server/decks'
+import { Block } from '../src/schema/block'
 import { Brand } from '../src/schema/brand'
 import { Deck } from '../src/schema/deck'
 import { Layout } from '../src/schema/layout'
@@ -13,6 +14,7 @@ const targets = [
   { file: 'src/schema/brand.schema.json', schema: Brand, title: 'Studio Brand-Kit' },
   { file: 'src/schema/theme.schema.json', schema: Theme, title: 'Studio Theme' },
   { file: 'src/schema/layout.schema.json', schema: Layout, title: 'Studio Layout' },
+  { file: 'src/schema/block.schema.json', schema: Block, title: 'Studio Baustein' },
 ]
 
 const check = process.argv.includes('--check')

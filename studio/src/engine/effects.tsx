@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import { resolveColor } from './brand'
-import { useEffectScale } from './context'
+import { useEffectScale, usePalette } from './context'
 import { resolveRgba, type RGBA } from './gl/color'
 import { ShaderCanvas } from './gl/ShaderCanvas'
 import { GRAIN, MESH, SWEEP } from './gl/shaders'
@@ -12,12 +12,13 @@ const isLive = (mode: RenderMode) => mode === 'view' || mode === 'present'
 
 /** Liest Farben (auch Brand-Tokens) erst beim Zeichnen und hält sie kurz vor. */
 function useColorResolver(colors: string[]): () => RGBA[] {
+  const palette = usePalette()
   const cache = useRef<{ key: string; at: number; values: RGBA[] }>({ key: '', at: 0, values: [] })
-  const key = colors.join('|')
+  const key = colors.join('|') + JSON.stringify(palette)
   return () => {
     const now = performance.now()
     if (cache.current.key !== key || now - cache.current.at > 1000) {
-      cache.current = { key, at: now, values: colors.map((c) => resolveRgba(c)) }
+      cache.current = { key, at: now, values: colors.map((c) => resolveRgba(c, palette)) }
     }
     return cache.current.values
   }
@@ -41,6 +42,7 @@ export function CssMesh({ colors, animate }: { colors: string[]; animate: boolea
 /** Licht-Verlauf: fließende Lichtquellen in Brand-Farben (Signature-Effekt). */
 export function MeshBackground({ colors, animate, mode }: { colors: string[]; animate: boolean; mode: RenderMode }) {
   const fx = useEffectScale()
+  const palette = usePalette()
   const resolve = useColorResolver(colors)
   const fallback = <CssMesh colors={colors} animate={animate && isLive(mode)} />
   if (!useGl(mode)) return fallback
@@ -50,7 +52,7 @@ export function MeshBackground({ colors, animate, mode }: { colors: string[]; an
         fragment={MESH}
         animate={animate && isLive(mode)}
         quality={0.5}
-        deps={colors.join('|')}
+        deps={colors.join('|') + JSON.stringify(palette)}
         fallback={fallback}
         uniforms={() => {
           const [base = [0, 0, 0, 1], ...spots] = resolve()

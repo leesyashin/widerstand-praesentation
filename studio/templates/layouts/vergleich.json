@@ -1,0 +1,156 @@
+{
+  "$schema": "../../src/schema/layout.schema.json",
+  "name": "vergleich",
+  "label": "Vergleich",
+  "description": "Zwei Spalten: vorher und nachher, A und B.",
+  "surface": "content",
+  "width": 1920,
+  "height": 1080,
+  "elements": [
+    {
+      "id": "headline",
+      "type": "text",
+      "style": "title",
+      "content": "Vorher. Nachher.",
+      "frame": {
+        "x": 160,
+        "y": 120,
+        "w": 1600,
+        "h": 120
+      },
+      "match": "headline"
+    },
+    {
+      "id": "trenner",
+      "type": "shape",
+      "shape": "line",
+      "stroke": {
+        "color": "brand.surface",
+        "width": 2
+      },
+      "frame": {
+        "x": 740,
+        "y": 558,
+        "w": 440,
+        "h": 4,
+        "rotation": 90
+      },
+      "build": {
+        "in": {
+          "preset": "drawLine"
+        },
+        "trigger": "afterPrevious"
+      }
+    },
+    {
+      "id": "links-label",
+      "type": "text",
+      "style": "label",
+      "content": "Vorher",
+      "frame": {
+        "x": 160,
+        "y": 340,
+        "w": 700,
+        "h": 40
+      },
+      "build": {
+        "in": {
+          "preset": "fade"
+        },
+        "trigger": "click"
+      }
+    },
+    {
+      "id": "links-titel",
+      "type": "text",
+      "style": "heading",
+      "content": "Wie es heute ist.",
+      "frame": {
+        "x": 160,
+        "y": 400,
+        "w": 700,
+        "h": 140
+      },
+      "build": {
+        "in": {
+          "preset": "rise"
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "links-text",
+      "type": "text",
+      "style": "body",
+      "content": "Zwei, drei Sätze zur Ausgangslage.",
+      "frame": {
+        "x": 160,
+        "y": 560,
+        "w": 700,
+        "h": 200
+      },
+      "color": "brand.textMuted",
+      "build": {
+        "in": {
+          "preset": "rise"
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "rechts-label",
+      "type": "text",
+      "style": "label",
+      "content": "Nachher",
+      "frame": {
+        "x": 1060,
+        "y": 340,
+        "w": 700,
+        "h": 40
+      },
+      "build": {
+        "in": {
+          "preset": "fade"
+        },
+        "trigger": "click"
+      }
+    },
+    {
+      "id": "rechts-titel",
+      "type": "text",
+      "style": "heading",
+      "content": "Wie es sein wird.",
+      "frame": {
+        "x": 1060,
+        "y": 400,
+        "w": 700,
+        "h": 140
+      },
+      "build": {
+        "in": {
+          "preset": "rise"
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "rechts-text",
+      "type": "text",
+      "style": "body",
+      "content": "Zwei, drei Sätze zum Ergebnis.",
+      "frame": {
+        "x": 1060,
+        "y": 560,
+        "w": 700,
+        "h": 200
+      },
+      "color": "brand.textMuted",
+      "build": {
+        "in": {
+          "preset": "rise"
+        },
+        "trigger": "withPrevious"
+      }
+    }
+  ]
+}

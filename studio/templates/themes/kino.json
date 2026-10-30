@@ -1,0 +1,32 @@
+{
+  "$schema": "../../src/schema/theme.schema.json",
+  "name": "kino",
+  "label": "Kino",
+  "description": "Tiefschwarz, Kinobalken, Filmkorn und große Typo. Für Showreels und Portfolios.",
+  "colors": {
+    "background": "#000000",
+    "surface": "#141414",
+    "text": "#f5f4f0",
+    "textMuted": "#8f8d88",
+    "accent": "#e4ddcc",
+    "accent2": "#2b2a27"
+  },
+  "textStyles": {
+    "display": { "font": "display", "size": 176, "weight": 760, "lineHeight": 0.95, "letterSpacing": -0.045, "color": "brand.text" },
+    "title": { "font": "display", "size": 108, "weight": 700, "lineHeight": 1, "letterSpacing": -0.035, "color": "brand.text" },
+    "heading": { "font": "display", "size": 60, "weight": 650, "lineHeight": 1.06, "letterSpacing": -0.02, "color": "brand.text" },
+    "subtitle": { "font": "text", "size": 38, "weight": 400, "lineHeight": 1.3, "letterSpacing": 0, "color": "brand.textMuted" },
+    "body": { "font": "text", "size": 30, "weight": 400, "lineHeight": 1.5, "letterSpacing": 0.005, "color": "brand.text" },
+    "caption": { "font": "text", "size": 22, "weight": 400, "lineHeight": 1.4, "letterSpacing": 0.02, "color": "brand.textMuted" },
+    "label": { "font": "text", "size": 20, "weight": 600, "lineHeight": 1.2, "letterSpacing": 0.32, "color": "brand.accent", "uppercase": true }
+  },
+  "backgrounds": {
+    "title": { "type": "meshGradient", "colors": ["brand.background", "brand.accent2", "brand.surface"], "animate": true },
+    "content": { "type": "color", "color": "brand.background" },
+    "light": { "type": "color", "color": "brand.light" }
+  },
+  "effects": {
+    "title": [{ "type": "grain", "amount": 0.14 }, { "type": "vignette", "amount": 0.45 }, { "type": "letterbox", "amount": 0.6 }],
+    "content": [{ "type": "grain", "amount": 0.08 }]
+  }
+}

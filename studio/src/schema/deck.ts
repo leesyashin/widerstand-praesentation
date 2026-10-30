@@ -369,6 +369,8 @@ export const Deck = z
     $schema: z.string().optional(),
     version: z.literal(1),
     title: z.string().min(1),
+    /** Kurzbeschreibung – für Vorlagen und die Deck-Übersicht. */
+    description: z.string().optional(),
     format: Format,
     theme: z.string().optional(),
     /** Globale Effekt-Intensität: 0 = ruhig, 1 = filmisch. */

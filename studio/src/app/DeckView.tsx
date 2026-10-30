@@ -2,7 +2,8 @@ import { gsap } from 'gsap'
 import type { Draft } from 'immer'
 import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent as ReactDragEvent } from 'react'
 import { assetUrl } from '../api/client'
-import { useBrand, useLayouts, useTheme } from '../api/live'
+import { useBlocks, useLayouts, useTheme, useThemes } from '../api/live'
+import { BlockPicker } from '../editor/BlockPicker'
 import { ASSET_MIME, Canvas } from '../editor/Canvas'
 import { FontsDialog } from '../editor/FontsDialog'
 import { Inspector, type InspectorTab } from '../editor/Inspector'
@@ -17,12 +18,14 @@ import {
   distributeElements,
   duplicateElement,
   duplicateSlide,
+  elementsFromBlock,
   groupElements,
   mediaElement,
   moveSlide,
   newElement,
   newMaster,
   pageOf,
+  slideFromBlock,
   slideFromLayout,
   uniqueId,
   ungroupElements,
@@ -34,12 +37,14 @@ import {
 import { Overview, SLIDE_MIME, slideTitle } from '../editor/Overview'
 import { SpaceView } from '../editor/SpaceView'
 import { useEditor, type Editor } from '../editor/useEditor'
+import { usePalette } from '../engine/context'
 import { masterAsSlide, resolveDeck, resolveSlide } from '../engine/masters'
 import { SlideView } from '../engine/SlideView'
 import { Stage } from '../engine/Stage'
 import { ThemeScope } from '../engine/ThemeScope'
 import { createSlideTimeline } from '../engine/timeline'
 import { openPresenter } from '../present/Present'
+import type { Block } from '../schema/block'
 import type { Deck, Element } from '../schema/deck'
 import type { Issue } from '../schema/issues'
 import type { Layout } from '../schema/layout'
@@ -94,8 +99,10 @@ function EditorShell({
   brandIssues: Issue[]
 }) {
   const { live, doc: deck, edit } = editor
-  const brand = useBrand()
+  const palette = usePalette()
   const layouts = useLayouts()
+  const blocks = useBlocks()
+  const themes = useThemes()
   const theme = useTheme(deck?.theme)
   const [selection, setSelection] = useState<{ key: string; ids: string[] }>({ key: '', ids: [] })
   const [editing, setEditing] = useState<string | null>(null)
@@ -104,6 +111,7 @@ function EditorShell({
   const [mode, setMode] = useState<Mode>('edit')
   const [masterId, setMasterId] = useState<string | null>(null)
   const [media, setMedia] = useState(false)
+  const [blockPicker, setBlockPicker] = useState(false)
   const [fonts, setFonts] = useState(false)
   const [layersOpen, setLayersOpen] = useState(true)
   const [notice, setNotice] = useState({ text: '', token: 0 })
@@ -211,6 +219,25 @@ function EditorShell({
         say((err as Error).message)
       }
     }
+  }
+
+  /** Baustein einfügen: als neue Folie hinter der aktuellen oder als Gruppe auf der aktuellen Seite. */
+  const insertBlock = (block: Block) => {
+    if (!deck || !page) return
+    setBlockPicker(false)
+    if (block.kind === 'slide' && !master) {
+      const s = slideFromBlock(block, deck, theme.value)
+      edit((d) => void d.slides.splice(index + 1, 0, s))
+      goToSlide(s.id)
+      say(`Baustein „${block.label}“ als neue Folie eingefügt`)
+      return
+    }
+    const els = elementsFromBlock(block, page, deck)
+    // Auf Master-Folien gibt es keine Builds.
+    if (master) for (const el of els) delete el.build
+    editPage((p) => void p.elements.push(...els))
+    setSelection({ key: pageKey, ids: els.map((e) => e.id) })
+    setTab(master ? 'stil' : 'animation')
   }
 
   const addSlide = (layout: Layout) => {
@@ -416,7 +443,8 @@ function EditorShell({
   }
 
   const status = { saved: 'Gespeichert', saving: 'Speichert …', error: 'Nicht gespeichert' }[editor.status]
-  const brandColors = brand.value?.colors ?? {}
+  // Farbfelder zeigen die Palette des Themes (Brand-Kit, ggf. vom Theme umgestellt).
+  const brandColors = palette
   const slideMaster = !master && slide?.master ? deck?.masters?.find((m) => m.id === slide.master) : undefined
 
   return (
@@ -449,6 +477,10 @@ function EditorShell({
                 <span>{t.label}</span>
               </button>
             ))}
+            <button className={`tool block-toggle ${blockPicker ? 'is-on' : ''}`} title="Animierten Baustein einfügen" onClick={() => setBlockPicker((b) => !b)} disabled={!page || mode !== 'edit'}>
+              <Icon name="sparkle" />
+              <span>Baustein</span>
+            </button>
             <button className={`tool media-toggle ${media ? 'is-on' : ''}`} title="Medien-Bibliothek" onClick={() => setMedia((m) => !m)} disabled={!page}>
               <Icon name="folder" />
               <span>Medien</span>
@@ -718,6 +750,9 @@ function EditorShell({
             />
           </div>
         )}
+        {blockPicker && deck && (
+          <BlockPicker deck={deck} deckName={name} blocks={blocks.value ?? []} theme={theme.value} onPick={insertBlock} onClose={() => setBlockPicker(false)} />
+        )}
         {media && deck && (
           <MediaLibrary
             deck={deck}
@@ -750,6 +785,8 @@ function EditorShell({
             onEditMaster={(id) => setMasterId(id)}
             onNewMaster={() => createMaster(true)}
             onOpenFonts={() => setFonts(true)}
+            themes={themes.value ?? []}
+            layouts={layouts.value ?? []}
             saveIssues={editor.saveIssues}
           />
         )}

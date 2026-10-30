@@ -1,0 +1,106 @@
+{
+  "$schema": "../../src/schema/layout.schema.json",
+  "name": "ueber-mich",
+  "label": "Über mich",
+  "description": "Porträt links, Name und kurzer Text rechts.",
+  "surface": "content",
+  "width": 1920,
+  "height": 1080,
+  "elements": [
+    {
+      "id": "portraet",
+      "type": "image",
+      "src": "brand/platzhalter.svg",
+      "fit": "cover",
+      "radius": 24,
+      "frame": {
+        "x": 160,
+        "y": 120,
+        "w": 640,
+        "h": 840
+      },
+      "build": {
+        "in": {
+          "preset": "maskReveal",
+          "direction": "up"
+        },
+        "trigger": "afterPrevious"
+      }
+    },
+    {
+      "id": "kicker",
+      "type": "text",
+      "style": "label",
+      "content": "Über mich",
+      "frame": {
+        "x": 920,
+        "y": 330,
+        "w": 840,
+        "h": 40
+      },
+      "build": {
+        "in": {
+          "preset": "fade",
+          "delay": 200
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "name",
+      "type": "text",
+      "style": "title",
+      "content": "Vorname Name",
+      "frame": {
+        "x": 920,
+        "y": 390,
+        "w": 840,
+        "h": 120
+      },
+      "build": {
+        "in": {
+          "preset": "blurRise",
+          "delay": 200
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "text",
+      "type": "text",
+      "style": "body",
+      "content": "Was ich mache, für wen und warum – zwei, drei Sätze.",
+      "frame": {
+        "x": 920,
+        "y": 540,
+        "w": 780,
+        "h": 200
+      },
+      "color": "brand.textMuted",
+      "build": {
+        "in": {
+          "preset": "rise"
+        },
+        "trigger": "click"
+      }
+    },
+    {
+      "id": "fakten",
+      "type": "text",
+      "style": "caption",
+      "content": "Ort · seit Jahr · Schwerpunkt",
+      "frame": {
+        "x": 920,
+        "y": 780,
+        "w": 840,
+        "h": 40
+      },
+      "build": {
+        "in": {
+          "preset": "fade"
+        },
+        "trigger": "afterPrevious"
+      }
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "$schema": "../../src/schema/layout.schema.json",
+  "name": "chart",
+  "label": "Chart",
+  "description": "Balkendiagramm mit einer Aussage und kurzer Einordnung.",
+  "surface": "content",
+  "width": 1920,
+  "height": 1080,
+  "elements": [
+    {
+      "id": "headline",
+      "type": "text",
+      "style": "title",
+      "content": "Eine Aussage.",
+      "frame": {
+        "x": 160,
+        "y": 120,
+        "w": 1600,
+        "h": 120
+      },
+      "match": "headline"
+    },
+    {
+      "id": "chart",
+      "type": "chart",
+      "chart": "bar",
+      "data": [
+        {
+          "label": "2022",
+          "value": 32,
+          "color": "brand.textMuted"
+        },
+        {
+          "label": "2023",
+          "value": 48,
+          "color": "brand.textMuted"
+        },
+        {
+          "label": "2024",
+          "value": 71,
+          "color": "brand.textMuted"
+        },
+        {
+          "label": "2025",
+          "value": 96,
+          "color": "brand.accent"
+        }
+      ],
+      "frame": {
+        "x": 160,
+        "y": 320,
+        "w": 1060,
+        "h": 620
+      },
+      "build": {
+        "in": {
+          "preset": "grow"
+        },
+        "trigger": "click"
+      }
+    },
+    {
+      "id": "einordnung",
+      "type": "text",
+      "style": "body",
+      "content": "Was die Zahlen bedeuten – in einem Satz.",
+      "frame": {
+        "x": 1320,
+        "y": 520,
+        "w": 440,
+        "h": 240
+      },
+      "color": "brand.textMuted",
+      "build": {
+        "in": {
+          "preset": "rise"
+        },
+        "trigger": "afterPrevious"
+      }
+    }
+  ]
+}

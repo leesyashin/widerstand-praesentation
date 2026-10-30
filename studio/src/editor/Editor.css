@@ -1382,58 +1382,6 @@ button.nav-slide__thumb {
   color: var(--danger);
 }
 
-/* ---------- Dialog (Schriften) ---------- */
-
-.dialog-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  display: grid;
-  place-items: center;
-  background: rgba(0, 0, 0, 0.28);
-  animation: fade-in var(--dur-base) var(--ease-out);
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-}
-
-.dialog {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  width: min(520px, calc(100vw - 32px));
-  max-height: calc(100vh - 64px);
-  overflow-y: auto;
-  padding: var(--space-5);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg), 0 0 0 var(--hairline) var(--separator);
-  animation: pop-in var(--dur-base) var(--ease-out);
-}
-
-.dialog__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.dialog__head h2 {
-  margin: 0;
-  font-size: var(--text-lg);
-}
-
-.dialog__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-2);
-}
-
-.dialog .row {
-  grid-template-columns: 72px minmax(0, 1fr);
-}
-
 .font-roles {
   display: flex;
   flex-direction: column;
@@ -1475,4 +1423,56 @@ button.nav-slide__thumb {
   padding: var(--space-3) 0;
   font-size: 34px;
   line-height: 1.15;
+}
+
+/* ---------- Bausteine ---------- */
+
+.block-picker {
+  position: absolute;
+  z-index: 6;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: min(620px, calc(100% - 24px));
+  max-height: calc(100% - 24px);
+  overflow-y: auto;
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg), 0 0 0 var(--hairline) var(--separator);
+  animation: pop-in var(--dur-base) var(--ease-out);
+}
+
+.block-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4) var(--space-3);
+}
+
+.block-option {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  text-align: left;
+  cursor: default;
+}
+
+.block-option:hover .layout-option__thumb,
+.block-option:focus-visible .layout-option__thumb {
+  box-shadow: 0 0 0 3px var(--accent);
+}
+
+.block-option__name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.block-option__text {
+  font-size: var(--text-xs);
+  line-height: 1.35;
 }

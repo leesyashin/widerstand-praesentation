@@ -1,0 +1,1228 @@
+{
+  "$schema": "../../src/schema/deck.schema.json",
+  "version": 1,
+  "title": "Angebot",
+  "description": "Kundenangebot: Ausgangslage, Leistungen, Ablauf, Investition. Theme Sachlich.",
+  "format": {
+    "preset": "16:9",
+    "width": 1920,
+    "height": 1080
+  },
+  "theme": "sachlich",
+  "intensity": 0.3,
+  "slides": [
+    {
+      "id": "titel",
+      "layout": "titel",
+      "background": {
+        "type": "gradient",
+        "from": "brand.surface",
+        "to": "brand.background",
+        "angle": 160
+      },
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Angebot · Kunde GmbH",
+          "align": "center",
+          "frame": {
+            "x": 160,
+            "y": 380,
+            "w": 1600,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade",
+              "duration": 600
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "headline",
+          "match": "headline",
+          "type": "text",
+          "style": "display",
+          "content": "Imagefilm\nfür Kunde GmbH.",
+          "align": "center",
+          "frame": {
+            "x": 160,
+            "y": 440,
+            "w": 1600,
+            "h": 320
+          },
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "logo",
+          "name": "Logo",
+          "type": "icon",
+          "icon": "brand/logo-mono.svg",
+          "color": "brand.text",
+          "frame": {
+            "x": 160,
+            "y": 930,
+            "w": 234,
+            "h": 60
+          }
+        }
+      ]
+    },
+    {
+      "id": "agenda",
+      "layout": "agenda",
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Agenda",
+          "frame": {
+            "x": 160,
+            "y": 160,
+            "w": 800,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "punkt-1-nummer",
+          "type": "text",
+          "style": "heading",
+          "content": "01",
+          "frame": {
+            "x": 160,
+            "y": 260,
+            "w": 160,
+            "h": 80
+          },
+          "color": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 0
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "punkt-1-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Ausgangslage",
+          "frame": {
+            "x": 360,
+            "y": 260,
+            "w": 1000,
+            "h": 80
+          },
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 0
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "punkt-2-nummer",
+          "type": "text",
+          "style": "heading",
+          "content": "02",
+          "frame": {
+            "x": 160,
+            "y": 420,
+            "w": 160,
+            "h": 80
+          },
+          "color": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 90
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "punkt-2-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Leistungen",
+          "frame": {
+            "x": 360,
+            "y": 420,
+            "w": 1000,
+            "h": 80
+          },
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 90
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "punkt-3-nummer",
+          "type": "text",
+          "style": "heading",
+          "content": "03",
+          "frame": {
+            "x": 160,
+            "y": 580,
+            "w": 160,
+            "h": 80
+          },
+          "color": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 180
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "punkt-3-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Ablauf",
+          "frame": {
+            "x": 360,
+            "y": 580,
+            "w": 1000,
+            "h": 80
+          },
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 180
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "punkt-4-nummer",
+          "type": "text",
+          "style": "heading",
+          "content": "04",
+          "frame": {
+            "x": 160,
+            "y": 740,
+            "w": 160,
+            "h": 80
+          },
+          "color": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 270
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "punkt-4-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Investition",
+          "frame": {
+            "x": 360,
+            "y": 740,
+            "w": 1000,
+            "h": 80
+          },
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 270
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "trenner-1",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.surface",
+            "width": 2
+          },
+          "frame": {
+            "x": 160,
+            "y": 380,
+            "w": 1600,
+            "h": 4
+          }
+        },
+        {
+          "id": "trenner-2",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.surface",
+            "width": 2
+          },
+          "frame": {
+            "x": 160,
+            "y": 540,
+            "w": 1600,
+            "h": 4
+          }
+        },
+        {
+          "id": "trenner-3",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.surface",
+            "width": 2
+          },
+          "frame": {
+            "x": 160,
+            "y": 700,
+            "w": 1600,
+            "h": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "ausgangslage",
+      "layout": "statement",
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "zitat",
+          "type": "text",
+          "style": "title",
+          "content": "Ihr Ziel: in 90 Sekunden zeigen, *wer Sie sind.*",
+          "frame": {
+            "x": 160,
+            "y": 380,
+            "w": 1400,
+            "h": 260
+          },
+          "build": {
+            "in": {
+              "preset": "wordByWord"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "quelle",
+          "type": "text",
+          "style": "caption",
+          "content": "— Ausgangslage",
+          "frame": {
+            "x": 160,
+            "y": 680,
+            "w": 1000,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "click"
+          }
+        }
+      ]
+    },
+    {
+      "id": "leistungen",
+      "layout": "drei-punkte",
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "headline",
+          "match": "headline",
+          "type": "text",
+          "style": "title",
+          "content": "Was Sie bekommen.",
+          "frame": {
+            "x": 160,
+            "y": 140,
+            "w": 1600,
+            "h": 130
+          }
+        },
+        {
+          "id": "karte-1",
+          "type": "shape",
+          "shape": "rect",
+          "fill": "brand.surface",
+          "radius": 28,
+          "frame": {
+            "x": 160,
+            "y": 400,
+            "w": 500,
+            "h": 480
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "karte-1-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Konzept",
+          "frame": {
+            "x": 220,
+            "y": 460,
+            "w": 380,
+            "h": 80
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "karte-1-text",
+          "type": "text",
+          "style": "body",
+          "color": "brand.textMuted",
+          "content": "Drehbuch, Moodboard und Drehplan.",
+          "frame": {
+            "x": 220,
+            "y": 560,
+            "w": 380,
+            "h": 200
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "karte-2",
+          "type": "shape",
+          "shape": "rect",
+          "fill": "brand.surface",
+          "radius": 28,
+          "frame": {
+            "x": 710,
+            "y": 400,
+            "w": 500,
+            "h": 480
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "karte-2-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Dreh",
+          "frame": {
+            "x": 770,
+            "y": 460,
+            "w": 380,
+            "h": 80
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "karte-2-text",
+          "type": "text",
+          "style": "body",
+          "color": "brand.textMuted",
+          "content": "Zwei Drehtage mit Team, Licht und Ton.",
+          "frame": {
+            "x": 770,
+            "y": 560,
+            "w": 380,
+            "h": 200
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "karte-3",
+          "type": "shape",
+          "shape": "rect",
+          "fill": "brand.surface",
+          "radius": 28,
+          "frame": {
+            "x": 1260,
+            "y": 400,
+            "w": 500,
+            "h": 480
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "karte-3-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Schnitt",
+          "frame": {
+            "x": 1320,
+            "y": 460,
+            "w": 380,
+            "h": 80
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "karte-3-text",
+          "type": "text",
+          "style": "body",
+          "color": "brand.textMuted",
+          "content": "Imagefilm, drei Social-Cuts, zwei Korrekturen.",
+          "frame": {
+            "x": 1320,
+            "y": 560,
+            "w": 380,
+            "h": 200
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ablauf",
+      "layout": "ablauf",
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "transition": {
+        "type": "magicMove"
+      },
+      "elements": [
+        {
+          "id": "headline",
+          "type": "text",
+          "style": "title",
+          "content": "So arbeiten wir.",
+          "frame": {
+            "x": 160,
+            "y": 120,
+            "w": 1600,
+            "h": 120
+          },
+          "match": "headline"
+        },
+        {
+          "id": "achse",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.accent2",
+            "width": 2
+          },
+          "frame": {
+            "x": 160,
+            "y": 456,
+            "w": 1600,
+            "h": 8
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine",
+              "duration": 1200
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "punkt-1",
+          "type": "shape",
+          "shape": "ellipse",
+          "fill": "brand.accent",
+          "frame": {
+            "x": 160,
+            "y": 448,
+            "w": 24,
+            "h": 24
+          },
+          "build": {
+            "in": {
+              "preset": "scaleIn",
+              "delay": 0
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "schritt-1-label",
+          "type": "text",
+          "style": "label",
+          "content": "Woche 1",
+          "frame": {
+            "x": 160,
+            "y": 380,
+            "w": 360,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "schritt-1-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Briefing",
+          "frame": {
+            "x": 160,
+            "y": 520,
+            "w": 380,
+            "h": 70
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "schritt-1-text",
+          "type": "text",
+          "style": "body",
+          "content": "Ziele, Zielgruppe, Rahmen.",
+          "frame": {
+            "x": 160,
+            "y": 600,
+            "w": 360,
+            "h": 160
+          },
+          "color": "brand.textMuted",
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "punkt-2",
+          "type": "shape",
+          "shape": "ellipse",
+          "fill": "brand.accent",
+          "frame": {
+            "x": 580,
+            "y": 448,
+            "w": 24,
+            "h": 24
+          },
+          "build": {
+            "in": {
+              "preset": "scaleIn",
+              "delay": 60
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "schritt-2-label",
+          "type": "text",
+          "style": "label",
+          "content": "Woche 2",
+          "frame": {
+            "x": 580,
+            "y": 380,
+            "w": 360,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "schritt-2-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Konzept",
+          "frame": {
+            "x": 580,
+            "y": 520,
+            "w": 380,
+            "h": 70
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "schritt-2-text",
+          "type": "text",
+          "style": "body",
+          "content": "Idee und Drehbuch zur Abnahme.",
+          "frame": {
+            "x": 580,
+            "y": 600,
+            "w": 360,
+            "h": 160
+          },
+          "color": "brand.textMuted",
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "punkt-3",
+          "type": "shape",
+          "shape": "ellipse",
+          "fill": "brand.accent",
+          "frame": {
+            "x": 1000,
+            "y": 448,
+            "w": 24,
+            "h": 24
+          },
+          "build": {
+            "in": {
+              "preset": "scaleIn",
+              "delay": 60
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "schritt-3-label",
+          "type": "text",
+          "style": "label",
+          "content": "Woche 4",
+          "frame": {
+            "x": 1000,
+            "y": 380,
+            "w": 360,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "schritt-3-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Dreh",
+          "frame": {
+            "x": 1000,
+            "y": 520,
+            "w": 380,
+            "h": 70
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "schritt-3-text",
+          "type": "text",
+          "style": "body",
+          "content": "Zwei Tage vor Ort.",
+          "frame": {
+            "x": 1000,
+            "y": 600,
+            "w": 360,
+            "h": 160
+          },
+          "color": "brand.textMuted",
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "punkt-4",
+          "type": "shape",
+          "shape": "ellipse",
+          "fill": "brand.accent",
+          "frame": {
+            "x": 1420,
+            "y": 448,
+            "w": 24,
+            "h": 24
+          },
+          "build": {
+            "in": {
+              "preset": "scaleIn",
+              "delay": 60
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "schritt-4-label",
+          "type": "text",
+          "style": "label",
+          "content": "Woche 6",
+          "frame": {
+            "x": 1420,
+            "y": 380,
+            "w": 360,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "schritt-4-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Schnitt",
+          "frame": {
+            "x": 1420,
+            "y": 520,
+            "w": 380,
+            "h": 70
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "schritt-4-text",
+          "type": "text",
+          "style": "body",
+          "content": "Feinschnitt, Farbe, Ton, Abgabe.",
+          "frame": {
+            "x": 1420,
+            "y": 600,
+            "w": 360,
+            "h": 160
+          },
+          "color": "brand.textMuted",
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ]
+    },
+    {
+      "id": "pakete",
+      "layout": "vergleich",
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "transition": {
+        "type": "magicMove"
+      },
+      "elements": [
+        {
+          "id": "headline",
+          "type": "text",
+          "style": "title",
+          "content": "Zwei Pakete.",
+          "frame": {
+            "x": 160,
+            "y": 120,
+            "w": 1600,
+            "h": 120
+          },
+          "match": "headline"
+        },
+        {
+          "id": "trenner",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.surface",
+            "width": 2
+          },
+          "frame": {
+            "x": 740,
+            "y": 558,
+            "w": 440,
+            "h": 4,
+            "rotation": 90
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "links-label",
+          "type": "text",
+          "style": "label",
+          "content": "Basis",
+          "frame": {
+            "x": 160,
+            "y": 340,
+            "w": 700,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "links-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Der Film.",
+          "frame": {
+            "x": 160,
+            "y": 400,
+            "w": 700,
+            "h": 140
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "links-text",
+          "type": "text",
+          "style": "body",
+          "content": "Konzept, ein Drehtag, Imagefilm bis 90 Sekunden.",
+          "frame": {
+            "x": 160,
+            "y": 560,
+            "w": 700,
+            "h": 200
+          },
+          "color": "brand.textMuted",
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "rechts-label",
+          "type": "text",
+          "style": "label",
+          "content": "Komplett",
+          "frame": {
+            "x": 1060,
+            "y": 340,
+            "w": 700,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "rechts-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Film und Kampagne.",
+          "frame": {
+            "x": 1060,
+            "y": 400,
+            "w": 700,
+            "h": 140
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "rechts-text",
+          "type": "text",
+          "style": "body",
+          "content": "Zwei Drehtage, Imagefilm, drei Social-Cuts, Fotos.",
+          "frame": {
+            "x": 1060,
+            "y": 560,
+            "w": 700,
+            "h": 200
+          },
+          "color": "brand.textMuted",
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ]
+    },
+    {
+      "id": "investition",
+      "layout": "grosse-zahl",
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "zahl",
+          "type": "text",
+          "style": "display",
+          "content": "8.900 €",
+          "fontSize": 280,
+          "frame": {
+            "x": 160,
+            "y": 300,
+            "w": 1600,
+            "h": 300
+          },
+          "build": {
+            "in": {
+              "preset": "countUp"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "erklaerung",
+          "type": "text",
+          "style": "subtitle",
+          "content": "Paket Komplett, netto · gültig bis 31.12.",
+          "frame": {
+            "x": 160,
+            "y": 640,
+            "w": 1200,
+            "h": 70
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "afterPrevious"
+          }
+        }
+      ]
+    },
+    {
+      "id": "kontakt",
+      "layout": "kontakt",
+      "background": {
+        "type": "gradient",
+        "from": "brand.surface",
+        "to": "brand.background",
+        "angle": 160
+      },
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Kontakt",
+          "frame": {
+            "x": 160,
+            "y": 320,
+            "w": 1600,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "headline",
+          "type": "text",
+          "style": "title",
+          "content": "Lassen Sie uns starten.",
+          "frame": {
+            "x": 160,
+            "y": 380,
+            "w": 1600,
+            "h": 130
+          },
+          "match": "headline",
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "email",
+          "type": "text",
+          "style": "subtitle",
+          "content": "name@beispiel.de",
+          "frame": {
+            "x": 160,
+            "y": 580,
+            "w": 1000,
+            "h": 60
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "telefon",
+          "type": "text",
+          "style": "subtitle",
+          "content": "+49 000 000 000",
+          "frame": {
+            "x": 160,
+            "y": 650,
+            "w": 1000,
+            "h": 60
+          },
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 80
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "web",
+          "type": "text",
+          "style": "subtitle",
+          "content": "beispiel.de",
+          "frame": {
+            "x": 160,
+            "y": 720,
+            "w": 1000,
+            "h": 60
+          },
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 160
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "logo",
+          "name": "Logo",
+          "type": "icon",
+          "icon": "brand/logo-mono.svg",
+          "color": "brand.text",
+          "frame": {
+            "x": 160,
+            "y": 930,
+            "w": 234,
+            "h": 60
+          }
+        }
+      ]
+    }
+  ]
+}

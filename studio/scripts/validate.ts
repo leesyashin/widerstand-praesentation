@@ -2,6 +2,7 @@
 // Aufruf: npm run validate            → alle Decks
 //         npm run validate -- <name>  → nur ein Deck
 import { listDeckNames, listThemeNames, readBrand, readDeck, readLayouts, readTheme } from '../server/decks'
+import { readBlocks, readDeckTemplates } from '../server/templates'
 
 const only = process.argv.slice(2).filter((a) => !a.startsWith('-'))
 let failed = false
@@ -31,6 +32,24 @@ for (const l of badLayouts) {
   failed = true
   console.error(`✗ templates/layouts/${l.file}`)
   for (const i of l.issues) console.error(`    ${i.path || '(Datei)'}: ${i.message}`)
+}
+
+const blocks = await readBlocks()
+const badBlocks = blocks.filter((b) => b.issues.length)
+if (!badBlocks.length) console.log(`✓ templates/blocks  ·  ${blocks.length} Bausteine`)
+for (const b of badBlocks) {
+  failed = true
+  console.error(`✗ templates/blocks/${b.file}`)
+  for (const i of b.issues) console.error(`    ${i.path || '(Datei)'}: ${i.message}`)
+}
+
+const templates = await readDeckTemplates()
+const badTemplates = templates.filter((t) => t.issues.length)
+if (!badTemplates.length) console.log(`✓ templates/decks  ·  ${templates.length} Vorlagen`)
+for (const t of badTemplates) {
+  failed = true
+  console.error(`✗ templates/decks/${t.file}`)
+  for (const i of t.issues) console.error(`    ${i.path || '(Datei)'}: ${i.message}`)
 }
 
 const names = only.length ? only : await listDeckNames()

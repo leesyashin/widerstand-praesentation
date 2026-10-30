@@ -416,11 +416,20 @@ Jede Phase endet mit etwas, das du **wirklich benutzen** kannst.
   Vibration und wach bleibendem Bildschirm. Ein Knopf im Editor folgt nach dem Merge von Phase 2 (Taste R im
   Präsentationsmodus geht schon).
 
-### Phase 5: Templates & Bibliothek
+### Phase 5: Templates & Bibliothek ✅ erledigt
 - 3–4 Themes, vollständige Layout-Bibliothek
 - 4 Deck-Vorlagen: Portfolio/Showreel, Kundenangebot, Pitch, Vortrag
 - Animierte Bausteine: Logo-Reveal, Intro, Kapitel-Trenner, Counter, Galerie, Abspann
 - Projekt-Skill `/deck` fertig ausgebaut, Erweiterungsmechanismus voll dokumentiert
+- *Umgesetzt:* Themes `silber`, `kino` (schwarz, Kinobalken, Korn), `sachlich` (Graphit, ohne Effekte) und `papier`
+  (hell). Themes dürfen die Brand-Palette umstellen (`colors`) – die Farben laufen dafür über einen Kontext statt
+  `:root`, damit WebGL-Verläufe und mehrere Decks nebeneinander stimmen. 16 Layouts (neu: Agenda, Zitat, Galerie,
+  Chart, Vergleich, Ablauf, Über mich, Kontakt; Logos als Icon in Textfarbe, damit sie in jedem Theme sichtbar sind).
+  6 Bausteine (`templates/blocks/`, eigenes Schema) mit animierter Vorschau beim Darüberfahren im Editor – Folien-
+  Bausteine kommen als neue Folie, Element-Bausteine als Gruppe auf die aktuelle Folie. 4 Deck-Vorlagen
+  (`templates/decks/`) aus den Layouts zusammengesetzt; Startseite mit „Neues Deck“ (leer mit Theme oder aus Vorlage).
+  Theme-Wechsel im Inspector setzt Hintergründe/Effekte passend neu. `npm run validate` prüft auch Bausteine und
+  Vorlagen. Skill `/deck` unter `.claude/skills/deck/`, Erweiterungen in `EXTENDING.md`.
 
 ### Phase 6: Teilen & Export
 - **Web-Link:** `npm run publish <deck>` baut einen eigenständigen Player (nur Ansehen, mit Animationen) und veröffentlicht ihn, z. B. über GitHub Pages, Netlify oder Vercel

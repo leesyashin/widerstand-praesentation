@@ -1,0 +1,89 @@
+{
+  "$schema": "../../src/schema/layout.schema.json",
+  "name": "zitat",
+  "label": "Zitat",
+  "description": "Zitat mit Quelle, aufgedeckt hinter einer Kante.",
+  "surface": "content",
+  "width": 1920,
+  "height": 1080,
+  "elements": [
+    {
+      "id": "anfuehrung",
+      "type": "text",
+      "style": "display",
+      "content": "„",
+      "frame": {
+        "x": 160,
+        "y": 170,
+        "w": 200,
+        "h": 200
+      },
+      "color": "brand.accent",
+      "build": {
+        "in": {
+          "preset": "fade"
+        },
+        "trigger": "afterPrevious"
+      }
+    },
+    {
+      "id": "zitat",
+      "type": "text",
+      "style": "title",
+      "content": "*Ein Satz, der bleibt –*\n*und den man weitererzählt.*",
+      "frame": {
+        "x": 160,
+        "y": 360,
+        "w": 1500,
+        "h": 260
+      },
+      "build": {
+        "in": {
+          "preset": "maskReveal",
+          "direction": "right",
+          "delay": 150
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "linie",
+      "type": "shape",
+      "shape": "line",
+      "stroke": {
+        "color": "brand.accent",
+        "width": 3
+      },
+      "frame": {
+        "x": 160,
+        "y": 700,
+        "w": 96,
+        "h": 4
+      },
+      "build": {
+        "in": {
+          "preset": "drawLine"
+        },
+        "trigger": "click"
+      }
+    },
+    {
+      "id": "quelle",
+      "type": "text",
+      "style": "caption",
+      "content": "Name, Rolle bei Firma",
+      "frame": {
+        "x": 290,
+        "y": 684,
+        "w": 1000,
+        "h": 40
+      },
+      "build": {
+        "in": {
+          "preset": "fade"
+        },
+        "trigger": "withPrevious"
+      }
+    }
+  ]
+}
