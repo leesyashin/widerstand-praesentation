@@ -39,6 +39,7 @@ import { SlideView } from '../engine/SlideView'
 import { Stage } from '../engine/Stage'
 import { ThemeScope } from '../engine/ThemeScope'
 import { createSlideTimeline } from '../engine/timeline'
+import { openPresenter } from '../present/Present'
 import type { Deck, Element } from '../schema/deck'
 import type { Issue } from '../schema/issues'
 import type { Layout } from '../schema/layout'
@@ -491,6 +492,9 @@ function EditorShell({
           <span className={`save-status save-status--${editor.status}`} title={editor.saveIssues.map((i) => i.message).join('\n')}>
             {status}
           </span>
+          <button className="btn" onClick={() => openPresenter(name, slide?.id)} disabled={!slide} title="Referentenansicht in neuem Fenster: Notizen, Timer, Probe-Modus, Handy-Fernbedienung">
+            Referentenansicht
+          </button>
           <button className="btn btn--primary" onClick={play} disabled={!slide} title="Abspielen (⌥⌘P)">
             <Icon name="play" size={12} /> Abspielen
           </button>

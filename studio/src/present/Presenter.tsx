@@ -2,6 +2,7 @@ import qrcode from 'qrcode-generator'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useDeck } from '../api/live'
 import { href } from '../app/route'
+import { resolveDeck } from '../engine/masters'
 import { ThemeScope } from '../engine/ThemeScope'
 import type { Deck, Slide } from '../schema/deck'
 import type { Rehearsal, RehearsalRun } from '../schema/rehearsal'
@@ -16,10 +17,11 @@ import './Presenter.css'
  */
 export function Presenter({ name, slideId }: { name: string; slideId?: string }) {
   const live = useDeck(name)
-  if (!live.value) return <div className="presenter presenter--loading">Lade Präsentation …</div>
+  const deck = useMemo(() => live.value && resolveDeck(live.value), [live.value])
+  if (!deck) return <div className="presenter presenter--loading">Lade Präsentation …</div>
   return (
-    <ThemeScope theme={live.value.theme} intensity={live.value.intensity}>
-      <PresenterView deck={live.value} name={name} startId={slideId} />
+    <ThemeScope theme={deck.theme} intensity={deck.intensity} textStyles={deck.textStyles}>
+      <PresenterView deck={deck} name={name} startId={slideId} />
     </ThemeScope>
   )
 }
