@@ -41,13 +41,22 @@ type Action =
 const HISTORY = 200
 const MERGE_WINDOW = 1200
 
-const same = (a: Deck | null, b: Deck | null) => a === b || JSON.stringify(a) === JSON.stringify(b)
+/** JSON mit sortierten Schlüsseln: Der Server liefert Felder in Schema-Reihenfolge, der Editor in Einfügereihenfolge. */
+function canonical(value: unknown): string {
+  return JSON.stringify(value, (_key, v: unknown) =>
+    v && typeof v === 'object' && !Array.isArray(v)
+      ? Object.fromEntries(Object.entries(v as Record<string, unknown>).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)))
+      : v,
+  )
+}
+
+const same = (a: Deck | null, b: Deck | null) => a === b || canonical(a) === canonical(b)
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'live': {
       if (same(action.deck, state.doc) || state.pending) return { ...state, seen: action.deck }
-      if (state.recentSaves.includes(JSON.stringify(action.deck))) return { ...state, seen: action.deck }
+      if (state.recentSaves.includes(canonical(action.deck))) return { ...state, seen: action.deck }
       const external = state.doc !== null
       return {
         ...state,
@@ -96,7 +105,7 @@ function reducer(state: State, action: Action): State {
         ...state,
         pending: state.doc !== action.deck,
         saveIssues: action.issues,
-        recentSaves: action.issues.length ? state.recentSaves : [...state.recentSaves, JSON.stringify(action.deck)].slice(-20),
+        recentSaves: action.issues.length ? state.recentSaves : [...state.recentSaves, canonical(action.deck)].slice(-20),
       }
   }
 }

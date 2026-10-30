@@ -39,7 +39,31 @@ export const api = {
   getBrand: () => request('/api/brand', (b) => b.brand as Brand),
   getTheme: (name: string) => request(`/api/themes/${encodeURIComponent(name)}`, (b) => b.theme as Theme),
   listLayouts: () => request('/api/layouts', (b) => b.layouts as Layout[]),
+  listAssets: (name: string) => request(`/api/decks/${encodeURIComponent(name)}/assets`, (b) => b.assets as AssetInfo[]),
+  listBrandAssets: () => request('/api/brand/assets', (b) => b.assets as AssetInfo[]),
+  uploadAsset: (name: string, file: Blob, fileName: string) =>
+    request(`/api/decks/${encodeURIComponent(name)}/assets?file=${encodeURIComponent(fileName)}`, (b) => b.path as string, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/octet-stream' },
+      body: file,
+    }),
+  deleteAsset: (name: string, path: string) =>
+    request(`/api/decks/${encodeURIComponent(name)}/assets?path=${encodeURIComponent(path)}`, () => true, { method: 'DELETE' }),
+  uploadFont: (file: Blob, fileName: string) =>
+    request(`/api/brand/fonts?file=${encodeURIComponent(fileName)}`, (b) => b.path as string, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/octet-stream' },
+      body: file,
+    }),
+  saveBrand: (brand: Brand) =>
+    request('/api/brand', (b) => b.brand as Brand, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(brand),
+    }),
 }
+
+export type AssetInfo = { path: string; size: number; kind: 'image' | 'video' | 'lottie' | 'other' }
 
 /**
  * URL einer Datei: "assets/foto.jpg" → "/decks/<name>/assets/foto.jpg",

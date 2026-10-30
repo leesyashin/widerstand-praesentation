@@ -1,7 +1,8 @@
-import { useLayoutEffect, useRef } from 'react'
+import { useLayoutEffect, useMemo, useRef } from 'react'
 import { useDeck } from '../api/live'
 import { SlideView } from '../engine/SlideView'
 import { Stage } from '../engine/Stage'
+import { resolveDeck } from '../engine/masters'
 import { ThemeScope } from '../engine/ThemeScope'
 import { createSlideTimeline } from '../engine/timeline'
 import type { Deck } from '../schema/deck'
@@ -13,10 +14,10 @@ import './Present.css'
  */
 export function RenderView({ name, slideId, step }: { name: string; slideId?: string; step?: number }) {
   const live = useDeck(name)
-  const deck = live.value
+  const deck = useMemo(() => live.value && resolveDeck(live.value), [live.value])
   if (!deck) return null
   return (
-    <ThemeScope theme={deck.theme} intensity={deck.intensity}>
+    <ThemeScope theme={deck.theme} intensity={deck.intensity} textStyles={deck.textStyles}>
       <RenderSlide deck={deck} name={name} slideId={slideId} step={step} />
     </ThemeScope>
   )

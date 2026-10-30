@@ -28,9 +28,15 @@ erscheint sofort im Browser – egal ob Claude sie macht oder du.
 |---|---|---|
 | Editor | Doppelklick / ⏎ | Text bearbeiten (Esc beendet) |
 | Editor | ⌘Z / ⇧⌘Z | Rückgängig / Wiederholen |
-| Editor | ⌘D, ⌘C / ⌘V, ⌫ | Duplizieren, Kopieren/Einfügen, Löschen |
+| Editor | ⇧-Klick, Rahmen ziehen, ⌘A | Mehrfachauswahl |
+| Editor | ⌘-Klick / Doppelklick | Einzelnes Element in einer Gruppe wählen |
+| Editor | ⌥⌘G / ⇧⌥⌘G | Gruppieren / Gruppe auflösen |
+| Editor | ⌘] / ⌘[ (mit ⇧: ganz) | Ebene nach vorne / hinten |
+| Editor | ⌘D, ⌘C / ⌘X / ⌘V, ⌫ | Duplizieren, Kopieren/Ausschneiden/Einfügen, Löschen |
+| Editor | ⌥ beim Ziehen | Kopie ziehen |
 | Editor | Pfeile (⇧ = 10 px) | Element verschieben – ohne Auswahl: Folie wechseln |
-| Editor | ⇧ beim Skalieren | Seitenverhältnis umschalten |
+| Editor | ⇧ beim Ziehen / Skalieren / Drehen | Achse sperren / Seitenverhältnis umschalten / 15°-Schritte |
+| Editor | ⌘ beim Ziehen | Einrasten an Hilfslinien kurz aus |
 | Editor | ⌥⌘P | Abspielen ab aktueller Folie |
 | Präsentation | → ␣ ⏎ Bild↓ / Klick | Weiter |
 | Präsentation | ← Bild↑ / Rechtsklick | Zurück |
@@ -48,6 +54,10 @@ erscheint sofort im Browser – egal ob Claude sie macht oder du.
 4. „Handy“ zeigt einen QR-Code für die Fernbedienung.
 5. „Probe starten“ misst die Zeit pro Folie. Ergebnisse landen in `decks/<deck>/rehearsal.json` und erscheinen beim
    nächsten Mal als „Letzte Probe“ neben der aktuellen Folie.
+
+Medien (Fotos, Videos, Lottie) ziehst du einfach auf die Folie oder in die Medien-Bibliothek – Bilder werden dabei
+auf max. 3840 px optimiert, Videos bekommen ein Posterbild. Eigene Schriften lädst du im Folie-Tab unter
+„Textstile → Schriften …“ hoch.
 
 ## Prüfen
 

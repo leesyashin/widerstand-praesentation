@@ -4,6 +4,7 @@ import { href, navigate } from '../app/route'
 import { useTextStyles } from '../engine/context'
 import { SlideView } from '../engine/SlideView'
 import { Stage } from '../engine/Stage'
+import { resolveDeck } from '../engine/masters'
 import { ThemeScope } from '../engine/ThemeScope'
 import { createSlideTimeline, type SlideTimeline } from '../engine/timeline'
 import { matchPairs, runTransition } from '../engine/transitions'
@@ -15,10 +16,11 @@ import './Present.css'
 /** Vollbild-Präsentation: Klick für Klick durch Builds und Folien. */
 export function Present({ name, slideId }: { name: string; slideId?: string }) {
   const live = useDeck(name)
-  if (!live.value) return <div className="present" />
+  const deck = useMemo(() => live.value && resolveDeck(live.value), [live.value])
+  if (!deck) return <div className="present" />
   return (
-    <ThemeScope theme={live.value.theme} intensity={live.value.intensity}>
-      <Show deck={live.value} name={name} startId={slideId} />
+    <ThemeScope theme={deck.theme} intensity={deck.intensity} textStyles={deck.textStyles}>
+      <Show deck={deck} name={name} startId={slideId} />
     </ThemeScope>
   )
 }

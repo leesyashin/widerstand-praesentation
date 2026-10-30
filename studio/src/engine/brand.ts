@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react'
 import type { Brand } from '../schema/brand'
-import type { TextStyle } from '../schema/deck'
+import type { Deck, TextStyle } from '../schema/deck'
 import type { TextStyleDef, Theme } from '../schema/theme'
 
 /** Wird genutzt, solange brand/brand.json fehlt oder ungültig ist – die Folien bleiben sichtbar. */
@@ -75,10 +75,12 @@ export const TEXT_STYLES: Record<TextStyle, TextStyleDef> = {
 
 export type TextStyles = Record<TextStyle, TextStyleDef>
 
-/** Standard-Skala, überschrieben durch die Werte des Themes. */
-export function mergeTextStyles(theme: Theme | null | undefined): TextStyles {
-  if (!theme) return TEXT_STYLES
+/** Standard-Skala, überschrieben durch die Werte des Themes und danach durch die Textstile des Decks. */
+export function mergeTextStyles(theme: Theme | null | undefined, deck?: Deck['textStyles']): TextStyles {
+  if (!theme && !deck) return TEXT_STYLES
   const merged = { ...TEXT_STYLES }
-  for (const key of Object.keys(merged) as TextStyle[]) merged[key] = { ...merged[key], ...theme.textStyles[key] }
+  for (const key of Object.keys(merged) as TextStyle[]) {
+    merged[key] = { ...merged[key], ...theme?.textStyles[key], ...deck?.[key] }
+  }
   return merged
 }

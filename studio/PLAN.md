@@ -367,7 +367,7 @@ Jede Phase endet mit etwas, das du **wirklich benutzen** kannst.
   duplizieren, löschen, Vorschau), Theme `silber`, 8 Layouts, Lucide-Icons, eigene Komponenten (`custom/FilmStrip.tsx`),
   `npm run shots`. Bewusst nach Phase 2 verschoben: Mehrfachauswahl und Drehen per Griff.
 
-### Phase 2: Editor wie Keynote
+### Phase 2: Editor wie Keynote ✅ erledigt
 - Hilfslinien & Einrasten, Mehrfachauswahl, Drehen
 - Ebenen-Liste, Gruppieren, Sperren, Ausblenden
 - Schwebende Mini-Toolbar
@@ -376,6 +376,20 @@ Jede Phase endet mit etwas, das du **wirklich benutzen** kannst.
 - Medien-Bibliothek: Dateien per Drag & Drop importieren, automatische Optimierung (Bildgrößen, Video-Posterbilder)
 - Eigene Schriften hochladen
 - Animations-Tab: Reihenfolge der Builds, Feinschliff und Vorschau
+- *Umgesetzt:* Mehrfachauswahl per ⇧-Klick, Auswahlrahmen und ⌘A; gemeinsames Verschieben/Skalieren; Drehgriff
+  (⇧ = 15°, rastet bei 0/90/180° ein); Einrasten an Folienrändern/-mitte und an Kanten/Mitten anderer Elemente mit
+  roten Hilfslinien und Positions-/Größenanzeige (⌘ = frei); ⌥-Ziehen kopiert. Ausrichten und Verteilen, Ebenen
+  nach vorne/hinten. Ebenen-Liste im Navigator (Drag & Drop, Umbenennen, Auge/Schloss, Gruppen-Kopfzeilen).
+  Gruppen über `group` (ändern die Ebenen-Reihenfolge nicht). Mini-Toolbar mit Textstil, Ausrichtung, Farbe, Build,
+  Gruppieren, Duplizieren, Löschen. Master-Folien (`masters`, eigener Master-Modus, „Neuer Master aus Folie“ übernimmt
+  Hintergrund, Effekte und ausgewählte Elemente). Deck-Textstile (`textStyles`) mit „Stil aktualisieren“ am Text.
+  Folienübersicht als Raster mit Größenregler; Folien auch im Navigator per Drag & Drop sortierbar. Medien-Bibliothek
+  (Deck + Brand-Kit) mit Import per Drag & Drop auf Bibliothek oder Folie, Bild-Optimierung im Browser (max. 3840 px,
+  JPEG bzw. WebP bei Transparenz), Video-Posterbild, Limit 100 MB, Ersetzen und Löschen ungenutzter Dateien. Schriften
+  hochladen mit Vorschau, Familie/Gewicht aus dem Dateinamen erkannt. Build-Liste per Drag & Drop sortierbar
+  (`build.order`), Start direkt in der Liste, Vorschau ab jedem Klick.
+  Bewusst offen: Gleich-Abstands-Hilfslinien beim Ziehen, Drehen mehrerer Elemente auf einmal, Git LFS für große
+  Videos (bisher genügt das 100-MB-Limit).
 
 ### Phase 3: Motion- & Grafik-Engine ✅ erledigt
 - WebGL-Effektebene: Mesh-Gradients, Glow/Licht-Sweep, Grain, Vignette, Letterbox, Farblooks
@@ -429,7 +443,7 @@ Jede Phase endet mit etwas, das du **wirklich benutzen** kannst.
 
 | Thema | Umgang |
 |---|---|
-| **Große Videos im Git-Repo** | GitHub erlaubt max. 100 MB pro Datei, und das Repo wird schnell schwer. Empfehlung: Rohmaterial bleibt außerhalb, ins Repo kommen nur optimierte Web-Versionen. Für große Dateien ist **Git LFS** sinnvoll. Das entscheiden wir in Phase 2. |
+| **Große Videos im Git-Repo** | GitHub erlaubt max. 100 MB pro Datei, und das Repo wird schnell schwer. Empfehlung: Rohmaterial bleibt außerhalb, ins Repo kommen nur optimierte Web-Versionen. Für große Dateien ist **Git LFS** sinnvoll. Stand Phase 2: Der Import lehnt Videos über 100 MB ab und erklärt warum; Git LFS richten wir ein, sobald echte große Clips anfallen. |
 | **Web-Links sind öffentlich** | Wer den Link hat, sieht die Präsentation. Ein Passwortschutz ist z. B. über Netlify/Vercel möglich. Das entscheiden wir in Phase 6. |
 | **Eigene Komponenten** | Sie sind im Editor nur über ihre Regler bearbeitbar, nicht frei gestaltbar. Deshalb: das Schema zuerst, Komponenten nur für echte Spezialfälle. |
 | **PPTX verliert Motion** | Das ist eine Grenze des Formats. Der Web-Link ist die „echte“ Version. |
