@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
 import { useDeck } from '../api/live'
 import { href, navigate } from '../app/route'
 import { useTextStyles } from '../engine/context'
@@ -13,14 +13,17 @@ import type { Deck } from '../schema/deck'
 import { onShow, sendShow } from './sync'
 import './Present.css'
 
-/** Vollbild-Präsentation: Klick für Klick durch Builds und Folien. */
-export function Present({ name, slideId }: { name: string; slideId?: string }) {
+/**
+ * Vollbild-Präsentation: Klick für Klick durch Builds und Folien.
+ * `player`: eigenständiger Web-Player (npm run publish) – ohne Editor und Referentenansicht, mit Bedienleiste und Wischen.
+ */
+export function Present({ name, slideId, player = false }: { name: string; slideId?: string; player?: boolean }) {
   const live = useDeck(name)
   const deck = useMemo(() => live.value && resolveDeck(live.value), [live.value])
   if (!deck) return <div className="present" />
   return (
     <ThemeScope theme={deck.theme} intensity={deck.intensity} textStyles={deck.textStyles}>
-      <Show deck={deck} name={name} startId={slideId} />
+      <Show deck={deck} name={name} startId={slideId} player={player} />
     </ThemeScope>
   )
 }
@@ -28,7 +31,7 @@ export function Present({ name, slideId }: { name: string; slideId?: string }) {
 /** Eine Navigation: von welcher Folie (Position in der Abspielfolge) wohin, und wie. */
 type Nav = { id: number; pos: number; from: number | null; direction: 'forward' | 'back' | 'jump' }
 
-function Show({ deck, name, startId }: { deck: Deck; name: string; startId?: string }) {
+function Show({ deck, name, startId, player }: { deck: Deck; name: string; startId?: string; player: boolean }) {
   const styles = useTextStyles()
   // Abspielfolge ohne übersprungene Folien.
   const order = useMemo(() => deck.slides.flatMap((s, i) => (s.skip ? [] : [i])), [deck])
@@ -143,9 +146,10 @@ function Show({ deck, name, startId }: { deck: Deck; name: string; startId?: str
 
   const exit = useCallback(() => {
     if (document.fullscreenElement) void document.exitFullscreen().catch(() => {})
+    if (player) return
     const slide = latest.current.deck.slides[current]
     navigate({ page: 'deck', name, slideId: slide?.id })
-  }, [current, name])
+  }, [current, name, player])
 
   const next = useCallback(() => {
     if (black) return setBlack(false)
@@ -159,9 +163,9 @@ function Show({ deck, name, startId }: { deck: Deck; name: string; startId?: str
       return
     }
     if (nav.pos < order.length - 1) go(nav.pos + 1, 'forward')
-    else if (ended) exit()
+    else if (ended && !player) exit()
     else setEnded(true)
-  }, [black, current, nav.pos, order.length, ended, go, exit, publish])
+  }, [black, current, nav.pos, order.length, ended, player, go, exit, publish])
 
   const prev = useCallback(() => {
     if (black) return setBlack(false)
@@ -208,6 +212,7 @@ function Show({ deck, name, startId }: { deck: Deck; name: string; startId?: str
           setBlack((b) => !b)
           break
         case 'r':
+          if (player) return
           openPresenter(name, latest.current.deck.slides[current]?.id)
           break
         case 'f':
@@ -224,7 +229,17 @@ function Show({ deck, name, startId }: { deck: Deck; name: string; startId?: str
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [next, prev, go, exit, order.length, name, current])
+  }, [next, prev, go, exit, order.length, name, current, player])
+
+  // Web-Player: aktuelle Folie in der Adresse (#folie) – Links auf eine bestimmte Folie funktionieren so.
+  useEffect(() => {
+    const id = deck.slides[current]?.id
+    if (player && id) history.replaceState(null, '', `#${encodeURIComponent(id)}`)
+  }, [player, deck, current])
+
+  // Web-Player auf Handy und Tablet: nach links wischen = weiter, nach rechts = zurück.
+  const touch = useRef<{ x: number; y: number } | null>(null)
+  const swiped = useRef(false)
 
   // Schwarzbild und Ende melden
   useEffect(() => {
@@ -291,7 +306,26 @@ function Show({ deck, name, startId }: { deck: Deck; name: string; startId?: str
   return (
     <div
       className={`present ${idle ? 'is-idle' : ''}`}
+      onTouchStart={(e) => {
+        const t = e.touches[0]
+        touch.current = t ? { x: t.clientX, y: t.clientY } : null
+      }}
+      onTouchEnd={(e) => {
+        const start = touch.current
+        const t = e.changedTouches[0]
+        touch.current = null
+        if (!player || !start || !t) return
+        const dx = t.clientX - start.x
+        if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(t.clientY - start.y)) return
+        swiped.current = true
+        if (dx < 0) next()
+        else prev()
+      }}
       onClick={() => {
+        if (swiped.current) {
+          swiped.current = false
+          return
+        }
         if (needsFullscreen) {
           setNeedsFullscreen(false)
           void document.documentElement.requestFullscreen?.().catch(() => {})
@@ -333,7 +367,62 @@ function Show({ deck, name, startId }: { deck: Deck; name: string; startId?: str
         <div className="present__hint">Klicken für Vollbild · Steuerung über die Referentenansicht</div>
       )}
       {(black || ended) && (
-        <div className="present__black">{ended && !black && <span>Ende der Präsentation · Esc zum Beenden</span>}</div>
+        <div className="present__black">
+          {ended && !black && <span>{player ? 'Ende der Präsentation · ← zurück' : 'Ende der Präsentation · Esc zum Beenden'}</span>}
+        </div>
+      )}
+      {player && (
+        <PlayerBar
+          position={nav.pos}
+          total={order.length}
+          ended={ended}
+          onPrev={prev}
+          onNext={next}
+          onRestart={() => go(0, 'jump')}
+        />
+      )}
+    </div>
+  )
+}
+
+/** Bedienleiste des Web-Players: erscheint bei Mausbewegung (ausgeblendet mit .is-idle). */
+function PlayerBar(props: {
+  position: number
+  total: number
+  ended: boolean
+  onPrev: () => void
+  onNext: () => void
+  onRestart: () => void
+}) {
+  const stop = (fn: () => void) => (e: MouseEvent) => {
+    e.stopPropagation()
+    fn()
+  }
+  const fullscreen = () => {
+    if (document.fullscreenElement) void document.exitFullscreen().catch(() => {})
+    else void document.documentElement.requestFullscreen?.().catch(() => {})
+  }
+  return (
+    <div className="player-bar" onClick={(e) => e.stopPropagation()} onTouchEnd={(e) => e.stopPropagation()}>
+      <button className="player-bar__btn" title="Zurück (←)" aria-label="Zurück" onClick={stop(props.onPrev)}>
+        ‹
+      </button>
+      <span className="player-bar__count">
+        {props.position + 1} / {props.total}
+      </span>
+      <button className="player-bar__btn" title="Weiter (→)" aria-label="Weiter" onClick={stop(props.onNext)}>
+        ›
+      </button>
+      <span className="player-bar__sep" />
+      {props.ended || props.position > 0 ? (
+        <button className="player-bar__btn player-bar__btn--text" title="Von vorn (Pos1)" onClick={stop(props.onRestart)}>
+          Von vorn
+        </button>
+      ) : null}
+      {document.fullscreenEnabled && (
+        <button className="player-bar__btn player-bar__btn--text" title="Vollbild (F)" onClick={stop(fullscreen)}>
+          Vollbild
+        </button>
       )}
     </div>
   )
