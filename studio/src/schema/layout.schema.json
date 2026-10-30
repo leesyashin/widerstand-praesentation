@@ -116,6 +116,10 @@
               "hidden": {
                 "type": "boolean"
               },
+              "group": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
               "build": {
                 "type": "object",
                 "properties": {
@@ -392,6 +396,10 @@
               "hidden": {
                 "type": "boolean"
               },
+              "group": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
               "build": {
                 "type": "object",
                 "properties": {
@@ -647,6 +655,10 @@
               "hidden": {
                 "type": "boolean"
               },
+              "group": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
               "build": {
                 "type": "object",
                 "properties": {
@@ -897,6 +909,10 @@
               },
               "hidden": {
                 "type": "boolean"
+              },
+              "group": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
               },
               "build": {
                 "type": "object",
@@ -1155,6 +1171,10 @@
               "hidden": {
                 "type": "boolean"
               },
+              "group": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
               "build": {
                 "type": "object",
                 "properties": {
@@ -1383,6 +1403,10 @@
               },
               "hidden": {
                 "type": "boolean"
+              },
+              "group": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
               },
               "build": {
                 "type": "object",
@@ -1653,6 +1677,10 @@
               "hidden": {
                 "type": "boolean"
               },
+              "group": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
               "build": {
                 "type": "object",
                 "properties": {
@@ -1886,6 +1914,10 @@
               },
               "hidden": {
                 "type": "boolean"
+              },
+              "group": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
               },
               "build": {
                 "type": "object",

@@ -4,7 +4,7 @@ import type { Deck } from '../schema/deck'
 import type { Issue } from '../schema/issues'
 import type { Layout } from '../schema/layout'
 import type { Theme } from '../schema/theme'
-import { api, type DeckSummary, type Result } from './client'
+import { api, type AssetInfo, type DeckSummary, type Result } from './client'
 import { BRAND_CHANGED, DECK_CHANGED, TEMPLATES_CHANGED, type DeckChangedData } from './events'
 
 export type Live<T> = {
@@ -90,4 +90,21 @@ export function useTheme(name: string | undefined): Live<Theme | null> {
 
 export function useLayouts(): Live<Layout[]> {
   return useLive(api.listLayouts, subscribeTemplates)
+}
+
+/** Medien im assets-Ordner eines Decks – aktualisiert sich, sobald Dateien dazukommen oder verschwinden. */
+export function useAssets(name: string): Live<AssetInfo[]> {
+  const load = useCallback(() => api.listAssets(name), [name])
+  const subscribe = useCallback(
+    (refresh: () => void) =>
+      onServerEvent<DeckChangedData>(DECK_CHANGED, (data) => {
+        if (data.name === name) refresh()
+      }),
+    [name],
+  )
+  return useLive(load, subscribe)
+}
+
+export function useBrandAssets(): Live<AssetInfo[]> {
+  return useLive(api.listBrandAssets, subscribeBrand)
 }

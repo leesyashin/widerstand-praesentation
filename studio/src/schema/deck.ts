@@ -84,6 +84,8 @@ const elementBase = {
   tilt: z.strictObject({ x: z.number().min(-60).max(60).optional(), y: z.number().min(-60).max(60).optional() }).optional(),
   locked: z.boolean().optional(),
   hidden: z.boolean().optional(),
+  /** Gruppe: Elemente mit gleichem `group` werden im Editor gemeinsam ausgewählt und bewegt. */
+  group: id.optional(),
   build: Build.optional(),
 }
 
@@ -276,6 +278,7 @@ export const Slide = z
   .strictObject({
     id,
     layout: z.string().optional(),
+    /** ID einer Master-Folie aus `masters`: deren Elemente liegen hinter den eigenen, Hintergrund/Effekte gelten als Standard. */
     master: z.string().optional(),
     background: Background.optional(),
     effects: z.array(Effect).optional(),
@@ -308,6 +311,37 @@ export const Slide = z
     })
   })
 
+/**
+ * Master-Folie: gemeinsamer Hintergrund, Effekte und Elemente (Logo, Seitenleiste …) für viele Folien.
+ * Eine Änderung am Master wirkt auf allen Folien, die ihn nutzen.
+ */
+export const Master = z
+  .strictObject({
+    id,
+    name: z.string().optional(),
+    background: Background.optional(),
+    effects: z.array(Effect).optional(),
+    elements: z.array(Element),
+  })
+  .superRefine((master, ctx) => {
+    const ids = new Set<string>()
+    master.elements.forEach((el, i) => {
+      if (ids.has(el.id)) ctx.addIssue({ code: 'custom', path: ['elements', i, 'id'], message: `Element-ID "${el.id}" ist doppelt` })
+      ids.add(el.id)
+    })
+  })
+
+/** Textstil auf Deck-Ebene – überschreibt die Werte des Themes für alle Texte mit diesem `style`. */
+export const DeckTextStyle = z.strictObject({
+  font: z.enum(['display', 'text', 'mono']).optional(),
+  size: z.number().positive().optional(),
+  weight: z.number().int().min(100).max(900).optional(),
+  lineHeight: z.number().positive().optional(),
+  letterSpacing: z.number().optional(),
+  color: Color.optional(),
+  uppercase: z.boolean().optional(),
+})
+
 export const FORMAT_PRESETS = {
   '16:9': { width: 1920, height: 1080 },
   '4:3': { width: 1440, height: 1080 },
@@ -339,6 +373,9 @@ export const Deck = z
     theme: z.string().optional(),
     /** Globale Effekt-Intensität: 0 = ruhig, 1 = filmisch. */
     intensity: unit.optional(),
+    /** Eigene Werte für die Textstile – eine Änderung wirkt auf alle Texte dieses Stils. */
+    textStyles: z.partialRecord(TextStyle, DeckTextStyle).optional(),
+    masters: z.array(Master).optional(),
     slides: z.array(Slide).min(1),
   })
   .superRefine((deck, ctx) => {
@@ -349,10 +386,28 @@ export const Deck = z
       }
       ids.add(s.id)
     })
+    const masters = new Set<string>()
+    deck.masters?.forEach((m, i) => {
+      if (masters.has(m.id)) {
+        ctx.addIssue({ code: 'custom', path: ['masters', i, 'id'], message: `Master-ID "${m.id}" ist doppelt` })
+      }
+      masters.add(m.id)
+    })
+    deck.slides.forEach((s, i) => {
+      if (s.master && !masters.has(s.master)) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['slides', i, 'master'],
+          message: `Master "${s.master}" fehlt in "masters"${masters.size ? ` (vorhanden: ${[...masters].join(', ')})` : ''}`,
+        })
+      }
+    })
   })
 
 export type Deck = z.infer<typeof Deck>
 export type Slide = z.infer<typeof Slide>
+export type Master = z.infer<typeof Master>
+export type DeckTextStyle = z.infer<typeof DeckTextStyle>
 export type Element = z.infer<typeof Element>
 export type TextElement = z.infer<typeof TextElement>
 export type ImageElement = z.infer<typeof ImageElement>

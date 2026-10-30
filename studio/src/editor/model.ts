@@ -1,4 +1,5 @@
-import type { Deck, Element, Frame, Slide } from '../schema/deck'
+import type { Draft } from 'immer'
+import type { Deck, Element, Frame, Master, Slide } from '../schema/deck'
 import type { Layout } from '../schema/layout'
 import type { Theme } from '../schema/theme'
 
@@ -118,4 +119,203 @@ export function duplicateSlide(slide: Slide, deck: Deck): Slide {
   const copy = structuredClone(slide)
   copy.id = uniqueId(slide.id, deck.slides.map((s) => s.id))
   return copy
+}
+
+/* ---------- Seiten: Folie oder Master ---------- */
+
+/** Was gerade bearbeitet wird: eine Folie oder eine Master-Folie. */
+export type PageRef = { kind: 'slide' | 'master'; index: number }
+export type Page = Slide | Master
+
+export function pageOf<D extends Deck | Draft<Deck>>(deck: D, ref: PageRef): D['slides'][number] | NonNullable<D['masters']>[number] | undefined {
+  return ref.kind === 'slide' ? deck.slides[ref.index] : deck.masters?.[ref.index]
+}
+
+/* ---------- Auswahl, Gruppen, Ebenen ---------- */
+
+/** Erweitert eine Auswahl um alle Mitglieder der betroffenen Gruppen. */
+export function expandGroups(elements: Element[], ids: string[]): string[] {
+  const groups = new Set(elements.filter((e) => ids.includes(e.id) && e.group).map((e) => e.group))
+  return elements.filter((e) => ids.includes(e.id) || (e.group && groups.has(e.group))).map((e) => e.id)
+}
+
+/** Umgebender Rahmen mehrerer Elemente (Drehung wird ignoriert). */
+export function unionFrame(frames: Frame[]): Frame {
+  const x = Math.min(...frames.map((f) => f.x))
+  const y = Math.min(...frames.map((f) => f.y))
+  const r = Math.max(...frames.map((f) => f.x + f.w))
+  const b = Math.max(...frames.map((f) => f.y + f.h))
+  return { x, y, w: Math.max(1, r - x), h: Math.max(1, b - y) }
+}
+
+/**
+ * Gruppiert Elemente über einen gemeinsamen `group`-Schlüssel. Die Ebenen-Reihenfolge bleibt unverändert,
+ * damit sich am Aussehen der Folie nichts ändert.
+ */
+export function groupElements(page: Draft<Page>, ids: string[]): string | null {
+  const members = page.elements.filter((e) => ids.includes(e.id))
+  if (members.length < 2) return null
+  const group = uniqueId('gruppe', page.elements.flatMap((e) => (e.group ? [e.group] : [])))
+  for (const m of members) m.group = group
+  return group
+}
+
+export function ungroupElements(page: Draft<Page>, ids: string[]) {
+  for (const e of page.elements) if (ids.includes(e.id)) delete e.group
+}
+
+/** Ebenen-Reihenfolge: nach vorne/hinten (ein Schritt) oder ganz nach vorne/hinten. Gruppen bleiben zusammen. */
+export function arrange(page: Draft<Page>, ids: string[], where: 'forward' | 'backward' | 'front' | 'back') {
+  const moving = page.elements.filter((e) => ids.includes(e.id))
+  if (!moving.length) return
+  const rest = page.elements.filter((e) => !ids.includes(e.id))
+  let at: number
+  if (where === 'front') at = rest.length
+  else if (where === 'back') at = 0
+  else {
+    const first = page.elements.indexOf(moving[0]!)
+    const last = page.elements.indexOf(moving[moving.length - 1]!)
+    // Position in `rest`: Anzahl der übrigen Elemente vor dem Block, ±1
+    const before = page.elements.slice(0, first).filter((e) => !ids.includes(e.id)).length
+    const after = page.elements.slice(0, last + 1).filter((e) => !ids.includes(e.id)).length
+    at = where === 'forward' ? Math.min(rest.length, after + 1) : Math.max(0, before - 1)
+  }
+  page.elements = [...rest.slice(0, at), ...moving, ...rest.slice(at)]
+}
+
+/** Verschiebt ein Element in der Ebenen-Liste an Position `to` (Index im Array, 0 = ganz hinten). */
+export function moveElement(page: Draft<Page>, id: string, to: number) {
+  const from = page.elements.findIndex((e) => e.id === id)
+  if (from < 0) return
+  const [el] = page.elements.splice(from, 1)
+  page.elements.splice(Math.max(0, Math.min(page.elements.length, to)), 0, el!)
+}
+
+export type AlignKind = 'left' | 'hcenter' | 'right' | 'top' | 'vcenter' | 'bottom'
+
+/**
+ * Ausrichten: ein Element an der Folie, mehrere am gemeinsamen Rahmen.
+ * Gruppen werden als Block behandelt (ihr gemeinsamer Rahmen bewegt sich).
+ */
+export function alignElements(page: Draft<Page>, ids: string[], kind: AlignKind, slideW: number, slideH: number) {
+  const els = page.elements.filter((e) => ids.includes(e.id))
+  if (!els.length) return
+  const blocks = blocksOf(els)
+  const box = blocks.length === 1 ? { x: 0, y: 0, w: slideW, h: slideH } : unionFrame(els.map((e) => e.frame))
+  for (const block of blocks) {
+    const f = unionFrame(block.map((e) => e.frame))
+    let dx = 0
+    let dy = 0
+    if (kind === 'left') dx = box.x - f.x
+    if (kind === 'hcenter') dx = box.x + box.w / 2 - (f.x + f.w / 2)
+    if (kind === 'right') dx = box.x + box.w - (f.x + f.w)
+    if (kind === 'top') dy = box.y - f.y
+    if (kind === 'vcenter') dy = box.y + box.h / 2 - (f.y + f.h / 2)
+    if (kind === 'bottom') dy = box.y + box.h - (f.y + f.h)
+    for (const e of block) e.frame = roundFrame({ ...e.frame, x: e.frame.x + dx, y: e.frame.y + dy })
+  }
+}
+
+/** Verteilt Elemente (bzw. Gruppen) mit gleichen Abständen zwischen dem ersten und letzten. */
+export function distributeElements(page: Draft<Page>, ids: string[], axis: 'x' | 'y') {
+  const blocks = blocksOf(page.elements.filter((e) => ids.includes(e.id)))
+  if (blocks.length < 3) return
+  const pos = axis === 'x' ? 'x' : 'y'
+  const size = axis === 'x' ? 'w' : 'h'
+  const sorted = blocks.map((b) => ({ b, f: unionFrame(b.map((e) => e.frame)) })).sort((a, z) => a.f[pos] - z.f[pos])
+  const first = sorted[0]!.f
+  const last = sorted[sorted.length - 1]!.f
+  const total = sorted.reduce((s, x) => s + x.f[size], 0)
+  const gap = (last[pos] + last[size] - first[pos] - total) / (sorted.length - 1)
+  let cursor = first[pos]
+  for (const { b, f } of sorted) {
+    const d = cursor - f[pos]
+    for (const e of b) e.frame = roundFrame({ ...e.frame, [pos]: e.frame[pos] + d })
+    cursor += f[size] + gap
+  }
+}
+
+/** Fasst Elemente zu Blöcken zusammen: Gruppenmitglieder bilden einen Block, alle anderen je einen. */
+function blocksOf<T extends { group?: string }>(els: T[]): T[][] {
+  const groups = new Map<string, T[]>()
+  const blocks: T[][] = []
+  for (const e of els) {
+    if (!e.group) blocks.push([e])
+    else if (groups.has(e.group)) groups.get(e.group)!.push(e)
+    else {
+      const b = [e]
+      groups.set(e.group, b)
+      blocks.push(b)
+    }
+  }
+  return blocks
+}
+
+/* ---------- Folien und Master ---------- */
+
+/** Verschiebt eine Folie in der Reihenfolge. `to` = Zielindex nach dem Entfernen. */
+export function moveSlide(deck: Draft<Deck>, from: number, to: number) {
+  const [s] = deck.slides.splice(from, 1)
+  if (s) deck.slides.splice(Math.max(0, Math.min(deck.slides.length, to)), 0, s)
+}
+
+/** Neuer, leerer Master (dunkle Fläche aus dem Theme). */
+export function newMaster(deck: Deck, theme: Theme | null, from?: Slide, elements: Element[] = []): Master {
+  const n = (deck.masters?.length ?? 0) + 1
+  const master: Master = {
+    id: uniqueId('master', deck.masters?.map((m) => m.id) ?? []),
+    name: `Master ${n}`,
+    elements: structuredClone(elements).map((e) => ({ ...e, build: undefined, match: undefined })),
+  }
+  const background = from?.background ?? theme?.backgrounds.content
+  if (background) master.background = structuredClone(background)
+  const effects = from?.effects
+  if (effects?.length) master.effects = structuredClone(effects)
+  // undefined-Felder nicht in die Datei schreiben
+  master.elements = JSON.parse(JSON.stringify(master.elements)) as Element[]
+  return master
+}
+
+/** Text-Werte, die vom Textstil abweichen. */
+export const TEXT_OVERRIDES = ['font', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing', 'color'] as const
+
+/** Element für eine Mediendatei – im Seitenverhältnis der Datei, mittig am Punkt (Standard: Folienmitte). */
+export function mediaElement(
+  media: { path: string; kind: 'image' | 'video' | 'lottie'; width?: number; height?: number; poster?: string },
+  page: Page,
+  deck: Deck,
+  point?: { x: number; y: number },
+): Element {
+  const W = deck.format.width
+  const H = deck.format.height
+  const ratio = media.width && media.height ? media.width / media.height : media.kind === 'lottie' ? 1 : 16 / 9
+  let w = W * 0.5
+  let h = w / ratio
+  if (h > H * 0.6) {
+    h = H * 0.6
+    w = h * ratio
+  }
+  const cx = point?.x ?? W / 2
+  const cy = point?.y ?? H / 2
+  const frame = roundFrame({
+    x: Math.min(W - w, Math.max(0, cx - w / 2)),
+    y: Math.min(H - h, Math.max(0, cy - h / 2)),
+    w,
+    h,
+  })
+  const taken = page.elements.map((e) => e.id)
+  const base = media.path.split('/').pop()?.replace(/\.[^.]+$/, '') ?? media.kind
+  if (media.kind === 'video') {
+    return {
+      id: uniqueId(base, taken),
+      type: 'video',
+      src: media.path,
+      ...(media.poster ? { poster: media.poster } : {}),
+      fit: 'cover',
+      playback: { autoplay: true, loop: true, muted: true },
+      frame,
+    }
+  }
+  if (media.kind === 'lottie') return { id: uniqueId(base, taken), type: 'lottie', src: media.path, frame }
+  return { id: uniqueId(base, taken), type: 'image', src: media.path, fit: 'cover', frame }
 }

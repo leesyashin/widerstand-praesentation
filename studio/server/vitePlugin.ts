@@ -14,6 +14,7 @@ import {
   summarizeDeck,
   writeDeck,
 } from './decks'
+import { deleteAsset, listAssets, listBrandAssets, uploadAsset, uploadFont, writeBrand } from './assets'
 import { BRAND_CHANGED, DECK_CHANGED, TEMPLATES_CHANGED } from '../src/api/events'
 
 const MAX_BODY = 10 * 1024 * 1024
@@ -52,6 +53,31 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<boolea
     return true
   }
 
+  if (parts[1] === 'brand' && parts.length === 2 && req.method === 'PUT') {
+    let value: unknown
+    try {
+      value = JSON.parse(await readBody(req))
+    } catch (err) {
+      send(res, 400, { ok: false, issues: [{ path: '', message: (err as Error).message }] })
+      return true
+    }
+    const result = await writeBrand(value)
+    send(res, result.ok ? 200 : 422, result)
+    return true
+  }
+
+  // Eigene Schrift hochladen: POST /api/brand/fonts?file=MeineSchrift-Bold.woff2 (Body = Datei)
+  if (parts[1] === 'brand' && parts[2] === 'fonts' && parts.length === 3 && req.method === 'POST') {
+    const result = await uploadFont(url.searchParams.get('file') ?? '', req)
+    send(res, result.ok ? 200 : 422, result)
+    return true
+  }
+
+  if (parts[1] === 'brand' && parts[2] === 'assets' && parts.length === 3 && req.method === 'GET') {
+    send(res, 200, { assets: await listBrandAssets() })
+    return true
+  }
+
   if (parts[1] === 'themes' && parts.length === 3 && req.method === 'GET') {
     const result = await readTheme(parts[2] ?? '')
     send(res, result.ok ? 200 : 404, result)
@@ -71,6 +97,29 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<boolea
     const names = await listDeckNames()
     send(res, 200, { decks: await Promise.all(names.map(summarizeDeck)) })
     return true
+  }
+
+  // Medien eines Decks: GET Liste, POST ?file=<name> lädt hoch, DELETE ?path=assets/… löscht
+  if (parts[1] === 'decks' && parts[3] === 'assets' && parts.length === 4) {
+    const name = parts[2] ?? ''
+    if (!isDeckName(name)) {
+      send(res, 400, { ok: false, issues: [{ path: '', message: `Ungültiger Deck-Name: ${name}` }] })
+      return true
+    }
+    if (req.method === 'GET') {
+      send(res, 200, { assets: await listAssets(name) })
+      return true
+    }
+    if (req.method === 'POST') {
+      const result = await uploadAsset(name, url.searchParams.get('file') ?? '', req)
+      send(res, result.ok ? 200 : 422, result)
+      return true
+    }
+    if (req.method === 'DELETE') {
+      const result = await deleteAsset(name, url.searchParams.get('path') ?? '')
+      send(res, result.ok ? 200 : 422, result)
+      return true
+    }
   }
 
   if (parts[1] === 'decks' && parts.length === 3) {

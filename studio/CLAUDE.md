@@ -35,13 +35,27 @@ Gesamtplan und Phasen: `PLAN.md`. Gestaltungsregeln: `STYLE.md` – **vor jedem 
 **Nach jeder Änderung an einem Deck:** `npm run validate -- <name>`, dann `npm run shots -- <name>` und die Bilder
 ansehen – auf Überlappungen, Lesbarkeit, Abstände und Ränder achten. Bei Animationen `--steps` nutzen.
 
-## Stand der Engine (Phase 3)
+## Stand (Phase 0–3)
 
 - Fertig: alle Elementtypen inkl. Charts und Lottie, Builds, Übergänge inkl. Magic Move v2, Kamerafahrt und Light Leak,
   WebGL-Effekte (Licht-Verlauf, Filmkorn, Licht-Sweep), Glas, 3D-Neigung, Parallax/Schweben, Deck-Intensität,
-  Präsentationsmodus, Editor mit Raum-Ansicht, Theme `silber`, 8 Layouts, eigene Komponenten.
-- Noch nicht: Referentenansicht, Probe-Modus, Handy-Fernbedienung (Phase 4); Editor-Komfort wie Mehrfachauswahl,
-  Hilfslinien, Ebenen, Master-Folien (Phase 2).
+  Präsentationsmodus, Theme `silber`, 8 Layouts, eigene Komponenten.
+- Editor (Phase 2): Mehrfachauswahl, Hilfslinien & Einrasten, Drehen, Ebenen (Gruppen, Sperren, Ausblenden),
+  Mini-Toolbar, Master-Folien, Deck-Textstile, Folienübersicht, Raum-Ansicht, Medien-Bibliothek mit Import,
+  eigene Schriften, Build-Reihenfolge per Drag & Drop.
+- Noch nicht: Referentenansicht, Probe-Modus, Handy-Fernbedienung (Phase 4).
+
+## Master-Folien, Textstile, Gruppen
+
+- `masters`: `[{ id, name?, background?, effects?, elements }]` auf Deck-Ebene; eine Folie nutzt einen per
+  `"master": "<id>"`. Master-Elemente liegen hinter den Folien-Elementen (gesperrt, ohne Builds, bleiben bei Magic Move
+  stehen). Hintergrund/Effekte des Masters gelten, solange die Folie keine eigenen hat – für wiederkehrende Elemente
+  (Logo, Seitenzahl-Linie, Kapitelmarke) also Master statt Kopien auf jeder Folie.
+- `textStyles` auf Deck-Ebene überschreibt die Typo-Skala des Themes für das ganze Deck, z. B.
+  `"textStyles": { "title": { "size": 112, "weight": 700 } }` (Felder: `font`, `size`, `weight`, `lineHeight`,
+  `letterSpacing`, `color`, `uppercase`). Lieber hier ändern als `fontSize` an vielen Texten.
+- `group`: gleicher Schlüssel an mehreren Elementen = Gruppe (im Editor gemeinsam ausgewählt/bewegt). Rein
+  organisatorisch – Rendering und Ebenen-Reihenfolge bleiben unverändert.
 
 ## Neues Deck aus einem Briefing
 
@@ -96,9 +110,12 @@ optional `schema` (Zod für `props` – wird geprüft, Fehler erscheinen als Pla
 
 - `src/schema/` – Format (gemeinsam für App, Server und Skripte). Schema-Änderungen rückwärtskompatibel halten
   und `version` erst bei Brüchen erhöhen.
-- `server/` – Datei-Dienst (Vite-Plugin): `/api/decks`, `/api/decks/<name>` (GET/PUT), `/api/brand`, Live-Events.
+- `server/` – Datei-Dienst (Vite-Plugin): `/api/decks`, `/api/decks/<name>` (GET/PUT), `/api/decks/<name>/assets`
+  (GET/POST/DELETE), `/api/brand` (GET/PUT), `/api/brand/fonts` (POST), Live-Events.
+- `src/engine/masters.ts` – Master-Folien auflösen (`resolveSlide`/`resolveDeck`) für Editor, Präsentation, Screenshots.
 - `src/engine/` – Rendering (`SlideView`), Builds (`timeline.ts`), Übergänge (`transitions.ts`).
-- `src/editor/` – Editor (Zustand/Verlauf in `useEditor.ts`, Arbeitsfläche, Inspector). `src/present/` – Präsentation.
+- `src/editor/` – Editor (Zustand/Verlauf in `useEditor.ts`, Arbeitsfläche `Canvas.tsx`, Inspector, Ebenen,
+  Mini-Toolbar, Übersicht, Medien, Schriften; Bearbeitungslogik in `model.ts`). `src/present/` – Präsentation.
 - `src/app/` – Ansichten und Routing. `src/ui/` – App-Designsystem (Tokens in `tokens.css`).
 - `templates/themes/`, `templates/layouts/` – Theme und Folien-Layouts (eigene Schemas in `src/schema/`).
 - UI-Texte auf Deutsch, Du-Form. App-Look: Apple-artig, ruhig, Hell/Dunkel automatisch.

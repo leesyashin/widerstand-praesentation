@@ -2,6 +2,7 @@ import type { DeckSummary } from '../api/client'
 import { useDeck, useDeckList } from '../api/live'
 import { SlideView } from '../engine/SlideView'
 import { Stage } from '../engine/Stage'
+import { resolveSlide } from '../engine/masters'
 import { ThemeScope } from '../engine/ThemeScope'
 import type { Issue } from '../schema/issues'
 import { Icon } from '../ui/Icon'
@@ -46,14 +47,14 @@ export function DeckList({ brandIssues }: { brandIssues: Issue[] }) {
 
 function DeckCard({ summary }: { summary: DeckSummary }) {
   const deck = useDeck(summary.name)
-  const first = deck.value?.slides[0]
+  const first = deck.value?.slides[0] && resolveSlide(deck.value, deck.value.slides[0])
   const invalid = summary.issues.length > 0
 
   return (
     <a className="deck-card" href={href({ page: 'deck', name: summary.name })}>
       <div className="deck-card__thumb">
         {deck.value && first ? (
-          <ThemeScope theme={deck.value.theme} intensity={deck.value.intensity}>
+          <ThemeScope theme={deck.value.theme} intensity={deck.value.intensity} textStyles={deck.value.textStyles}>
             <Stage format={deck.value.format}>
               <SlideView
                 slide={first}
