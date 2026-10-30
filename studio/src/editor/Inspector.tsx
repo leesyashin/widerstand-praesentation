@@ -6,6 +6,8 @@ import { computeSteps, PRESET_DURATION } from '../engine/timeline'
 import { TRANSITION_DURATION } from '../engine/transitions'
 import type { Animation, Build, Deck, DeckTextStyle, Effect, Element, Master, Slide, TextStyle, Transition } from '../schema/deck'
 import type { Issue } from '../schema/issues'
+import type { Layout } from '../schema/layout'
+import type { Surface, Theme } from '../schema/theme'
 import { Icon } from '../ui/Icon'
 import { IssueList } from '../ui/IssueList'
 import { ColorField, Group, NumberField, Row, Segmented, Select, Slider, TextField, Toggle } from './fields'
@@ -35,6 +37,9 @@ type Props = {
   onEditMaster: (id: string) => void
   onNewMaster: () => void
   onOpenFonts: () => void
+  /** Alle Themes und Layouts – für den Theme-Wechsel des Decks. */
+  themes: Theme[]
+  layouts: Layout[]
   saveIssues: Issue[]
 }
 
@@ -1180,7 +1185,31 @@ function EffectsGroup({ page, set }: Props & { set: PageSetter }) {
 }
 
 /** Deck-weite Einstellungen: Intensität und Textstile (eine Änderung wirkt auf alle Texte des Stils). */
-function DeckGroup({ deck, edit, brand, onOpenFonts }: Props) {
+/**
+ * Theme des Decks wechseln. Eine Folie bekommt Hintergrund und Effekte der passenden Fläche aus dem neuen Theme,
+ * wenn sie aus einem Layout stammt oder noch genau den Hintergrund einer Fläche des alten Themes hat (z. B. aus
+ * einem Baustein). Eigene Hintergründe, Bilder und Folien mit Master-Hintergrund bleiben, wie sie sind.
+ */
+function applyTheme(d: Draft<Deck>, theme: Theme, layouts: Layout[], previous: Theme | undefined) {
+  d.theme = theme.name
+  const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)
+  for (const s of d.slides) {
+    if (s.master && !s.background) continue
+    const fromOld = previous && (Object.keys(previous.backgrounds) as Surface[]).find((k) => same(previous.backgrounds[k], s.background))
+    const surface = layouts.find((l) => l.name === s.layout)?.surface ?? fromOld
+    if (!surface) continue
+    const bg = theme.backgrounds[surface]
+    if (bg) s.background = structuredClone(bg)
+    const fx = theme.effects?.[surface]
+    // Effekte nur ersetzen, wenn sie noch die des alten Themes sind – eigene Effekte bleiben.
+    if (!s.effects || same(s.effects, previous?.effects?.[surface])) {
+      if (fx?.length) s.effects = structuredClone(fx)
+      else delete s.effects
+    }
+  }
+}
+
+function DeckGroup({ deck, edit, brand, onOpenFonts, themes, layouts }: Props) {
   const styles = useTextStyles()
   const [style, setStyle] = useState<TextStyle>('title')
   const def = styles[style]
@@ -1199,6 +1228,17 @@ function DeckGroup({ deck, edit, brand, onOpenFonts }: Props) {
   return (
     <>
       <Group title="Deck">
+        <Row label="Theme">
+          <Select
+            value={deck.theme ?? ''}
+            options={[...(deck.theme ? [] : [{ value: '', label: 'Keins' }]), ...themes.map((t) => ({ value: t.name, label: t.label }))]}
+            onChange={(v) => {
+              const t = themes.find((x) => x.name === v)
+              if (t) edit((d) => applyTheme(d, t, layouts, themes.find((x) => x.name === deck.theme)))
+            }}
+          />
+        </Row>
+        <p className="field-hint muted">{themes.find((t) => t.name === deck.theme)?.description ?? 'Farben, Typografie und Hintergründe für das ganze Deck.'}</p>
         <Row label="Intensität">
           <Slider value={deck.intensity ?? 0.3} onChange={(v) => edit((d) => void (d.intensity = Math.round(v * 100) / 100), 'intensity')} />
         </Row>

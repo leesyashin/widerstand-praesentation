@@ -1,0 +1,28 @@
+{
+  "$schema": "../../src/schema/theme.schema.json",
+  "name": "sachlich",
+  "label": "Sachlich",
+  "description": "Neutrales Graphit, klare Typo, keine Effekte. Für Angebote und Arbeitsstände.",
+  "colors": {
+    "background": "#17181b",
+    "surface": "#24262b",
+    "text": "#f2f2f0",
+    "textMuted": "#a4a5a8",
+    "accent": "#d9d3c4",
+    "accent2": "#3a3c42"
+  },
+  "textStyles": {
+    "display": { "font": "display", "size": 124, "weight": 650, "lineHeight": 1.02, "letterSpacing": -0.03, "color": "brand.text" },
+    "title": { "font": "display", "size": 84, "weight": 620, "lineHeight": 1.06, "letterSpacing": -0.02, "color": "brand.text" },
+    "heading": { "font": "display", "size": 50, "weight": 600, "lineHeight": 1.12, "letterSpacing": -0.01, "color": "brand.text" },
+    "subtitle": { "font": "text", "size": 38, "weight": 400, "lineHeight": 1.35, "letterSpacing": 0, "color": "brand.textMuted" },
+    "body": { "font": "text", "size": 30, "weight": 400, "lineHeight": 1.5, "letterSpacing": 0, "color": "brand.text" },
+    "caption": { "font": "text", "size": 23, "weight": 400, "lineHeight": 1.4, "letterSpacing": 0.005, "color": "brand.textMuted" },
+    "label": { "font": "text", "size": 21, "weight": 600, "lineHeight": 1.2, "letterSpacing": 0.1, "color": "brand.accent", "uppercase": true }
+  },
+  "backgrounds": {
+    "title": { "type": "gradient", "from": "brand.surface", "to": "brand.background", "angle": 160 },
+    "content": { "type": "color", "color": "brand.background" },
+    "light": { "type": "color", "color": "brand.light" }
+  }
+}

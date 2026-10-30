@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import type { Block } from '../schema/block'
 import type { Brand } from '../schema/brand'
 import type { Deck } from '../schema/deck'
 import type { Issue } from '../schema/issues'
@@ -107,4 +108,16 @@ export function useAssets(name: string): Live<AssetInfo[]> {
 
 export function useBrandAssets(): Live<AssetInfo[]> {
   return useLive(api.listBrandAssets, subscribeBrand)
+}
+
+export function useThemes(): Live<Theme[]> {
+  return useLive(api.listThemes, subscribeTemplates)
+}
+
+export function useBlocks(): Live<Block[]> {
+  return useLive(api.listBlocks, subscribeTemplates)
+}
+
+export function useDeckTemplates(): Live<{ name: string; deck: Deck }[]> {
+  return useLive(api.listTemplates, subscribeTemplates)
 }

@@ -7,13 +7,58 @@
   "width": 1920,
   "height": 1080,
   "elements": [
-    { "id": "kicker", "type": "text", "style": "label", "content": "Kicker", "align": "center",
-      "frame": { "x": 160, "y": 380, "w": 1600, "h": 40 },
-      "build": { "in": { "preset": "fade", "duration": 600 }, "trigger": "afterPrevious" } },
-    { "id": "headline", "match": "headline", "type": "text", "style": "display", "content": "Große Headline.\nZweite Zeile.", "align": "center",
-      "frame": { "x": 160, "y": 440, "w": 1600, "h": 320 },
-      "build": { "in": { "preset": "blurRise" }, "trigger": "withPrevious" } },
-    { "id": "logo", "name": "Logo", "type": "image", "src": "brand/logo.svg", "fit": "contain",
-      "frame": { "x": 160, "y": 930, "w": 234, "h": 60 } }
+    {
+      "id": "kicker",
+      "type": "text",
+      "style": "label",
+      "content": "Kicker",
+      "align": "center",
+      "frame": {
+        "x": 160,
+        "y": 380,
+        "w": 1600,
+        "h": 40
+      },
+      "build": {
+        "in": {
+          "preset": "fade",
+          "duration": 600
+        },
+        "trigger": "afterPrevious"
+      }
+    },
+    {
+      "id": "headline",
+      "match": "headline",
+      "type": "text",
+      "style": "display",
+      "content": "Große Headline.\nZweite Zeile.",
+      "align": "center",
+      "frame": {
+        "x": 160,
+        "y": 440,
+        "w": 1600,
+        "h": 320
+      },
+      "build": {
+        "in": {
+          "preset": "blurRise"
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "logo",
+      "name": "Logo",
+      "type": "icon",
+      "icon": "brand/logo-mono.svg",
+      "color": "brand.text",
+      "frame": {
+        "x": 160,
+        "y": 930,
+        "w": 234,
+        "h": 60
+      }
+    }
   ]
 }

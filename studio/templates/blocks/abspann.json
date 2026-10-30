@@ -1,0 +1,90 @@
+{
+  "$schema": "../../src/schema/block.schema.json",
+  "name": "abspann",
+  "label": "Abspann",
+  "description": "„Danke.“, Mitwirkende Zeile für Zeile, zum Schluss das Logo.",
+  "kind": "slide",
+  "surface": "title",
+  "width": 1920,
+  "height": 1080,
+  "effects": [
+    {
+      "type": "grain",
+      "amount": 0.1
+    },
+    {
+      "type": "vignette",
+      "amount": 0.35
+    },
+    {
+      "type": "letterbox",
+      "amount": 0.5
+    }
+  ],
+  "transition": {
+    "type": "dissolve",
+    "duration": 1200
+  },
+  "elements": [
+    {
+      "id": "abspann-danke",
+      "type": "text",
+      "style": "title",
+      "content": "Danke.",
+      "frame": {
+        "x": 160,
+        "y": 250,
+        "w": 1600,
+        "h": 130
+      },
+      "align": "center",
+      "build": {
+        "in": {
+          "preset": "blurRise"
+        },
+        "trigger": "afterPrevious"
+      }
+    },
+    {
+      "id": "abspann-credits",
+      "type": "text",
+      "style": "body",
+      "content": "Idee & Regie — Vorname Name\nKamera — Vorname Name\nMusik — Vorname Name",
+      "frame": {
+        "x": 460,
+        "y": 440,
+        "w": 1000,
+        "h": 240
+      },
+      "align": "center",
+      "build": {
+        "in": {
+          "preset": "lineByLine",
+          "duration": 1400
+        },
+        "trigger": "afterPrevious"
+      }
+    },
+    {
+      "id": "abspann-logo",
+      "name": "Logo",
+      "type": "icon",
+      "icon": "brand/logo-mono.svg",
+      "color": "brand.text",
+      "frame": {
+        "x": 843,
+        "y": 760,
+        "w": 234,
+        "h": 60
+      },
+      "build": {
+        "in": {
+          "preset": "fade",
+          "duration": 1000,
+          "delay": 300
+        },
+        "trigger": "afterPrevious"
+      }
+    }
+  ]
+}

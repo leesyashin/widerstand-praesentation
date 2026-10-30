@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { DeckSummary } from '../api/client'
 import { useDeck, useDeckList } from '../api/live'
 import { SlideView } from '../engine/SlideView'
@@ -7,19 +8,27 @@ import { ThemeScope } from '../engine/ThemeScope'
 import type { Issue } from '../schema/issues'
 import { Icon } from '../ui/Icon'
 import { IssueList } from '../ui/IssueList'
+import { NewDeckDialog } from './NewDeck'
 import { href } from './route'
 import './DeckList.css'
 
 export function DeckList({ brandIssues }: { brandIssues: Issue[] }) {
   const list = useDeckList()
   const decks = list.value ?? []
+  const [creating, setCreating] = useState(false)
 
   return (
     <main className="decks">
       <header className="decks__header">
-        <h1>Studio</h1>
-        <p className="muted">Deine Präsentationen</p>
+        <div>
+          <h1>Studio</h1>
+          <p className="muted">Deine Präsentationen</p>
+        </div>
+        <button type="button" className="btn btn--primary" onClick={() => setCreating(true)} disabled={list.status === 'offline'}>
+          <Icon name="plus" size={14} /> Neues Deck
+        </button>
       </header>
+      {creating && <NewDeckDialog existing={decks.map((d) => d.name)} onClose={() => setCreating(false)} />}
 
       {brandIssues.length > 0 && <IssueList title="brand/brand.json ist ungültig" issues={brandIssues} />}
       {list.status === 'offline' && <IssueList title="Keine Verbindung zum Dev-Server" issues={list.issues} />}
@@ -29,7 +38,8 @@ export function DeckList({ brandIssues }: { brandIssues: Issue[] }) {
           <Icon name="sparkle" size={28} />
           <h2>Noch keine Präsentationen</h2>
           <p className="muted">
-            Bitte Claude zum Beispiel: <em>„Bau mir ein Deck über mein Portfolio.“</em>
+            Leg oben ein neues Deck an – leer oder aus einer Vorlage – oder bitte Claude zum Beispiel:{' '}
+            <em>„Bau mir ein Deck über mein Portfolio.“</em>
             <br />
             Neue Decks entstehen in <code className="mono">studio/decks/&lt;name&gt;/deck.json</code>.
           </p>

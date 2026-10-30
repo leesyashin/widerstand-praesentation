@@ -35,15 +35,17 @@ Gesamtplan und Phasen: `PLAN.md`. Gestaltungsregeln: `STYLE.md` – **vor jedem 
 **Nach jeder Änderung an einem Deck:** `npm run validate -- <name>`, dann `npm run shots -- <name>` und die Bilder
 ansehen – auf Überlappungen, Lesbarkeit, Abstände und Ränder achten. Bei Animationen `--steps` nutzen.
 
-## Stand (Phase 0–3)
+## Stand (Phase 0–5)
 
 - Fertig: alle Elementtypen inkl. Charts und Lottie, Builds, Übergänge inkl. Magic Move v2, Kamerafahrt und Light Leak,
   WebGL-Effekte (Licht-Verlauf, Filmkorn, Licht-Sweep), Glas, 3D-Neigung, Parallax/Schweben, Deck-Intensität,
-  Präsentationsmodus, Theme `silber`, 8 Layouts, eigene Komponenten.
-- Editor (Phase 2): Mehrfachauswahl, Hilfslinien & Einrasten, Drehen, Ebenen (Gruppen, Sperren, Ausblenden),
-  Mini-Toolbar, Master-Folien, Deck-Textstile, Folienübersicht, Raum-Ansicht, Medien-Bibliothek mit Import,
-  eigene Schriften, Build-Reihenfolge per Drag & Drop.
-- Noch nicht: Referentenansicht, Probe-Modus, Handy-Fernbedienung (Phase 4).
+  Präsentationsmodus mit Referentenansicht, Probe-Modus und Handy-Fernbedienung, eigene Komponenten.
+- Editor: Mehrfachauswahl, Hilfslinien & Einrasten, Drehen, Ebenen (Gruppen, Sperren, Ausblenden), Mini-Toolbar,
+  Master-Folien, Deck-Textstile, Folienübersicht, Raum-Ansicht, Medien-Bibliothek mit Import, eigene Schriften,
+  Build-Reihenfolge per Drag & Drop, Bausteine einfügen, Theme wechseln.
+- Bibliothek (Phase 5): 4 Themes (`silber`, `kino`, `sachlich`, `papier`), 16 Layouts, 6 animierte Bausteine,
+  4 Deck-Vorlagen (`portfolio`, `angebot`, `pitch`, `vortrag`); neue Decks über die Startseite („Neues Deck“).
+- Noch nicht: Web-Link und PowerPoint-Export (Phase 6).
 
 ## Master-Folien, Textstile, Gruppen
 
@@ -59,12 +61,24 @@ ansehen – auf Überlappungen, Lesbarkeit, Abstände und Ränder achten. Bei An
 
 ## Neues Deck aus einem Briefing
 
-1. `STYLE.md` lesen. Theme `"theme": "silber"` setzen.
-2. Gliederung: eine Idee pro Folie, Titel – Kapitel – Inhalt – Abschluss.
-3. Folien von den Layouts in `templates/layouts/` ableiten (Elemente und Koordinaten übernehmen, Inhalte ersetzen,
-   `"layout": "<name>"` setzen). Hintergründe/Effekte je Fläche aus `templates/themes/silber.json`
-   (`title` = Licht-Verlauf + Korn + Vignette, `content` = dunkle Fläche, `light` = hell).
-4. Builds und Übergänge nach STYLE.md setzen, dann validieren und Screenshots prüfen.
+Dafür gibt es den Projekt-Skill **`/deck`** (`../.claude/skills/deck/SKILL.md`) – er beschreibt den ganzen Ablauf.
+Kurz:
+
+1. `STYLE.md` lesen. Passende Vorlage aus `templates/decks/` wählen (`portfolio`/kino, `angebot`/sachlich,
+   `pitch`/silber, `vortrag`/papier) und nach `decks/<name>/deck.json` kopieren – oder Folien selbst aus
+   `templates/layouts/` ableiten (Elemente und Koordinaten übernehmen, `"layout": "<name>"` setzen, Hintergrund/Effekte
+   der Fläche aus dem Theme: `title`, `content`, `light`).
+2. Gliederung: eine Idee pro Folie, Titel – Kapitel – Inhalt – Abschluss. Besondere Momente mit Bausteinen aus
+   `templates/blocks/` (`intro`, `kapitel-trenner`, `abspann`, `logo-reveal`, `counter`, `galerie`).
+3. Builds und Übergänge nach STYLE.md setzen, dann validieren und Screenshots prüfen.
+
+## Themes und Paletten
+
+- Ein Theme kann mit `colors` Brand-Tokens für seine Decks umstellen (z. B. `papier`: helles `background`, dunkles
+  `text`; `light`/`ink` sind dort die dunkle Kontrastfläche). Deshalb Farben in Decks und Vorlagen **immer als Token**
+  und Logos als Icon `brand/logo-mono.svg` mit `"color": "brand.text"` – dann passt alles in jedem Theme.
+- `*kursiv*`/`**fett**` gelten nur innerhalb einer Zeile: über `\n` hinweg jede Zeile einzeln markieren.
+- Wie man Themes, Layouts, Bausteine, Vorlagen, Komponenten und Engine-Features ergänzt: `EXTENDING.md`.
 
 ## Builds und Übergänge (wie die Engine sie liest)
 
@@ -117,7 +131,8 @@ optional `schema` (Zod für `props` – wird geprüft, Fehler erscheinen als Pla
 - `src/editor/` – Editor (Zustand/Verlauf in `useEditor.ts`, Arbeitsfläche `Canvas.tsx`, Inspector, Ebenen,
   Mini-Toolbar, Übersicht, Medien, Schriften; Bearbeitungslogik in `model.ts`). `src/present/` – Präsentation.
 - `src/app/` – Ansichten und Routing. `src/ui/` – App-Designsystem (Tokens in `tokens.css`).
-- `templates/themes/`, `templates/layouts/` – Theme und Folien-Layouts (eigene Schemas in `src/schema/`).
+- `templates/themes/`, `templates/layouts/`, `templates/blocks/`, `templates/decks/` – Themes, Layouts, Bausteine,
+  Deck-Vorlagen (eigene Schemas in `src/schema/`, Server-Seite in `server/templates.ts`). Anleitung: `EXTENDING.md`.
 - UI-Texte auf Deutsch, Du-Form. App-Look: Apple-artig, ruhig, Hell/Dunkel automatisch.
 - Die alte Präsentation im Repo-Root (`../index.html`) **nicht anfassen**.
 

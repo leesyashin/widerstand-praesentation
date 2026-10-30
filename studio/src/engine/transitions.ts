@@ -206,7 +206,7 @@ function lightLeak(args: Args, tl: gsap.core.Timeline, duration: number) {
     canvas.remove()
     return
   }
-  const tint = resolveRgba('brand.accent', [1, 0.9, 0.8, 1]).slice(0, 3)
+  const tint = resolveRgba('brand.accent', {}, [1, 0.9, 0.8, 1], to).slice(0, 3)
   const proxy = { p: 0 }
   const draw = () => {
     const rect = canvas.getBoundingClientRect()

@@ -1,0 +1,91 @@
+{
+  "$schema": "../../src/schema/block.schema.json",
+  "name": "galerie",
+  "label": "Galerie im Fluss",
+  "description": "Vier Bilder gleiten gestaffelt herein und zoomen danach langsam weiter.",
+  "kind": "elements",
+  "width": 1920,
+  "height": 1080,
+  "elements": [
+    {
+      "id": "galerie-1",
+      "type": "image",
+      "src": "brand/platzhalter.svg",
+      "fit": "cover",
+      "radius": 12,
+      "frame": {
+        "x": 160,
+        "y": 300,
+        "w": 380,
+        "h": 480
+      },
+      "build": {
+        "in": {
+          "preset": "blurRise",
+          "delay": 0
+        },
+        "trigger": "click"
+      }
+    },
+    {
+      "id": "galerie-2",
+      "type": "image",
+      "src": "brand/platzhalter.svg",
+      "fit": "cover",
+      "radius": 12,
+      "frame": {
+        "x": 570,
+        "y": 300,
+        "w": 380,
+        "h": 480
+      },
+      "build": {
+        "in": {
+          "preset": "blurRise",
+          "delay": 90
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "galerie-3",
+      "type": "image",
+      "src": "brand/platzhalter.svg",
+      "fit": "cover",
+      "radius": 12,
+      "frame": {
+        "x": 980,
+        "y": 300,
+        "w": 380,
+        "h": 480
+      },
+      "build": {
+        "in": {
+          "preset": "blurRise",
+          "delay": 180
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "galerie-4",
+      "type": "image",
+      "src": "brand/platzhalter.svg",
+      "fit": "cover",
+      "radius": 12,
+      "frame": {
+        "x": 1390,
+        "y": 300,
+        "w": 380,
+        "h": 480
+      },
+      "build": {
+        "in": {
+          "preset": "blurRise",
+          "delay": 270
+        },
+        "trigger": "withPrevious"
+      }
+    }
+  ]
+}

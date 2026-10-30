@@ -1,6 +1,7 @@
 import { useMemo, type ReactNode } from 'react'
 import type { Brand } from '../schema/brand'
 import { brandFontFaces, brandVariables } from './brand'
+import { PaletteContext } from './context'
 
 /**
  * Stellt Brand-Farben und -Schriften als CSS-Variablen auf :root bereit –
@@ -14,9 +15,9 @@ export function BrandScope({ brand, children }: { brand: Brand; children: ReactN
     return `:root{${vars}}\n${brandFontFaces(brand)}`
   }, [brand])
   return (
-    <>
+    <PaletteContext.Provider value={brand.colors}>
       <style>{css}</style>
       {children}
-    </>
+    </PaletteContext.Provider>
   )
 }

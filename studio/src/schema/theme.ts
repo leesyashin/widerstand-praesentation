@@ -26,6 +26,11 @@ export const Theme = z.strictObject({
   name: z.string().regex(/^[a-z0-9][a-z0-9-]*$/),
   label: z.string().min(1),
   description: z.string().optional(),
+  /**
+   * Palette des Themes: überschreibt Brand-Farben (gleiche Token-Namen) für alle Decks mit diesem Theme,
+   * z. B. eine helle Variante. Ohne Angabe gelten die Farben aus brand/brand.json.
+   */
+  colors: z.record(z.string().regex(/^[a-zA-Z][a-zA-Z0-9]*$/), z.string().regex(/^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/, 'Hex-Farbe, z. B. #f4f2ed')).optional(),
   textStyles: z.partialRecord(TextStyle, TextStyleDef.partial()),
   backgrounds: z.partialRecord(Surface, Background),
   effects: z.partialRecord(Surface, z.array(Effect)).optional(),

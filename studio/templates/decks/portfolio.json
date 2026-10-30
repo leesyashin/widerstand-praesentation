@@ -1,0 +1,873 @@
+{
+  "$schema": "../../src/schema/deck.schema.json",
+  "version": 1,
+  "title": "Portfolio",
+  "description": "Showreel und ausgewählte Arbeiten – für Kundentermine und Bewerbungen. Theme Kino.",
+  "format": {
+    "preset": "16:9",
+    "width": 1920,
+    "height": 1080
+  },
+  "theme": "kino",
+  "intensity": 0.3,
+  "slides": [
+    {
+      "id": "titel",
+      "layout": "titel",
+      "background": {
+        "type": "meshGradient",
+        "colors": [
+          "brand.background",
+          "brand.accent2",
+          "brand.surface"
+        ],
+        "animate": true
+      },
+      "effects": [
+        {
+          "type": "grain",
+          "amount": 0.14
+        },
+        {
+          "type": "vignette",
+          "amount": 0.45
+        },
+        {
+          "type": "letterbox",
+          "amount": 0.6
+        }
+      ],
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Portfolio · 2027",
+          "align": "center",
+          "frame": {
+            "x": 160,
+            "y": 380,
+            "w": 1600,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade",
+              "duration": 600
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "headline",
+          "match": "headline",
+          "type": "text",
+          "style": "display",
+          "content": "Bilder, die\nbleiben.",
+          "align": "center",
+          "frame": {
+            "x": 160,
+            "y": 440,
+            "w": 1600,
+            "h": 320
+          },
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "logo",
+          "name": "Logo",
+          "type": "icon",
+          "icon": "brand/logo-mono.svg",
+          "color": "brand.text",
+          "frame": {
+            "x": 160,
+            "y": 930,
+            "w": 234,
+            "h": 60
+          }
+        }
+      ],
+      "notes": "Kurz ankommen lassen. Die Folie läuft von selbst."
+    },
+    {
+      "id": "ueber-mich",
+      "layout": "ueber-mich",
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "effects": [
+        {
+          "type": "grain",
+          "amount": 0.08
+        }
+      ],
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "portraet",
+          "type": "image",
+          "src": "brand/platzhalter.svg",
+          "fit": "cover",
+          "radius": 24,
+          "frame": {
+            "x": 160,
+            "y": 120,
+            "w": 640,
+            "h": 840
+          },
+          "build": {
+            "in": {
+              "preset": "maskReveal",
+              "direction": "up"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Über mich",
+          "frame": {
+            "x": 920,
+            "y": 330,
+            "w": 840,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 200
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "name",
+          "type": "text",
+          "style": "title",
+          "content": "Vorname Name",
+          "frame": {
+            "x": 920,
+            "y": 390,
+            "w": 840,
+            "h": 120
+          },
+          "build": {
+            "in": {
+              "preset": "blurRise",
+              "delay": 200
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "text",
+          "type": "text",
+          "style": "body",
+          "content": "Ich erzähle Geschichten mit Kamera und Schnitt – für Marken, Menschen und Momente.",
+          "frame": {
+            "x": 920,
+            "y": 540,
+            "w": 780,
+            "h": 200
+          },
+          "color": "brand.textMuted",
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "fakten",
+          "type": "text",
+          "style": "caption",
+          "content": "Fotografie · Film · Motion",
+          "frame": {
+            "x": 920,
+            "y": 780,
+            "w": 840,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        }
+      ]
+    },
+    {
+      "id": "arbeiten",
+      "layout": "kapitel",
+      "background": {
+        "type": "meshGradient",
+        "colors": [
+          "brand.background",
+          "brand.accent2",
+          "brand.surface"
+        ],
+        "animate": true
+      },
+      "effects": [
+        {
+          "type": "grain",
+          "amount": 0.14
+        },
+        {
+          "type": "vignette",
+          "amount": 0.45
+        },
+        {
+          "type": "letterbox",
+          "amount": 0.6
+        }
+      ],
+      "transition": {
+        "type": "lightLeak"
+      },
+      "elements": [
+        {
+          "id": "nummer",
+          "type": "text",
+          "style": "label",
+          "content": "Kapitel 01",
+          "frame": {
+            "x": 160,
+            "y": 500,
+            "w": 800,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "titel",
+          "match": "kapitel-titel",
+          "type": "text",
+          "style": "title",
+          "content": "Ausgewählte Arbeiten",
+          "frame": {
+            "x": 160,
+            "y": 556,
+            "w": 1600,
+            "h": 130
+          },
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ]
+    },
+    {
+      "id": "projekt-1",
+      "layout": "bild-vollbild",
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "effects": [
+        {
+          "type": "grain",
+          "amount": 0.08
+        }
+      ],
+      "transition": {
+        "type": "dissolve",
+        "duration": 900
+      },
+      "elements": [
+        {
+          "id": "bild",
+          "type": "image",
+          "src": "brand/platzhalter.svg",
+          "fit": "cover",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "w": 1920,
+            "h": 1080
+          },
+          "build": {
+            "in": {
+              "preset": "kenBurns"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "verlauf",
+          "name": "Verlauf",
+          "type": "shape",
+          "shape": "rect",
+          "fill": "rgba(0,0,0,0.45)",
+          "frame": {
+            "x": 0,
+            "y": 640,
+            "w": 1920,
+            "h": 440
+          }
+        },
+        {
+          "id": "titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Projekt Eins — Kunde, 2026",
+          "frame": {
+            "x": 160,
+            "y": 820,
+            "w": 1200,
+            "h": 80
+          },
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "click"
+          }
+        }
+      ],
+      "notes": "Eigenes Bild oder Video: Medien-Bibliothek öffnen und auf das Bild ziehen."
+    },
+    {
+      "id": "projekt-2",
+      "layout": "galerie",
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "effects": [
+        {
+          "type": "grain",
+          "amount": 0.08
+        }
+      ],
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Projekt Zwei — Serie",
+          "frame": {
+            "x": 160,
+            "y": 120,
+            "w": 1000,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "bild-1",
+          "type": "image",
+          "src": "brand/platzhalter.svg",
+          "fit": "cover",
+          "radius": 16,
+          "frame": {
+            "x": 160,
+            "y": 220,
+            "w": 506,
+            "h": 640
+          },
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 0
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "bild-1-text",
+          "type": "text",
+          "style": "caption",
+          "content": "Motiv eins",
+          "frame": {
+            "x": 160,
+            "y": 884,
+            "w": 506,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 200
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "bild-2",
+          "type": "image",
+          "src": "brand/platzhalter.svg",
+          "fit": "cover",
+          "radius": 16,
+          "frame": {
+            "x": 707,
+            "y": 220,
+            "w": 506,
+            "h": 640
+          },
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 90
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "bild-2-text",
+          "type": "text",
+          "style": "caption",
+          "content": "Motiv zwei",
+          "frame": {
+            "x": 707,
+            "y": 884,
+            "w": 506,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 290
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "bild-3",
+          "type": "image",
+          "src": "brand/platzhalter.svg",
+          "fit": "cover",
+          "radius": 16,
+          "frame": {
+            "x": 1254,
+            "y": 220,
+            "w": 506,
+            "h": 640
+          },
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 180
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "bild-3-text",
+          "type": "text",
+          "style": "caption",
+          "content": "Motiv drei",
+          "frame": {
+            "x": 1254,
+            "y": 884,
+            "w": 506,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 380
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ]
+    },
+    {
+      "id": "projekt-3",
+      "layout": "bild-text",
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "effects": [
+        {
+          "type": "grain",
+          "amount": 0.08
+        }
+      ],
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "bild",
+          "type": "image",
+          "src": "brand/platzhalter.svg",
+          "fit": "cover",
+          "radius": 24,
+          "frame": {
+            "x": 1000,
+            "y": 120,
+            "w": 760,
+            "h": 840
+          },
+          "build": {
+            "in": {
+              "preset": "maskReveal",
+              "direction": "up"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "headline",
+          "match": "headline",
+          "type": "text",
+          "style": "title",
+          "content": "Projekt Drei",
+          "frame": {
+            "x": 160,
+            "y": 360,
+            "w": 760,
+            "h": 130
+          },
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "text",
+          "type": "text",
+          "style": "body",
+          "color": "brand.textMuted",
+          "content": "Aufgabe, Idee, Ergebnis – ein Satz pro Gedanke.",
+          "frame": {
+            "x": 160,
+            "y": 520,
+            "w": 720,
+            "h": 200
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "click"
+          }
+        }
+      ]
+    },
+    {
+      "id": "zahl",
+      "layout": "grosse-zahl",
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "effects": [
+        {
+          "type": "grain",
+          "amount": 0.08
+        }
+      ],
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "zahl",
+          "type": "text",
+          "style": "display",
+          "content": "1.250",
+          "fontSize": 280,
+          "frame": {
+            "x": 160,
+            "y": 300,
+            "w": 1600,
+            "h": 300
+          },
+          "build": {
+            "in": {
+              "preset": "countUp"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "erklaerung",
+          "type": "text",
+          "style": "subtitle",
+          "content": "Stunden Film, geschnitten seit 2019",
+          "frame": {
+            "x": 160,
+            "y": 640,
+            "w": 1200,
+            "h": 70
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "afterPrevious"
+          }
+        }
+      ]
+    },
+    {
+      "id": "stimme",
+      "layout": "zitat",
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "effects": [
+        {
+          "type": "grain",
+          "amount": 0.08
+        }
+      ],
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "anfuehrung",
+          "type": "text",
+          "style": "display",
+          "content": "„",
+          "frame": {
+            "x": 160,
+            "y": 170,
+            "w": 200,
+            "h": 200
+          },
+          "color": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "zitat",
+          "type": "text",
+          "style": "title",
+          "content": "*Er hat gesehen, was wir selbst*\n*noch nicht sehen konnten.*",
+          "frame": {
+            "x": 160,
+            "y": 360,
+            "w": 1500,
+            "h": 260
+          },
+          "build": {
+            "in": {
+              "preset": "maskReveal",
+              "direction": "right",
+              "delay": 150
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "linie",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.accent",
+            "width": 3
+          },
+          "frame": {
+            "x": 160,
+            "y": 700,
+            "w": 96,
+            "h": 4
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine"
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "quelle",
+          "type": "text",
+          "style": "caption",
+          "content": "Name, Marketingleitung bei Kunde",
+          "frame": {
+            "x": 290,
+            "y": 684,
+            "w": 1000,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ]
+    },
+    {
+      "id": "kontakt",
+      "layout": "kontakt",
+      "background": {
+        "type": "meshGradient",
+        "colors": [
+          "brand.background",
+          "brand.accent2",
+          "brand.surface"
+        ],
+        "animate": true
+      },
+      "effects": [
+        {
+          "type": "grain",
+          "amount": 0.14
+        },
+        {
+          "type": "vignette",
+          "amount": 0.45
+        },
+        {
+          "type": "letterbox",
+          "amount": 0.6
+        }
+      ],
+      "transition": {
+        "type": "lightLeak"
+      },
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Kontakt",
+          "frame": {
+            "x": 160,
+            "y": 320,
+            "w": 1600,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "headline",
+          "type": "text",
+          "style": "title",
+          "content": "Lass uns etwas drehen.",
+          "frame": {
+            "x": 160,
+            "y": 380,
+            "w": 1600,
+            "h": 130
+          },
+          "match": "headline",
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "email",
+          "type": "text",
+          "style": "subtitle",
+          "content": "name@beispiel.de",
+          "frame": {
+            "x": 160,
+            "y": 580,
+            "w": 1000,
+            "h": 60
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "telefon",
+          "type": "text",
+          "style": "subtitle",
+          "content": "+49 000 000 000",
+          "frame": {
+            "x": 160,
+            "y": 650,
+            "w": 1000,
+            "h": 60
+          },
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 80
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "web",
+          "type": "text",
+          "style": "subtitle",
+          "content": "beispiel.de",
+          "frame": {
+            "x": 160,
+            "y": 720,
+            "w": 1000,
+            "h": 60
+          },
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 160
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "logo",
+          "name": "Logo",
+          "type": "icon",
+          "icon": "brand/logo-mono.svg",
+          "color": "brand.text",
+          "frame": {
+            "x": 160,
+            "y": 930,
+            "w": 234,
+            "h": 60
+          }
+        }
+      ]
+    }
+  ]
+}

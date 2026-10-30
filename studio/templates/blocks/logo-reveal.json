@@ -1,0 +1,98 @@
+{
+  "$schema": "../../src/schema/block.schema.json",
+  "name": "logo-reveal",
+  "label": "Logo-Reveal",
+  "description": "Das Logo wird hinter einer Kante aufgedeckt, zwei feine Linien zeichnen sich nach außen, darunter die Zeile.",
+  "kind": "elements",
+  "width": 1920,
+  "height": 1080,
+  "elements": [
+    {
+      "id": "logo-linie-links",
+      "type": "shape",
+      "shape": "line",
+      "stroke": {
+        "color": "brand.accent",
+        "width": 2
+      },
+      "frame": {
+        "x": 560,
+        "y": 508,
+        "w": 240,
+        "h": 4,
+        "rotation": 180
+      },
+      "build": {
+        "in": {
+          "preset": "drawLine",
+          "duration": 900
+        },
+        "trigger": "afterPrevious"
+      }
+    },
+    {
+      "id": "logo-linie-rechts",
+      "type": "shape",
+      "shape": "line",
+      "stroke": {
+        "color": "brand.accent",
+        "width": 2
+      },
+      "frame": {
+        "x": 1120,
+        "y": 508,
+        "w": 240,
+        "h": 4
+      },
+      "build": {
+        "in": {
+          "preset": "drawLine",
+          "duration": 900
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "logo",
+      "name": "Logo",
+      "type": "icon",
+      "icon": "brand/logo-mono.svg",
+      "color": "brand.text",
+      "frame": {
+        "x": 843,
+        "y": 480,
+        "w": 234,
+        "h": 60
+      },
+      "build": {
+        "in": {
+          "preset": "maskReveal",
+          "direction": "right",
+          "duration": 1100,
+          "delay": 250
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "logo-zeile",
+      "type": "text",
+      "style": "label",
+      "content": "Licht · Bewegung · Geschichte",
+      "frame": {
+        "x": 560,
+        "y": 580,
+        "w": 800,
+        "h": 40
+      },
+      "align": "center",
+      "build": {
+        "in": {
+          "preset": "fade",
+          "duration": 700
+        },
+        "trigger": "afterPrevious"
+      }
+    }
+  ]
+}

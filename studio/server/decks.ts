@@ -68,7 +68,7 @@ export async function readBrand(): Promise<BrandResult> {
 }
 
 /** Läuft rekursiv durch das Deck und ruft `visit` für jeden String mit seinem Pfad auf. */
-function walkStrings(value: unknown, at: PropertyKey[], visit: (s: string, at: PropertyKey[]) => void) {
+export function walkStrings(value: unknown, at: PropertyKey[], visit: (s: string, at: PropertyKey[]) => void) {
   if (typeof value === 'string') visit(value, at)
   else if (Array.isArray(value)) value.forEach((v, i) => walkStrings(v, [...at, i], visit))
   else if (value && typeof value === 'object') {
@@ -175,7 +175,20 @@ export async function readTheme(name: string): Promise<ThemeResult> {
   const json = parseJson(await readFile(file, 'utf8'))
   if (!json.ok) return json
   const parsed = Theme.safeParse(json.value)
-  return parsed.success ? { ok: true, theme: parsed.data } : { ok: false, issues: fromZod(parsed.error) }
+  if (!parsed.success) return { ok: false, issues: fromZod(parsed.error) }
+  // Die Palette eines Themes darf nur bekannte Brand-Farben umstellen – so bleiben Decks themeübergreifend gültig.
+  const brand = await readBrand()
+  if (brand.ok && parsed.data.colors) {
+    const unknown = Object.keys(parsed.data.colors).filter((k) => !(k in brand.brand.colors))
+    if (unknown.length) {
+      return {
+        ok: false,
+        issues: unknown.map((k) => ({ path: `colors.${k}`, message: `Unbekannte Brand-Farbe "${k}". Vorhanden: ${Object.keys(brand.brand.colors).join(', ')}` })),
+      }
+    }
+  }
+  if (parsed.data.name !== name) return { ok: false, issues: [{ path: 'name', message: `name muss dem Dateinamen entsprechen ("${name}")` }] }
+  return { ok: true, theme: parsed.data }
 }
 
 export async function listThemeNames(): Promise<string[]> {

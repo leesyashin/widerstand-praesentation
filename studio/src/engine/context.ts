@@ -22,3 +22,10 @@ export function intensityScale(intensity: number): number {
 export function useEffectScale(): number {
   return intensityScale(useContext(IntensityContext))
 }
+
+/** Farben der aktuellen Folien: Brand-Kit, überlagert von der Palette des Themes (Token → Hex). */
+export const PaletteContext = createContext<Record<string, string>>({})
+
+export function usePalette(): Record<string, string> {
+  return useContext(PaletteContext)
+}

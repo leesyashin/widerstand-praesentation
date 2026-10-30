@@ -1,0 +1,342 @@
+{
+  "$schema": "../../src/schema/layout.schema.json",
+  "name": "ablauf",
+  "label": "Ablauf",
+  "description": "Vier Schritte auf einer Zeitachse.",
+  "surface": "content",
+  "width": 1920,
+  "height": 1080,
+  "elements": [
+    {
+      "id": "headline",
+      "type": "text",
+      "style": "title",
+      "content": "So gehen wir vor.",
+      "frame": {
+        "x": 160,
+        "y": 120,
+        "w": 1600,
+        "h": 120
+      },
+      "match": "headline"
+    },
+    {
+      "id": "achse",
+      "type": "shape",
+      "shape": "line",
+      "stroke": {
+        "color": "brand.accent2",
+        "width": 2
+      },
+      "frame": {
+        "x": 160,
+        "y": 456,
+        "w": 1600,
+        "h": 8
+      },
+      "build": {
+        "in": {
+          "preset": "drawLine",
+          "duration": 1200
+        },
+        "trigger": "afterPrevious"
+      }
+    },
+    {
+      "id": "punkt-1",
+      "type": "shape",
+      "shape": "ellipse",
+      "fill": "brand.accent",
+      "frame": {
+        "x": 160,
+        "y": 448,
+        "w": 24,
+        "h": 24
+      },
+      "build": {
+        "in": {
+          "preset": "scaleIn",
+          "delay": 0
+        },
+        "trigger": "click"
+      }
+    },
+    {
+      "id": "schritt-1-label",
+      "type": "text",
+      "style": "label",
+      "content": "01",
+      "frame": {
+        "x": 160,
+        "y": 380,
+        "w": 360,
+        "h": 40
+      },
+      "build": {
+        "in": {
+          "preset": "fade"
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "schritt-1-titel",
+      "type": "text",
+      "style": "heading",
+      "content": "Verstehen",
+      "frame": {
+        "x": 160,
+        "y": 520,
+        "w": 380,
+        "h": 70
+      },
+      "build": {
+        "in": {
+          "preset": "rise"
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "schritt-1-text",
+      "type": "text",
+      "style": "body",
+      "content": "Ein Satz, was hier passiert.",
+      "frame": {
+        "x": 160,
+        "y": 600,
+        "w": 360,
+        "h": 160
+      },
+      "color": "brand.textMuted",
+      "build": {
+        "in": {
+          "preset": "rise"
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "punkt-2",
+      "type": "shape",
+      "shape": "ellipse",
+      "fill": "brand.accent",
+      "frame": {
+        "x": 580,
+        "y": 448,
+        "w": 24,
+        "h": 24
+      },
+      "build": {
+        "in": {
+          "preset": "scaleIn",
+          "delay": 60
+        },
+        "trigger": "afterPrevious"
+      }
+    },
+    {
+      "id": "schritt-2-label",
+      "type": "text",
+      "style": "label",
+      "content": "02",
+      "frame": {
+        "x": 580,
+        "y": 380,
+        "w": 360,
+        "h": 40
+      },
+      "build": {
+        "in": {
+          "preset": "fade"
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "schritt-2-titel",
+      "type": "text",
+      "style": "heading",
+      "content": "Entwerfen",
+      "frame": {
+        "x": 580,
+        "y": 520,
+        "w": 380,
+        "h": 70
+      },
+      "build": {
+        "in": {
+          "preset": "rise"
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "schritt-2-text",
+      "type": "text",
+      "style": "body",
+      "content": "Ein Satz, was hier passiert.",
+      "frame": {
+        "x": 580,
+        "y": 600,
+        "w": 360,
+        "h": 160
+      },
+      "color": "brand.textMuted",
+      "build": {
+        "in": {
+          "preset": "rise"
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "punkt-3",
+      "type": "shape",
+      "shape": "ellipse",
+      "fill": "brand.accent",
+      "frame": {
+        "x": 1000,
+        "y": 448,
+        "w": 24,
+        "h": 24
+      },
+      "build": {
+        "in": {
+          "preset": "scaleIn",
+          "delay": 60
+        },
+        "trigger": "afterPrevious"
+      }
+    },
+    {
+      "id": "schritt-3-label",
+      "type": "text",
+      "style": "label",
+      "content": "03",
+      "frame": {
+        "x": 1000,
+        "y": 380,
+        "w": 360,
+        "h": 40
+      },
+      "build": {
+        "in": {
+          "preset": "fade"
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "schritt-3-titel",
+      "type": "text",
+      "style": "heading",
+      "content": "Umsetzen",
+      "frame": {
+        "x": 1000,
+        "y": 520,
+        "w": 380,
+        "h": 70
+      },
+      "build": {
+        "in": {
+          "preset": "rise"
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "schritt-3-text",
+      "type": "text",
+      "style": "body",
+      "content": "Ein Satz, was hier passiert.",
+      "frame": {
+        "x": 1000,
+        "y": 600,
+        "w": 360,
+        "h": 160
+      },
+      "color": "brand.textMuted",
+      "build": {
+        "in": {
+          "preset": "rise"
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "punkt-4",
+      "type": "shape",
+      "shape": "ellipse",
+      "fill": "brand.accent",
+      "frame": {
+        "x": 1420,
+        "y": 448,
+        "w": 24,
+        "h": 24
+      },
+      "build": {
+        "in": {
+          "preset": "scaleIn",
+          "delay": 60
+        },
+        "trigger": "afterPrevious"
+      }
+    },
+    {
+      "id": "schritt-4-label",
+      "type": "text",
+      "style": "label",
+      "content": "04",
+      "frame": {
+        "x": 1420,
+        "y": 380,
+        "w": 360,
+        "h": 40
+      },
+      "build": {
+        "in": {
+          "preset": "fade"
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "schritt-4-titel",
+      "type": "text",
+      "style": "heading",
+      "content": "Liefern",
+      "frame": {
+        "x": 1420,
+        "y": 520,
+        "w": 380,
+        "h": 70
+      },
+      "build": {
+        "in": {
+          "preset": "rise"
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "schritt-4-text",
+      "type": "text",
+      "style": "body",
+      "content": "Ein Satz, was hier passiert.",
+      "frame": {
+        "x": 1420,
+        "y": 600,
+        "w": 360,
+        "h": 160
+      },
+      "color": "brand.textMuted",
+      "build": {
+        "in": {
+          "preset": "rise"
+        },
+        "trigger": "withPrevious"
+      }
+    }
+  ]
+}

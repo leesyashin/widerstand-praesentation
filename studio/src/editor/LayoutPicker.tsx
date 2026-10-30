@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { SlideView } from '../engine/SlideView'
 import { Stage } from '../engine/Stage'
+import { ThemeVars } from '../engine/ThemeScope'
 import type { Deck } from '../schema/deck'
 import type { Layout } from '../schema/layout'
 import type { Theme } from '../schema/theme'
@@ -42,6 +43,7 @@ export function LayoutPicker({
 
   // Portal: die Seitenleiste (backdrop-filter) würde ein fixiertes Menü sonst abschneiden.
   return createPortal(
+    <ThemeVars>
     <div ref={ref} className="layout-picker material" role="dialog" aria-label="Layout wählen">
       <h3 className="section-title">Neue Folie</h3>
       <div className="layout-picker__grid">
@@ -59,7 +61,8 @@ export function LayoutPicker({
           )
         })}
       </div>
-    </div>,
+    </div>
+    </ThemeVars>,
     document.body,
   )
 }

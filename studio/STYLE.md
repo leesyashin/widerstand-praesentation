@@ -18,6 +18,18 @@ Filmische Mittel (Grain, Light Leaks, Kamerafahrten, Letterbox) sind Gewürz, ni
 | Motion | **Seide** | Signature-Build `blurRise`, Standard-Übergang `blurDissolve` |
 | Signature-Effekt | **Licht-Verlauf** | Langsam fließender Mesh-Gradient in Silbertönen |
 
+## Themes
+
+| Theme | Charakter | Wofür |
+|---|---|---|
+| `silber` | Dunkel, Licht-Verlauf in Silbertönen – das Signature-Theme | Pitch, Standard |
+| `kino` | Tiefschwarz, Kinobalken, Filmkorn, große Typo | Showreel, Portfolio |
+| `sachlich` | Graphit, klare Typo, keine Effekte | Angebote, Arbeitsstände |
+| `papier` | Hell, Papierweiß, dunkle Schrift, viel Weißraum | Vorträge, Workshops |
+
+Pro Deck ein Theme. Die Regeln unten gelten für alle; „dunkel/hell“ meint dann die Rollen (`brand.background`,
+`brand.text`), die das Theme mit Farben belegt.
+
 ## Komposition
 
 - **Eine Idee pro Folie.** Lieber eine Folie mehr als eine volle Folie.

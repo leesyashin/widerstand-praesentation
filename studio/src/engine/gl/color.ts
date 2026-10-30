@@ -1,10 +1,20 @@
 /** Farbwerte aus dem Deck (Hex, rgb(a), Brand-Token) → [r, g, b, a] in 0–1 für Shader. */
 export type RGBA = [number, number, number, number]
 
-export function resolveRgba(color: string, fallback: RGBA = [0, 0, 0, 1]): RGBA {
+/**
+ * Brand-Tokens kommen aus der Palette (Brand + Theme). Fehlt dort ein Token, wird die CSS-Variable am Element
+ * `from` gelesen – so gilt auch dann die Palette des Themes, in dem das Element liegt.
+ */
+export function resolveRgba(
+  color: string,
+  palette: Record<string, string> = {},
+  fallback: RGBA = [0, 0, 0, 1],
+  from: Element = document.documentElement,
+): RGBA {
   let value = color.trim()
   if (value.startsWith('brand.')) {
-    value = getComputedStyle(document.documentElement).getPropertyValue(`--brand-${value.slice(6)}`).trim()
+    const token = value.slice(6)
+    value = palette[token] ?? getComputedStyle(from).getPropertyValue(`--brand-${token}`).trim()
   }
   const hex = value.match(/^#([0-9a-f]{3,8})$/i)?.[1]
   if (hex) {

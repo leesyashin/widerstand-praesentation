@@ -1,0 +1,146 @@
+{
+  "$schema": "../../src/schema/layout.schema.json",
+  "name": "galerie",
+  "label": "Galerie",
+  "description": "Drei Bilder nebeneinander mit Bildunterschrift.",
+  "surface": "content",
+  "width": 1920,
+  "height": 1080,
+  "elements": [
+    {
+      "id": "kicker",
+      "type": "text",
+      "style": "label",
+      "content": "Ausgewählte Arbeiten",
+      "frame": {
+        "x": 160,
+        "y": 120,
+        "w": 1000,
+        "h": 40
+      },
+      "build": {
+        "in": {
+          "preset": "fade"
+        },
+        "trigger": "afterPrevious"
+      }
+    },
+    {
+      "id": "bild-1",
+      "type": "image",
+      "src": "brand/platzhalter.svg",
+      "fit": "cover",
+      "radius": 16,
+      "frame": {
+        "x": 160,
+        "y": 220,
+        "w": 506,
+        "h": 640
+      },
+      "build": {
+        "in": {
+          "preset": "rise",
+          "delay": 0
+        },
+        "trigger": "afterPrevious"
+      }
+    },
+    {
+      "id": "bild-1-text",
+      "type": "text",
+      "style": "caption",
+      "content": "Projekt 1 · Jahr",
+      "frame": {
+        "x": 160,
+        "y": 884,
+        "w": 506,
+        "h": 40
+      },
+      "build": {
+        "in": {
+          "preset": "fade",
+          "delay": 200
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "bild-2",
+      "type": "image",
+      "src": "brand/platzhalter.svg",
+      "fit": "cover",
+      "radius": 16,
+      "frame": {
+        "x": 707,
+        "y": 220,
+        "w": 506,
+        "h": 640
+      },
+      "build": {
+        "in": {
+          "preset": "rise",
+          "delay": 90
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "bild-2-text",
+      "type": "text",
+      "style": "caption",
+      "content": "Projekt 2 · Jahr",
+      "frame": {
+        "x": 707,
+        "y": 884,
+        "w": 506,
+        "h": 40
+      },
+      "build": {
+        "in": {
+          "preset": "fade",
+          "delay": 290
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "bild-3",
+      "type": "image",
+      "src": "brand/platzhalter.svg",
+      "fit": "cover",
+      "radius": 16,
+      "frame": {
+        "x": 1254,
+        "y": 220,
+        "w": 506,
+        "h": 640
+      },
+      "build": {
+        "in": {
+          "preset": "rise",
+          "delay": 180
+        },
+        "trigger": "withPrevious"
+      }
+    },
+    {
+      "id": "bild-3-text",
+      "type": "text",
+      "style": "caption",
+      "content": "Projekt 3 · Jahr",
+      "frame": {
+        "x": 1254,
+        "y": 884,
+        "w": 506,
+        "h": 40
+      },
+      "build": {
+        "in": {
+          "preset": "fade",
+          "delay": 380
+        },
+        "trigger": "withPrevious"
+      }
+    }
+  ]
+}
