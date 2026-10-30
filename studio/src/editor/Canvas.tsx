@@ -1,6 +1,7 @@
 import type { Draft } from 'immer'
 import {
   useContext,
+  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
@@ -168,6 +169,16 @@ function SelectionLayer({ deck, view, page, selected, onSelect, editing, onEditT
     e.preventDefault()
     ;(document.activeElement as HTMLElement | null)?.blur?.()
     const hit = hitTest(e.clientX, e.clientY)
+    // Touch: Doppeltippen = Doppelklick (iOS meldet keinen dblclick, solange touch-action: none gilt).
+    if (e.pointerType === 'touch') {
+      const last = lastTap.current
+      lastTap.current = { at: e.timeStamp, id: hit }
+      if (hit && last && last.id === hit && e.timeStamp - last.at < 350) {
+        lastTap.current = null
+        onDoubleClick(e)
+        return
+      }
+    }
     if (!hit) {
       const p = toLocal(e.clientX, e.clientY)
       const base = e.shiftKey || e.metaKey ? selected : []
@@ -315,6 +326,20 @@ function SelectionLayer({ deck, view, page, selected, onSelect, editing, onEditT
     setGuides({ x: [], y: [] })
     setBadge(null)
   }
+
+  const lastTap = useRef<{ at: number; id: string | null } | null>(null)
+
+  // Mini-Toolbar im sichtbaren Bereich halten – auf dem Handy ist sie oft breiter als der Platz neben dem Element.
+  useLayoutEffect(() => {
+    const bar = layer.current?.querySelector<HTMLElement>('.mini-toolbar')
+    if (!bar) return
+    bar.style.marginLeft = ''
+    const r = bar.getBoundingClientRect()
+    const min = 8
+    const max = document.documentElement.clientWidth - 8
+    const shift = r.left < min ? min - r.left : r.right > max ? Math.max(max - r.right, min - r.left) : 0
+    if (shift) bar.style.marginLeft = `${shift}px`
+  })
 
   const onDoubleClick = (e: ReactMouseEvent) => {
     const id = hitTest(e.clientX, e.clientY)

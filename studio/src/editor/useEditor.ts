@@ -1,5 +1,6 @@
 import { produce, type Draft } from 'immer'
 import { useCallback, useEffect, useReducer, useRef } from 'react'
+import { CLOUD } from '../api/cloud/config'
 import { api } from '../api/client'
 import { useDeck, type Live } from '../api/live'
 import type { Deck } from '../schema/deck'
@@ -39,6 +40,8 @@ type Action =
   | { type: 'saved'; deck: Deck; issues: Issue[] }
 
 const HISTORY = 200
+/** Unterwegs ist jedes Speichern ein Commit – dort erst nach einer kurzen Pause speichern. */
+const SAVE_DELAY = CLOUD ? 2500 : 400
 const MERGE_WINDOW = 1200
 
 /** JSON mit sortierten Schlüsseln: Der Server liefert Felder in Schema-Reihenfolge, der Editor in Einfügereihenfolge. */
@@ -154,7 +157,7 @@ export function useEditor(name: string): Editor {
     const doc = state.doc
     const timer = setTimeout(() => {
       void api.saveDeck(name, doc).then((r) => dispatch({ type: 'saved', deck: doc, issues: r.ok ? [] : r.issues }))
-    }, 400)
+    }, SAVE_DELAY)
     return () => clearTimeout(timer)
   }, [state.pending, state.doc, name])
 
@@ -163,9 +166,15 @@ export function useEditor(name: string): Editor {
     const flush = () => {
       if (pendingDoc.current) void api.saveDeck(name, pendingDoc.current)
     }
+    // Handy: Wechsel zu einer anderen App oder Sperren → sofort speichern, ein „beforeunload“ kommt dort oft nicht.
+    const onHide = () => {
+      if (document.visibilityState === 'hidden') flush()
+    }
     window.addEventListener('beforeunload', flush)
+    document.addEventListener('visibilitychange', onHide)
     return () => {
       window.removeEventListener('beforeunload', flush)
+      document.removeEventListener('visibilitychange', onHide)
       flush()
     }
   }, [name])

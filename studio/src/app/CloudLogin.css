@@ -1,0 +1,81 @@
+.login {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: max(var(--space-6), env(safe-area-inset-top)) var(--space-4) var(--space-6);
+  overflow: auto;
+}
+
+.login__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: min(440px, 100%);
+  padding: var(--space-6) var(--space-5);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg), inset 0 0.5px 0 var(--material-edge);
+}
+
+.login__card h1 {
+  margin: 0;
+  font-family: var(--font-ui-display);
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: var(--track-display);
+}
+
+.login__card p {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.login__steps {
+  margin: 0;
+  padding-left: 1.3em;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+
+.login__steps a {
+  color: var(--accent);
+}
+
+.login__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+/* 16 px: iOS zoomt sonst beim Antippen ins Feld. */
+.login .field {
+  font-size: 16px;
+  padding: 10px 12px;
+}
+
+.login__more summary {
+  font-size: var(--text-sm);
+  color: var(--text-2);
+  cursor: default;
+  margin-bottom: 6px;
+}
+
+.login__error {
+  color: #ff453a;
+  font-size: var(--text-sm);
+}
+
+.login__submit {
+  height: 44px;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.login__note {
+  font-size: 12px;
+  text-align: center;
+}

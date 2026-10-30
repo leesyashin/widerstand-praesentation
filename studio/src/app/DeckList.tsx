@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { clearConfig, CLOUD } from '../api/cloud/config'
+import { syncWorkerConfig } from '../api/cloud/worker'
 import type { DeckSummary } from '../api/client'
 import { useDeck, useDeckList } from '../api/live'
 import { SlideView } from '../engine/SlideView'
@@ -12,6 +14,13 @@ import { NewDeckDialog } from './NewDeck'
 import { href } from './route'
 import './DeckList.css'
 
+async function signOut() {
+  if (!confirm('Auf diesem Gerät abmelden? Deine Decks bleiben im Repo.')) return
+  clearConfig()
+  await syncWorkerConfig(null)
+  location.reload()
+}
+
 export function DeckList({ brandIssues }: { brandIssues: Issue[] }) {
   const list = useDeckList()
   const decks = list.value ?? []
@@ -24,14 +33,24 @@ export function DeckList({ brandIssues }: { brandIssues: Issue[] }) {
           <h1>Studio</h1>
           <p className="muted">Deine Präsentationen</p>
         </div>
-        <button type="button" className="btn btn--primary" onClick={() => setCreating(true)} disabled={list.status === 'offline'}>
-          <Icon name="plus" size={14} /> Neues Deck
-        </button>
+        <div className="decks__actions">
+          {CLOUD && (
+            <button type="button" className="btn btn--plain" onClick={() => void signOut()} title="Zugangsschlüssel von diesem Gerät entfernen">
+              Abmelden
+            </button>
+          )}
+          <button type="button" className="btn btn--primary" onClick={() => setCreating(true)} disabled={list.status === 'offline'}>
+            <Icon name="plus" size={14} /> Neues Deck
+          </button>
+        </div>
       </header>
       {creating && <NewDeckDialog existing={decks.map((d) => d.name)} onClose={() => setCreating(false)} />}
 
       {brandIssues.length > 0 && <IssueList title="brand/brand.json ist ungültig" issues={brandIssues} />}
-      {list.status === 'offline' && <IssueList title="Keine Verbindung zum Dev-Server" issues={list.issues} />}
+      {list.status === 'offline' && (
+        <IssueList title={CLOUD ? 'Keine Verbindung zu GitHub' : 'Keine Verbindung zum Dev-Server'} issues={list.issues} />
+      )}
+      {CLOUD && list.status === 'invalid' && <IssueList title="GitHub" issues={list.issues} />}
 
       {list.status !== 'loading' && decks.length === 0 && list.status !== 'offline' && (
         <div className="decks__empty">
