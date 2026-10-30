@@ -35,13 +35,13 @@ Gesamtplan und Phasen: `PLAN.md`. Gestaltungsregeln: `STYLE.md` – **vor jedem 
 **Nach jeder Änderung an einem Deck:** `npm run validate -- <name>`, dann `npm run shots -- <name>` und die Bilder
 ansehen – auf Überlappungen, Lesbarkeit, Abstände und Ränder achten. Bei Animationen `--steps` nutzen.
 
-## Stand der Engine (Phase 1)
+## Stand der Engine (Phase 3)
 
-- Fertig: alle Elementtypen, Hintergründe, CSS-Vorschau der Effekte, Builds, Übergänge inkl. Magic Move,
-  Präsentationsmodus (`#/present/<deck>`), Editor mit Auswahl/Ziehen/Skalieren/Textbearbeitung/Undo/Autosave,
-  Theme `silber`, 8 Layouts, eigene Komponenten.
-- Noch nicht: `world`/`depth` (Kamerafahrt, Parallax – Phase 3), WebGL-Effekte (Phase 3), Referentenansicht (Phase 4).
-  Diese Felder trotzdem sinnvoll setzen – Decks sollen vorwärtskompatibel sein.
+- Fertig: alle Elementtypen inkl. Charts und Lottie, Builds, Übergänge inkl. Magic Move v2, Kamerafahrt und Light Leak,
+  WebGL-Effekte (Licht-Verlauf, Filmkorn, Licht-Sweep), Glas, 3D-Neigung, Parallax/Schweben, Deck-Intensität,
+  Präsentationsmodus, Editor mit Raum-Ansicht, Theme `silber`, 8 Layouts, eigene Komponenten.
+- Noch nicht: Referentenansicht, Probe-Modus, Handy-Fernbedienung (Phase 4); Editor-Komfort wie Mehrfachauswahl,
+  Hilfslinien, Ebenen, Master-Folien (Phase 2).
 
 ## Neues Deck aus einem Briefing
 
@@ -61,10 +61,30 @@ ansehen – auf Überlappungen, Lesbarkeit, Abstände und Ränder achten. Bei An
   `wordByWord`, `lineByLine` (nur Text), `drawLine` (Linien, Pfeile, Lucide-Icons), `countUp` (erste Zahl im Text,
   deutsche Schreibweise „1.250“), `kenBurns` (Bilder; lang – nicht mit `afterPrevious` dahinter verketten).
 - `transition` gilt für den Übergang **zu** dieser Folie: `blurDissolve`, `dissolve`, `magicMove`, `push`, `zoom`,
-  `maskReveal`, `whipPan` sind fertig; `camera` und `lightLeak` laufen bis Phase 3 als Zoom bzw. Blur-Überblendung.
+  `maskReveal`, `whipPan`, `camera`, `lightLeak`.
 - Magic Move: Elemente mit gleichem `match` auf beiden Folien fließen ineinander (Text richtet sich an der sichtbaren
   Textkante aus, skaliert nach Schriftgröße). Ihr eigener Einblend-Build wird dabei übersprungen.
 - Icons: Lucide-Namen in kebab-case (`camera`, `aperture`, `film`, `sparkles` … siehe lucide.dev/icons).
+- Magic Move v2: gleichartige Formen, Icons und Bilder mit gleicher Datei verwandeln sich direkt (Position, Größe,
+  Drehung, Farbe, Rundung) – ideal, um z. B. eine Linie zu einer Karte werden zu lassen.
+- `camera`: Die Kamera fliegt zwischen den `world`-Positionen (x/y in logischen Pixeln, `z` = Tiefe, `rotate`, `scale`).
+  Ohne `world` liegen die Folien auf einer Linie (Abstand 1,25 Folienbreiten). Elemente mit `depth` erzeugen dabei Parallax.
+- `lightLeak`: WebGL-Licht in der Akzentfarbe flutet über den Schnitt – Kapitelwechsel, sparsam.
+
+## Grafik & Effekte
+
+- Hintergrund `meshGradient` = Licht-Verlauf (WebGL, mit `animate` lebendig). Farben als Tokens, erste = Grundfarbe.
+- `effects`: `grain` (Filmkorn), `vignette`, `letterbox`, `lightSweep` (Lichtstreifen alle ~8 s), `float`
+  (Elemente mit `depth` schweben gegeneinander), `colorLook`. Stärken 0–1, skaliert mit `intensity` des Decks
+  (0.3 = Standard = Werte wie angegeben, 0 ≈ halb, 1 ≈ doppelt).
+- Formen: `glass` (0–1) macht Rechteck/Ellipse zu Milchglas; die Füllung tönt nur. Wirkt nur über Bildern/Verläufen.
+- Jedes Element: `depth` (−10…10, hinten…vorne), `tilt` `{ x, y }` in Grad für räumliche Neigung.
+- `chart`: `chart` = `bar` | `line` | `donut`, `data` = `[{ label, value, color? }]`, optional `unit`, `max`,
+  `showValues`, `showLabels`. Mit Build `grow` wachsen Balken, Linien zeichnen sich, Ringe füllen sich.
+- `lottie`: `src` = Bodymovin-JSON in `assets/`, `loop`, `speed`, `posterFrame`. Mit Einblend-Build startet die
+  Animation erst mit dem Build; Videos verhalten sich genauso.
+
+
 
 ## Eigene Komponenten
 

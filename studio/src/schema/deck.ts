@@ -49,6 +49,8 @@ export const BuildPreset = z.enum([
   'drawLine',
   'countUp',
   'kenBurns',
+  /** Charts: Balken wachsen, Linien zeichnen sich, Ringe füllen sich. */
+  'grow',
 ])
 
 export const Animation = z.strictObject({
@@ -76,8 +78,10 @@ const elementBase = {
   name: z.string().optional(),
   frame: Frame,
   opacity: unit.optional(),
-  /** Tiefe für Parallax/3D: negativ = hinten, positiv = vorne. */
+  /** Tiefe für Parallax/3D: negativ = hinten, positiv = vorne. Wirkt bei Kamerafahrten und mit dem Effekt "float". */
   depth: z.number().min(-10).max(10).optional(),
+  /** Räumliche Neigung in Grad (x = nach hinten kippen, y = seitlich drehen). */
+  tilt: z.strictObject({ x: z.number().min(-60).max(60).optional(), y: z.number().min(-60).max(60).optional() }).optional(),
   locked: z.boolean().optional(),
   hidden: z.boolean().optional(),
   build: Build.optional(),
@@ -138,6 +142,8 @@ export const ShapeElement = z.strictObject({
   fill: Color.optional(),
   stroke: Stroke.optional(),
   radius: z.number().min(0).optional(),
+  /** Milchglas: 0 = aus, 1 = stark. Die Füllung wird dann als Tönung genutzt. */
+  glass: unit.optional(),
 })
 
 export const IconElement = z.strictObject({
@@ -147,6 +153,38 @@ export const IconElement = z.strictObject({
   icon: z.string().min(1),
   color: Color.optional(),
   strokeWidth: z.number().positive().optional(),
+})
+
+export const ChartPoint = z.strictObject({
+  label: z.string(),
+  value: z.number(),
+  color: Color.optional(),
+})
+
+export const ChartElement = z.strictObject({
+  ...elementBase,
+  type: z.literal('chart'),
+  chart: z.enum(['bar', 'line', 'donut']),
+  data: z.array(ChartPoint).min(1).max(24),
+  /** Obergrenze der Skala. Ohne Angabe: größter Wert. */
+  max: z.number().positive().optional(),
+  /** Hauptfarbe (Balken, Linie). Einzelne Punkte können eigene Farben haben. */
+  color: Color.optional(),
+  showValues: z.boolean().optional(),
+  showLabels: z.boolean().optional(),
+  /** Anhang an Werte, z. B. "%" oder " €". */
+  unit: z.string().max(8).optional(),
+})
+
+export const LottieElement = z.strictObject({
+  ...elementBase,
+  type: z.literal('lottie'),
+  /** Lottie-JSON aus After Effects (Bodymovin), z. B. "assets/intro.json". */
+  src: assetPath,
+  loop: z.boolean().optional(),
+  speed: z.number().positive().max(8).optional(),
+  /** Bild für Vorschau und Screenshots (Frame-Nummer). Standard: letzter Frame. */
+  posterFrame: z.number().int().min(0).optional(),
 })
 
 export const CustomElement = z.strictObject({
@@ -163,6 +201,8 @@ export const Element = z.discriminatedUnion('type', [
   VideoElement,
   ShapeElement,
   IconElement,
+  ChartElement,
+  LottieElement,
   CustomElement,
 ])
 
@@ -192,6 +232,10 @@ export const Effect = z.discriminatedUnion('type', [
   z.strictObject({ type: z.literal('grain'), amount: unit }),
   z.strictObject({ type: z.literal('vignette'), amount: unit }),
   z.strictObject({ type: z.literal('letterbox'), amount: unit }),
+  /** Ein Lichtstreifen, der in Abständen über die Folie gleitet. */
+  z.strictObject({ type: z.literal('lightSweep'), amount: unit }),
+  /** Ruhiges Schweben: Elemente mit `depth` driften leicht gegeneinander – Tiefe ohne Kamerafahrt. */
+  z.strictObject({ type: z.literal('float'), amount: unit }),
   z.strictObject({
     type: z.literal('colorLook'),
     look: z.enum(['warm', 'cool', 'tealOrange', 'muted', 'mono']),
@@ -316,6 +360,9 @@ export type VideoElement = z.infer<typeof VideoElement>
 export type ShapeElement = z.infer<typeof ShapeElement>
 export type IconElement = z.infer<typeof IconElement>
 export type CustomElement = z.infer<typeof CustomElement>
+export type ChartElement = z.infer<typeof ChartElement>
+export type LottieElement = z.infer<typeof LottieElement>
+export type World = z.infer<typeof World>
 export type Background = z.infer<typeof Background>
 export type Effect = z.infer<typeof Effect>
 export type Transition = z.infer<typeof Transition>

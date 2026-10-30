@@ -4,6 +4,7 @@ import { useBrand, useLayouts, useTheme } from '../api/live'
 import { Canvas } from '../editor/Canvas'
 import { Inspector, type InspectorTab } from '../editor/Inspector'
 import { LayoutPicker } from '../editor/LayoutPicker'
+import { SpaceView } from '../editor/SpaceView'
 import { duplicateElement, duplicateSlide, newElement, slideFromLayout, type NewElementKind } from '../editor/model'
 import { useEditor, type Editor } from '../editor/useEditor'
 import { SlideView } from '../engine/SlideView'
@@ -35,7 +36,7 @@ export function DeckView({ name, slideId, brandIssues }: { name: string; slideId
     )
   }
   return (
-    <ThemeScope theme={doc?.theme}>
+    <ThemeScope theme={doc?.theme} intensity={doc?.intensity}>
       <EditorShell name={name} slideId={slideId} editor={editor} brandIssues={brandIssues} />
     </ThemeScope>
   )
@@ -47,6 +48,7 @@ const INSERT: { kind: NewElementKind; icon: IconName; label: string }[] = [
   { kind: 'line', icon: 'line', label: 'Linie' },
   { kind: 'icon', icon: 'icon', label: 'Icon' },
   { kind: 'image', icon: 'image', label: 'Bild' },
+  { kind: 'chart', icon: 'chart', label: 'Chart' },
 ]
 
 function EditorShell({
@@ -68,6 +70,7 @@ function EditorShell({
   const [editing, setEditing] = useState<string | null>(null)
   const [tab, setTab] = useState<InspectorTab>('folie')
   const [picker, setPicker] = useState(false)
+  const [space, setSpace] = useState(false)
   const clipboard = useRef<Element | null>(null)
   const canvasRef = useRef<HTMLDivElement>(null)
 
@@ -228,6 +231,10 @@ function EditorShell({
               </button>
             ))}
           </div>
+          <button className={`tool ${space ? 'is-on' : ''}`} title="Raum-Ansicht: Folien für Kamerafahrten anordnen" onClick={() => setSpace((s) => !s)} disabled={!deck}>
+            <Icon name="space" />
+            <span>Raum</span>
+          </button>
           <span className={`save-status save-status--${editor.status}`} title={editor.saveIssues.map((i) => i.message).join('\n')}>
             {status}
           </span>
@@ -308,6 +315,16 @@ function EditorShell({
           <div className="deck__banner">
             <IssueList title="brand/brand.json ist ungültig – Standardfarben aktiv" issues={brandIssues} />
           </div>
+        )}
+        {deck && space && (
+          <SpaceView
+            deck={deck}
+            deckName={name}
+            current={index}
+            edit={edit}
+            onSelect={(id) => goToSlide(id)}
+            onClose={() => setSpace(false)}
+          />
         )}
         {deck && slide && (
           <div className="deck__stage">

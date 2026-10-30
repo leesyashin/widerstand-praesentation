@@ -7,6 +7,7 @@ import { Stage } from '../engine/Stage'
 import { ThemeScope } from '../engine/ThemeScope'
 import { createSlideTimeline, type SlideTimeline } from '../engine/timeline'
 import { matchPairs, runTransition } from '../engine/transitions'
+import { worldOf } from '../engine/world'
 import type { Deck } from '../schema/deck'
 import './Present.css'
 
@@ -15,7 +16,7 @@ export function Present({ name, slideId }: { name: string; slideId?: string }) {
   const live = useDeck(name)
   if (!live.value) return <div className="present" />
   return (
-    <ThemeScope theme={live.value.theme}>
+    <ThemeScope theme={live.value.theme} intensity={live.value.intensity}>
       <Show deck={live.value} name={name} startId={slideId} />
     </ThemeScope>
   )
@@ -91,6 +92,8 @@ function Show({ deck, name, startId }: { deck: Deck; name: string; startId?: str
         styles,
         width: deck.format.width,
         height: deck.format.height,
+        fromWorld: worldOf(fromSlide, fromIndex!, deck),
+        toWorld: worldOf(slide, index, deck),
       })
       transition.current = run.timeline
       run.timeline.eventCallback('onComplete', () => {

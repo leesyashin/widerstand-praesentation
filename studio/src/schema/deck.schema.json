@@ -256,6 +256,44 @@
                   "properties": {
                     "type": {
                       "type": "string",
+                      "const": "lightSweep"
+                    },
+                    "amount": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "amount"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "float"
+                    },
+                    "amount": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "amount"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
                       "const": "colorLook"
                     },
                     "look": {
@@ -417,6 +455,22 @@
                       "minimum": -10,
                       "maximum": 10
                     },
+                    "tilt": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "minimum": -60,
+                          "maximum": 60
+                        },
+                        "y": {
+                          "type": "number",
+                          "minimum": -60,
+                          "maximum": 60
+                        }
+                      },
+                      "additionalProperties": false
+                    },
                     "locked": {
                       "type": "boolean"
                     },
@@ -441,7 +495,8 @@
                                 "lineByLine",
                                 "drawLine",
                                 "countUp",
-                                "kenBurns"
+                                "kenBurns",
+                                "grow"
                               ]
                             },
                             "duration": {
@@ -495,7 +550,8 @@
                                 "lineByLine",
                                 "drawLine",
                                 "countUp",
-                                "kenBurns"
+                                "kenBurns",
+                                "grow"
                               ]
                             },
                             "duration": {
@@ -675,6 +731,22 @@
                       "minimum": -10,
                       "maximum": 10
                     },
+                    "tilt": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "minimum": -60,
+                          "maximum": 60
+                        },
+                        "y": {
+                          "type": "number",
+                          "minimum": -60,
+                          "maximum": 60
+                        }
+                      },
+                      "additionalProperties": false
+                    },
                     "locked": {
                       "type": "boolean"
                     },
@@ -699,7 +771,8 @@
                                 "lineByLine",
                                 "drawLine",
                                 "countUp",
-                                "kenBurns"
+                                "kenBurns",
+                                "grow"
                               ]
                             },
                             "duration": {
@@ -753,7 +826,8 @@
                                 "lineByLine",
                                 "drawLine",
                                 "countUp",
-                                "kenBurns"
+                                "kenBurns",
+                                "grow"
                               ]
                             },
                             "duration": {
@@ -912,6 +986,22 @@
                       "minimum": -10,
                       "maximum": 10
                     },
+                    "tilt": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "minimum": -60,
+                          "maximum": 60
+                        },
+                        "y": {
+                          "type": "number",
+                          "minimum": -60,
+                          "maximum": 60
+                        }
+                      },
+                      "additionalProperties": false
+                    },
                     "locked": {
                       "type": "boolean"
                     },
@@ -936,7 +1026,8 @@
                                 "lineByLine",
                                 "drawLine",
                                 "countUp",
-                                "kenBurns"
+                                "kenBurns",
+                                "grow"
                               ]
                             },
                             "duration": {
@@ -990,7 +1081,8 @@
                                 "lineByLine",
                                 "drawLine",
                                 "countUp",
-                                "kenBurns"
+                                "kenBurns",
+                                "grow"
                               ]
                             },
                             "duration": {
@@ -1145,6 +1237,22 @@
                       "minimum": -10,
                       "maximum": 10
                     },
+                    "tilt": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "minimum": -60,
+                          "maximum": 60
+                        },
+                        "y": {
+                          "type": "number",
+                          "minimum": -60,
+                          "maximum": 60
+                        }
+                      },
+                      "additionalProperties": false
+                    },
                     "locked": {
                       "type": "boolean"
                     },
@@ -1169,7 +1277,8 @@
                                 "lineByLine",
                                 "drawLine",
                                 "countUp",
-                                "kenBurns"
+                                "kenBurns",
+                                "grow"
                               ]
                             },
                             "duration": {
@@ -1223,7 +1332,8 @@
                                 "lineByLine",
                                 "drawLine",
                                 "countUp",
-                                "kenBurns"
+                                "kenBurns",
+                                "grow"
                               ]
                             },
                             "duration": {
@@ -1314,6 +1424,11 @@
                     "radius": {
                       "type": "number",
                       "minimum": 0
+                    },
+                    "glass": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
                     }
                   },
                   "required": [
@@ -1379,6 +1494,22 @@
                       "minimum": -10,
                       "maximum": 10
                     },
+                    "tilt": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "minimum": -60,
+                          "maximum": 60
+                        },
+                        "y": {
+                          "type": "number",
+                          "minimum": -60,
+                          "maximum": 60
+                        }
+                      },
+                      "additionalProperties": false
+                    },
                     "locked": {
                       "type": "boolean"
                     },
@@ -1403,7 +1534,8 @@
                                 "lineByLine",
                                 "drawLine",
                                 "countUp",
-                                "kenBurns"
+                                "kenBurns",
+                                "grow"
                               ]
                             },
                             "duration": {
@@ -1457,7 +1589,8 @@
                                 "lineByLine",
                                 "drawLine",
                                 "countUp",
-                                "kenBurns"
+                                "kenBurns",
+                                "grow"
                               ]
                             },
                             "duration": {
@@ -1590,6 +1723,22 @@
                       "minimum": -10,
                       "maximum": 10
                     },
+                    "tilt": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "minimum": -60,
+                          "maximum": 60
+                        },
+                        "y": {
+                          "type": "number",
+                          "minimum": -60,
+                          "maximum": 60
+                        }
+                      },
+                      "additionalProperties": false
+                    },
                     "locked": {
                       "type": "boolean"
                     },
@@ -1614,7 +1763,8 @@
                                 "lineByLine",
                                 "drawLine",
                                 "countUp",
-                                "kenBurns"
+                                "kenBurns",
+                                "grow"
                               ]
                             },
                             "duration": {
@@ -1668,7 +1818,511 @@
                                 "lineByLine",
                                 "drawLine",
                                 "countUp",
-                                "kenBurns"
+                                "kenBurns",
+                                "grow"
+                              ]
+                            },
+                            "duration": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 20000
+                            },
+                            "delay": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 20000
+                            },
+                            "easing": {
+                              "type": "string",
+                              "enum": [
+                                "smooth",
+                                "spring",
+                                "linear",
+                                "in",
+                                "out",
+                                "inOut"
+                              ]
+                            },
+                            "direction": {
+                              "type": "string",
+                              "enum": [
+                                "up",
+                                "down",
+                                "left",
+                                "right"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "preset"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "trigger": {
+                          "type": "string",
+                          "enum": [
+                            "click",
+                            "withPrevious",
+                            "afterPrevious"
+                          ]
+                        },
+                        "order": {
+                          "type": "number"
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "chart"
+                    },
+                    "chart": {
+                      "type": "string",
+                      "enum": [
+                        "bar",
+                        "line",
+                        "donut"
+                      ]
+                    },
+                    "data": {
+                      "minItems": 1,
+                      "maxItems": 24,
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "number"
+                          },
+                          "color": {
+                            "type": "string",
+                            "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "max": {
+                      "type": "number",
+                      "exclusiveMinimum": 0
+                    },
+                    "color": {
+                      "type": "string",
+                      "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+                    },
+                    "showValues": {
+                      "type": "boolean"
+                    },
+                    "showLabels": {
+                      "type": "boolean"
+                    },
+                    "unit": {
+                      "type": "string",
+                      "maxLength": 8
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "frame",
+                    "type",
+                    "chart",
+                    "data"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                    },
+                    "match": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "frame": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number"
+                        },
+                        "y": {
+                          "type": "number"
+                        },
+                        "w": {
+                          "type": "number",
+                          "exclusiveMinimum": 0
+                        },
+                        "h": {
+                          "type": "number",
+                          "exclusiveMinimum": 0
+                        },
+                        "rotation": {
+                          "type": "number",
+                          "minimum": -360,
+                          "maximum": 360
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y",
+                        "w",
+                        "h"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "opacity": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "depth": {
+                      "type": "number",
+                      "minimum": -10,
+                      "maximum": 10
+                    },
+                    "tilt": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "minimum": -60,
+                          "maximum": 60
+                        },
+                        "y": {
+                          "type": "number",
+                          "minimum": -60,
+                          "maximum": 60
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "locked": {
+                      "type": "boolean"
+                    },
+                    "hidden": {
+                      "type": "boolean"
+                    },
+                    "build": {
+                      "type": "object",
+                      "properties": {
+                        "in": {
+                          "type": "object",
+                          "properties": {
+                            "preset": {
+                              "type": "string",
+                              "enum": [
+                                "fade",
+                                "rise",
+                                "blurRise",
+                                "scaleIn",
+                                "maskReveal",
+                                "wordByWord",
+                                "lineByLine",
+                                "drawLine",
+                                "countUp",
+                                "kenBurns",
+                                "grow"
+                              ]
+                            },
+                            "duration": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 20000
+                            },
+                            "delay": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 20000
+                            },
+                            "easing": {
+                              "type": "string",
+                              "enum": [
+                                "smooth",
+                                "spring",
+                                "linear",
+                                "in",
+                                "out",
+                                "inOut"
+                              ]
+                            },
+                            "direction": {
+                              "type": "string",
+                              "enum": [
+                                "up",
+                                "down",
+                                "left",
+                                "right"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "preset"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "out": {
+                          "type": "object",
+                          "properties": {
+                            "preset": {
+                              "type": "string",
+                              "enum": [
+                                "fade",
+                                "rise",
+                                "blurRise",
+                                "scaleIn",
+                                "maskReveal",
+                                "wordByWord",
+                                "lineByLine",
+                                "drawLine",
+                                "countUp",
+                                "kenBurns",
+                                "grow"
+                              ]
+                            },
+                            "duration": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 20000
+                            },
+                            "delay": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 20000
+                            },
+                            "easing": {
+                              "type": "string",
+                              "enum": [
+                                "smooth",
+                                "spring",
+                                "linear",
+                                "in",
+                                "out",
+                                "inOut"
+                              ]
+                            },
+                            "direction": {
+                              "type": "string",
+                              "enum": [
+                                "up",
+                                "down",
+                                "left",
+                                "right"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "preset"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "trigger": {
+                          "type": "string",
+                          "enum": [
+                            "click",
+                            "withPrevious",
+                            "afterPrevious"
+                          ]
+                        },
+                        "order": {
+                          "type": "number"
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "type": {
+                      "type": "string",
+                      "const": "lottie"
+                    },
+                    "src": {
+                      "type": "string",
+                      "pattern": "^(assets|brand)\\/[^\\s]+$"
+                    },
+                    "loop": {
+                      "type": "boolean"
+                    },
+                    "speed": {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "maximum": 8
+                    },
+                    "posterFrame": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "frame",
+                    "type",
+                    "src"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                    },
+                    "match": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "frame": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number"
+                        },
+                        "y": {
+                          "type": "number"
+                        },
+                        "w": {
+                          "type": "number",
+                          "exclusiveMinimum": 0
+                        },
+                        "h": {
+                          "type": "number",
+                          "exclusiveMinimum": 0
+                        },
+                        "rotation": {
+                          "type": "number",
+                          "minimum": -360,
+                          "maximum": 360
+                        }
+                      },
+                      "required": [
+                        "x",
+                        "y",
+                        "w",
+                        "h"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "opacity": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "depth": {
+                      "type": "number",
+                      "minimum": -10,
+                      "maximum": 10
+                    },
+                    "tilt": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number",
+                          "minimum": -60,
+                          "maximum": 60
+                        },
+                        "y": {
+                          "type": "number",
+                          "minimum": -60,
+                          "maximum": 60
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "locked": {
+                      "type": "boolean"
+                    },
+                    "hidden": {
+                      "type": "boolean"
+                    },
+                    "build": {
+                      "type": "object",
+                      "properties": {
+                        "in": {
+                          "type": "object",
+                          "properties": {
+                            "preset": {
+                              "type": "string",
+                              "enum": [
+                                "fade",
+                                "rise",
+                                "blurRise",
+                                "scaleIn",
+                                "maskReveal",
+                                "wordByWord",
+                                "lineByLine",
+                                "drawLine",
+                                "countUp",
+                                "kenBurns",
+                                "grow"
+                              ]
+                            },
+                            "duration": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 20000
+                            },
+                            "delay": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 20000
+                            },
+                            "easing": {
+                              "type": "string",
+                              "enum": [
+                                "smooth",
+                                "spring",
+                                "linear",
+                                "in",
+                                "out",
+                                "inOut"
+                              ]
+                            },
+                            "direction": {
+                              "type": "string",
+                              "enum": [
+                                "up",
+                                "down",
+                                "left",
+                                "right"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "preset"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "out": {
+                          "type": "object",
+                          "properties": {
+                            "preset": {
+                              "type": "string",
+                              "enum": [
+                                "fade",
+                                "rise",
+                                "blurRise",
+                                "scaleIn",
+                                "maskReveal",
+                                "wordByWord",
+                                "lineByLine",
+                                "drawLine",
+                                "countUp",
+                                "kenBurns",
+                                "grow"
                               ]
                             },
                             "duration": {

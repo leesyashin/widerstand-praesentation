@@ -41,7 +41,7 @@ export function slideFromLayout(layout: Layout, deck: Deck, theme: Theme | null)
   return slide
 }
 
-export type NewElementKind = 'text' | 'rect' | 'ellipse' | 'line' | 'icon' | 'image'
+export type NewElementKind = 'text' | 'rect' | 'ellipse' | 'line' | 'icon' | 'image' | 'chart'
 
 /** Neues Element mittig auf der Folie. */
 export function newElement(kind: NewElementKind, slide: Slide, deck: Deck): Element {
@@ -79,6 +79,19 @@ export function newElement(kind: NewElementKind, slide: Slide, deck: Deck): Elem
       }
     case 'icon':
       return { id: uniqueId('icon', taken), type: 'icon', icon: 'camera', color: 'brand.text', frame: center(160, 160) }
+    case 'chart':
+      return {
+        id: uniqueId('chart', taken),
+        type: 'chart',
+        chart: 'bar',
+        data: [
+          { label: '2023', value: 40 },
+          { label: '2024', value: 65 },
+          { label: '2025', value: 90 },
+        ],
+        frame: center(900, 520),
+        build: { in: { preset: 'grow' }, trigger: 'click' },
+      }
     case 'image':
       return {
         id: uniqueId('bild', taken),

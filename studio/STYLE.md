@@ -71,6 +71,13 @@ Filmische Mittel (Grain, Light Leaks, Kamerafahrten, Letterbox) sind Gewürz, ni
 - **Signature: Licht-Verlauf.** Titel- und Kapitel-Folien bekommen den Mesh-Gradient aus `brand.signature.background`
   (Silbertöne, `animate: true`). Auf Inhaltsfolien ruhige Flächen (`brand.background`).
 - Grain: 0.08–0.15. Vignette: 0.2–0.4. Letterbox nur für Bild-/Video-Momente.
+- Licht-Sweep: 0.3–0.6, nur auf Titel- und Kapitelfolien – er ist ein Signature-Moment, kein Dauerzustand.
+- Schweben (`float`): 0.3–0.7 mit wenigen Elementen mit `depth` (Hintergrund −2…−4, Karten +2…+5). Nie Text bewegen,
+  der gelesen werden muss.
+- Neigung (`tilt`): höchstens 15–25°, für Bild- und Geräte-Mockups, nicht für Text.
+- Charts: eine Aussage pro Chart, Akzentfarbe für den wichtigsten Wert, Rest gedämpft (`brand.textMuted`).
+- Kamerafahrt: Folien eines Kapitels nah beieinander, Kapitel weiter auseinander – die Entfernung erzählt die Struktur.
+  Höchstens leichte Drehungen (≤ 10°). Light Leak nur an 1–2 Stellen pro Deck.
 - Glas & Blur für Karten über Bildern – nie über einfarbigen Flächen.
 - Farblooks pro Kapitel einheitlich halten.
 - Deck-Intensität (`intensity`) standardmäßig 0.3.

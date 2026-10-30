@@ -23,10 +23,8 @@ export function Stage({
   useLayoutEffect(() => {
     const el = ref.current
     if (!el) return
-    const update = () => {
-      const { width, height } = el.getBoundingClientRect()
-      setScale(Math.min(width / format.width, height / format.height))
-    }
+    // Layout-Größe statt getBoundingClientRect: bleibt auch in gedrehten/skalierten Containern korrekt.
+    const update = () => setScale(Math.min(el.clientWidth / format.width, el.clientHeight / format.height))
     update()
     const ro = new ResizeObserver(update)
     ro.observe(el)

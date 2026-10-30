@@ -222,7 +222,8 @@
             "lineByLine",
             "drawLine",
             "countUp",
-            "kenBurns"
+            "kenBurns",
+            "grow"
           ]
         },
         "transition": {

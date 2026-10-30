@@ -1,6 +1,7 @@
 import { gsap } from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
 import type { Animation, Element, Slide } from '../schema/deck'
+import { BUILD_IN_EVENT } from './buildEvents'
 import { formatGermanNumber, parseGermanNumber } from './text'
 
 gsap.registerPlugin(CustomEase)
@@ -31,6 +32,7 @@ export const PRESET_DURATION: Record<Animation['preset'], number> = {
   drawLine: 1000,
   countUp: 1600,
   kenBurns: 6000,
+  grow: 1400,
 }
 
 /* ---------- Schritte berechnen ---------- */
@@ -127,6 +129,7 @@ function hiddenVars(anim: Animation): Vars {
     case 'blurRise':
       return { opacity: 0, ...offset(anim.direction, 50), filter: 'blur(16px)' }
     case 'scaleIn':
+    case 'grow':
       return { opacity: 0, scale: 0.92 }
     case 'maskReveal':
       return { clipPath: maskFrom(anim.direction) }
@@ -138,13 +141,18 @@ function hiddenVars(anim: Animation): Vars {
 const shownVars: Vars = { opacity: 1, x: 0, y: 0, scale: 1, filter: 'blur(0px)', clipPath: MASK_OPEN }
 
 function shownFor(hidden: Vars): Vars {
-  return Object.fromEntries(Object.keys(hidden).map((k) => [k, shownVars[k]]))
+  const shown: Vars = Object.fromEntries(Object.keys(hidden).map((k) => [k, shownVars[k]]))
+  // Filter und Masken nach dem Einblenden entfernen: sie würden sonst Glas-Effekte (backdrop-filter) darunter abschneiden.
+  const clear = ['filter', 'clipPath'].filter((k) => k in hidden)
+  if (clear.length) shown.clearProps = clear.join(',')
+  return shown
 }
 
 /** Fügt eine Einblendung ein. `at` = absolute Startzeit in der Timeline. */
 function addIn(tl: gsap.core.Timeline, target: HTMLElement, item: BuildItem, at: number) {
   const { anim, duration } = item
   const e = ease(anim.easing)
+  tl.call(() => void target.dispatchEvent(new CustomEvent(BUILD_IN_EVENT)), undefined, at)
   switch (anim.preset) {
     case 'wordByWord':
     case 'lineByLine': {
@@ -155,7 +163,7 @@ function addIn(tl: gsap.core.Timeline, target: HTMLElement, item: BuildItem, at:
       tl.fromTo(
         parts,
         { opacity: 0, ...offset(anim.direction, 24), filter: 'blur(8px)' },
-        { opacity: 1, x: 0, y: 0, filter: 'blur(0px)', duration: each, ease: e, stagger },
+        { opacity: 1, x: 0, y: 0, filter: 'blur(0px)', clearProps: 'filter', duration: each, ease: e, stagger },
         at,
       )
       return
@@ -202,6 +210,10 @@ function addIn(tl: gsap.core.Timeline, target: HTMLElement, item: BuildItem, at:
       )
       return
     }
+    case 'grow': {
+      if (!addChartGrow(tl, target, duration, at)) break
+      return
+    }
     case 'kenBurns': {
       tl.fromTo(target, { opacity: 0 }, { opacity: 1, duration: Math.min(0.8, duration), ease: 'none' }, at)
       tl.fromTo(target, { scale: 1.12 }, { scale: 1, duration, ease: 'power1.out' }, at)
@@ -210,6 +222,46 @@ function addIn(tl: gsap.core.Timeline, target: HTMLElement, item: BuildItem, at:
   }
   const hidden = hiddenVars(anim)
   tl.fromTo(target, hidden, { ...shownFor(hidden), duration, ease: e }, at)
+}
+
+/** Chart-Aufbau: Balken wachsen, Linien und Ringe zeichnen sich, Werte blenden nach. */
+function addChartGrow(tl: gsap.core.Timeline, target: HTMLElement, duration: number, at: number): boolean {
+  const bars = target.querySelectorAll('.chart-bar')
+  const lines = target.querySelectorAll<SVGPathElement>('.chart-line')
+  const segs = target.querySelectorAll<SVGCircleElement>('.chart-seg')
+  if (!bars.length && !lines.length && !segs.length) return false
+  const texts = target.querySelectorAll('.chart-value, .chart-label')
+  const main = duration * 0.75
+  // Achsen und Ring-Spur kommen mit einem kurzen Einblenden des ganzen Charts.
+  tl.fromTo(target, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: 'none' }, at)
+  if (bars.length) {
+    tl.fromTo(
+      bars,
+      { scaleY: 0, transformOrigin: '50% 100%' },
+      { scaleY: 1, duration: main * 0.7, ease: 'expo.out', stagger: (main * 0.3) / Math.max(1, bars.length - 1) },
+      at,
+    )
+  }
+  lines.forEach((line) => {
+    const len = line.getTotalLength()
+    tl.fromTo(line, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration: main, ease: 'power2.inOut' }, at)
+  })
+  const dots = target.querySelectorAll('.chart-dot')
+  if (dots.length) {
+    tl.fromTo(dots, { scale: 0, transformOrigin: '50% 50%' }, { scale: 1, duration: 0.4, ease: 'back.out(2)', stagger: main / Math.max(1, dots.length) }, at + 0.1)
+  }
+  const area = target.querySelectorAll('.chart-area')
+  if (area.length) tl.fromTo(area, { opacity: 0 }, { opacity: 1, duration: main * 0.6, ease: 'none' }, at + main * 0.4)
+  let offset = 0
+  segs.forEach((seg) => {
+    const len = Number(seg.dataset.len ?? 0)
+    const circ = Number(seg.dataset.circ ?? 0)
+    const part = segs.length ? main / segs.length : main
+    tl.fromTo(seg, { strokeDasharray: `0 ${circ}` }, { strokeDasharray: `${len} ${circ}`, duration: part, ease: 'power2.inOut' }, at + offset)
+    offset += part
+  })
+  if (texts.length) tl.fromTo(texts, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: 'none', stagger: 0.04 }, at + main * 0.6)
+  return true
 }
 
 function addOut(tl: gsap.core.Timeline, target: HTMLElement, item: BuildItem, at: number) {

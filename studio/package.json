@@ -17,6 +17,7 @@
   "dependencies": {
     "gsap": "^3.15.0",
     "immer": "^11.2.9",
+    "lottie-web": "^5.13.0",
     "lucide": "^1.65.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",

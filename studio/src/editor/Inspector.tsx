@@ -32,6 +32,7 @@ const PRESETS: { value: Animation['preset']; label: string }[] = [
   { value: 'drawLine', label: 'Linie zeichnen' },
   { value: 'countUp', label: 'Hochzählen' },
   { value: 'kenBurns', label: 'Ken Burns' },
+  { value: 'grow', label: 'Aufbauen (Charts)' },
 ]
 
 const EASINGS: { value: NonNullable<Animation['easing']>; label: string }[] = [
@@ -65,8 +66,8 @@ export const TRANSITIONS: { value: Transition['type']; label: string }[] = [
   { value: 'zoom', label: 'Zoom' },
   { value: 'maskReveal', label: 'Kreis-Reveal' },
   { value: 'whipPan', label: 'Whip-Pan' },
-  { value: 'camera', label: 'Kamerafahrt (Vorschau)' },
-  { value: 'lightLeak', label: 'Light Leak (Vorschau)' },
+  { value: 'camera', label: 'Kamerafahrt' },
+  { value: 'lightLeak', label: 'Light Leak' },
 ]
 
 export function Inspector(props: Props) {
@@ -114,6 +115,12 @@ function useElementEdit({ deck, slide, element, edit }: Props) {
 
 /* ---------- Stil ---------- */
 
+function setTilt(e: Draft<Element>, axis: 'x' | 'y', v: number | undefined) {
+  const tilt = { ...e.tilt, [axis]: v || undefined }
+  if (!tilt.x && !tilt.y) delete e.tilt
+  else e.tilt = tilt
+}
+
 function ElementStyle(props: Props & { element: Element }) {
   const { element: el, brand } = props
   const set = useElementEdit(props)
@@ -146,6 +153,38 @@ function ElementStyle(props: Props & { element: Element }) {
                   else delete e.frame.rotation
                 }, 'rot')
               }
+            />
+          </Row>
+        </div>
+        <div className="grid2">
+          <Row label="Tiefe">
+            <NumberField
+              value={el.depth}
+              placeholder="0"
+              step={0.5}
+              min={-10}
+              max={10}
+              onChange={(v) => set((e) => void (e.depth = v || undefined), 'depth')}
+            />
+          </Row>
+          <Row label="Kippen">
+            <NumberField
+              value={el.tilt?.x}
+              placeholder="0"
+              suffix="°"
+              min={-60}
+              max={60}
+              onChange={(v) => set((e) => setTilt(e, 'x', v), 'tiltx')}
+            />
+          </Row>
+          <Row label="Wenden">
+            <NumberField
+              value={el.tilt?.y}
+              placeholder="0"
+              suffix="°"
+              min={-60}
+              max={60}
+              onChange={(v) => set((e) => setTilt(e, 'y', v), 'tilty')}
             />
           </Row>
         </div>
@@ -322,6 +361,11 @@ function ElementStyle(props: Props & { element: Element }) {
               />
             </Row>
           )}
+          {(el.shape === 'rect' || el.shape === 'ellipse') && (
+            <Row label="Glas">
+              <Slider value={el.glass ?? 0} onChange={(v) => set((x) => void (x.type === 'shape' && (x.glass = v > 0 ? v : undefined)), 'glass')} />
+            </Row>
+          )}
           {el.shape === 'rect' && (
             <Row label="Ecken">
               <NumberField value={el.radius ?? 0} min={0} onChange={(v) => set((x) => void (x.type === 'shape' && (x.radius = v || undefined)), 'radius')} />
@@ -347,6 +391,21 @@ function ElementStyle(props: Props & { element: Element }) {
         </Group>
       )}
 
+      {el.type === 'chart' && <ChartFields {...props} element={el} />}
+
+      {el.type === 'lottie' && (
+        <Group title="Lottie">
+          <Row label="Datei">
+            <TextField mono value={el.src} placeholder="assets/animation.json" onChange={(v) => set((x) => void (x.type === 'lottie' && (x.src = v)), 'src')} />
+          </Row>
+          <Row label="Tempo">
+            <NumberField value={el.speed ?? 1} step={0.1} min={0.1} max={8} onChange={(v) => set((x) => void (x.type === 'lottie' && (x.speed = v === 1 ? undefined : v)), 'speed')} />
+          </Row>
+          <Toggle label="Endlos wiederholen" value={Boolean(el.loop)} onChange={(v) => set((x) => void (x.type === 'lottie' && (x.loop = v || undefined)))} />
+          <p className="field-hint muted">Export aus After Effects mit Bodymovin als .json in den assets-Ordner legen.</p>
+        </Group>
+      )}
+
       {el.type === 'custom' && (
         <Group title={`Komponente ${el.component}`}>
           <PropsEditor value={el.props ?? {}} onChange={(p) => set((x) => void (x.type === 'custom' && (x.props = p)), 'props')} />
@@ -369,6 +428,74 @@ function ElementStyle(props: Props & { element: Element }) {
         <Toggle label="Gesperrt" value={Boolean(el.locked)} onChange={(v) => set((x) => void (x.locked = v || undefined))} />
       </Group>
     </>
+  )
+}
+
+/** Chart-Daten: Art, Werte, Beschriftungen. */
+function ChartFields(props: Props & { element: Extract<Element, { type: 'chart' }> }) {
+  const { element: el, brand } = props
+  const set = useElementEdit(props)
+  const chart = (recipe: (c: Draft<Extract<Element, { type: 'chart' }>>) => void, merge?: string) =>
+    set((x) => {
+      if (x.type === 'chart') recipe(x)
+    }, merge)
+  return (
+    <Group title="Chart">
+      <Row label="Art">
+        <Segmented
+          value={el.chart}
+          onChange={(v) => chart((c) => void (c.chart = v))}
+          options={[
+            { value: 'bar', label: 'Balken' },
+            { value: 'line', label: 'Linie' },
+            { value: 'donut', label: 'Ring' },
+          ]}
+        />
+      </Row>
+      <div className="chart-data">
+        {el.data.map((d, i) => (
+          <div key={i} className="chart-data__row">
+            <input
+              className="field field--sm"
+              value={d.label}
+              placeholder="Beschriftung"
+              onChange={(e) => chart((c) => void (c.data[i] && (c.data[i].label = e.target.value)), `label-${i}`)}
+            />
+            <NumberField value={d.value} onChange={(v) => chart((c) => void (c.data[i] && (c.data[i].value = v ?? 0)), `value-${i}`)} />
+            <button
+              type="button"
+              className="btn btn--plain btn--icon"
+              title="Wert entfernen"
+              disabled={el.data.length <= 1}
+              onClick={() => chart((c) => void c.data.splice(i, 1))}
+            >
+              ×
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          className="btn"
+          disabled={el.data.length >= 24}
+          onClick={() => chart((c) => void c.data.push({ label: `Wert ${c.data.length + 1}`, value: c.data[c.data.length - 1]?.value ?? 10 }))}
+        >
+          + Wert
+        </button>
+      </div>
+      <div className="grid2">
+        <Row label="Einheit">
+          <TextField value={el.unit ?? ''} placeholder="%" onChange={(v) => chart((c) => void (c.unit = v || undefined), 'unit')} />
+        </Row>
+        <Row label="Max">
+          <NumberField value={el.max} placeholder="auto" min={0} onChange={(v) => chart((c) => void (c.max = v || undefined), 'max')} />
+        </Row>
+      </div>
+      <Row label="Farbe">
+        <ColorField brand={brand} allowNone value={el.color} onChange={(v) => chart((c) => void (c.color = v), 'color')} />
+      </Row>
+      <Toggle label="Werte zeigen" value={el.showValues ?? true} onChange={(v) => chart((c) => void (c.showValues = v ? undefined : false))} />
+      <Toggle label="Beschriftungen zeigen" value={el.showLabels ?? true} onChange={(v) => chart((c) => void (c.showLabels = v ? undefined : false))} />
+    </Group>
   )
 }
 
@@ -566,7 +693,7 @@ function SlideTab({ deck, slide, edit, brand }: Props) {
       if (s) recipe(s)
     }, merge ? `${merge}-${slide.id}` : undefined)
   const effect = <T extends Effect['type']>(type: T) => slide.effects?.find((e) => e.type === type) as Extract<Effect, { type: T }> | undefined
-  const setEffect = (type: 'grain' | 'vignette' | 'letterbox', amount: number) =>
+  const setEffect = (type: 'grain' | 'vignette' | 'letterbox' | 'lightSweep' | 'float', amount: number) =>
     setSlide((s) => {
       const list: Effect[] = (s.effects ?? []).filter((e) => e.type !== type)
       if (amount > 0) list.push({ type, amount })
@@ -691,6 +818,13 @@ function SlideTab({ deck, slide, edit, brand }: Props) {
         <Row label="Kinobalken">
           <Slider value={effect('letterbox')?.amount ?? 0} onChange={(v) => setEffect('letterbox', v)} />
         </Row>
+        <Row label="Licht-Sweep">
+          <Slider value={effect('lightSweep')?.amount ?? 0} onChange={(v) => setEffect('lightSweep', v)} />
+        </Row>
+        <Row label="Schweben">
+          <Slider value={effect('float')?.amount ?? 0} onChange={(v) => setEffect('float', v)} />
+        </Row>
+        <p className="field-hint muted">Schweben bewegt Elemente mit „Tiefe“ (Stil-Tab) sanft gegeneinander.</p>
         <Row label="Farblook">
           <Select
             value={look?.look ?? 'none'}
@@ -712,6 +846,37 @@ function SlideTab({ deck, slide, edit, brand }: Props) {
             }
           />
         </Row>
+      </Group>
+
+      <Group title="Raum (Kamerafahrt)">
+        <div className="grid2">
+          {(['x', 'y', 'z', 'rotate', 'scale'] as const).map((k) => (
+            <Row key={k} label={{ x: 'X', y: 'Y', z: 'Tiefe', rotate: 'Drehung', scale: 'Maßstab' }[k]}>
+              <NumberField
+                value={slide.world?.[k]}
+                placeholder={k === 'scale' ? '1' : k === 'x' ? String(Math.round(si * deck.format.width * 1.25)) : '0'}
+                step={k === 'scale' ? 0.1 : 10}
+                min={k === 'scale' ? 0.1 : undefined}
+                onChange={(v) =>
+                  setSlide((s) => {
+                    const w = { x: si * deck.format.width * 1.25, y: 0, ...s.world }
+                    if (v === undefined && k !== 'x' && k !== 'y') delete w[k]
+                    else w[k] = v ?? 0
+                    s.world = w
+                  }, `world-${k}`)
+                }
+              />
+            </Row>
+          ))}
+        </div>
+        <p className="field-hint muted">Wirkt mit dem Übergang „Kamerafahrt“. Anordnen geht am einfachsten in der Raum-Ansicht.</p>
+      </Group>
+
+      <Group title="Deck">
+        <Row label="Intensität">
+          <Slider value={deck.intensity ?? 0.3} onChange={(v) => edit((d) => void (d.intensity = Math.round(v * 100) / 100), 'intensity')} />
+        </Row>
+        <p className="field-hint muted">Ruhig ↔ filmisch: skaliert Korn, Vignette, Licht und Bewegung im ganzen Deck.</p>
       </Group>
 
       <Group title="Notizen">

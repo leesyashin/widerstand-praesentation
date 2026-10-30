@@ -458,3 +458,99 @@ select.field--sm {
   color: var(--text-3);
   font-variant-numeric: tabular-nums;
 }
+
+.chart-data {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chart-data__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 72px 24px;
+  gap: 4px;
+  align-items: center;
+}
+
+/* ---------- Raum-Ansicht ---------- */
+
+.space-view {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  background: color-mix(in srgb, var(--canvas) 92%, black);
+  animation: pop-in var(--dur-base) var(--ease-out);
+}
+
+.space-view__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  border-bottom: var(--hairline) solid var(--separator);
+}
+
+.space-view__actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.space-view__world {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.space-view__path {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.space-view__path path {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 6;
+  opacity: 0.7;
+}
+
+.space-card {
+  position: absolute;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md), 0 0 0 var(--hairline) var(--separator);
+  cursor: grab;
+  touch-action: none;
+  transition: box-shadow var(--dur-fast);
+}
+
+.space-card:active {
+  cursor: grabbing;
+}
+
+.space-card.is-current {
+  box-shadow: var(--shadow-lg), 0 0 0 3px var(--accent);
+}
+
+.space-card__number {
+  position: absolute;
+  left: 6px;
+  top: 4px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.space-card.is-camera .space-card__number::after {
+  content: ' · Kamera';
+}
+.tool.is-on { background: var(--fill-hover); }

@@ -377,7 +377,7 @@ Jede Phase endet mit etwas, das du **wirklich benutzen** kannst.
 - Eigene Schriften hochladen
 - Animations-Tab: Reihenfolge der Builds, Feinschliff und Vorschau
 
-### Phase 3: Motion- & Grafik-Engine
+### Phase 3: Motion- & Grafik-Engine ✅ erledigt
 - WebGL-Effektebene: Mesh-Gradients, Glow/Licht-Sweep, Grain, Vignette, Letterbox, Farblooks
 - Glas & Blur, 3D-Neigung, Parallax über `depth`, Idle-Schweben
 - **Kamerafahrt im Raum** und die Ansicht „Raum“ in der Folienübersicht
@@ -385,6 +385,11 @@ Jede Phase endet mit etwas, das du **wirklich benutzen** kannst.
 - Magic Move v2 (Farben, Radien, Schriftgrößen, Text-Überblendung)
 - Neue Elemente: animierte Zahlen, Charts (Balken, Linie, Donut), Lottie, SVG-Linien zeichnen
 - Globaler Intensitäts-Regler (Ruhig ↔ Filmisch)
+- *Umgesetzt:* WebGL-Shader für Licht-Verlauf (organisch, mit Dithering gegen Banding), Filmkorn (24 fps), Licht-Sweep
+  und Light Leak; Glas (backdrop-filter), 3D-Neigung, Parallax bei Kamerafahrten und Schweben; Kamerafahrt mit
+  Raum-Ansicht (Ziehen, Linie/Raster/Kreis, „Alle als Kamerafahrt“); Magic Move v2 (Formen/Bilder morphen ohne
+  Verzerrung, Farbe und Rundung inklusive); Charts (Balken, Linie, Ring) mit Build „grow“; Lottie mit Start beim Build;
+  Deck-Intensität. Farblooks bleiben als CSS-Filter (WebGL-LUTs bräuchten ein Rendern der Folie in eine Textur).
 
 ### Phase 4: Bühne
 - Referentenansicht (zweites Fenster, synchronisiert)

@@ -53,7 +53,7 @@ function DeckCard({ summary }: { summary: DeckSummary }) {
     <a className="deck-card" href={href({ page: 'deck', name: summary.name })}>
       <div className="deck-card__thumb">
         {deck.value && first ? (
-          <ThemeScope theme={deck.value.theme}>
+          <ThemeScope theme={deck.value.theme} intensity={deck.value.intensity}>
             <Stage format={deck.value.format}>
               <SlideView
                 slide={first}
