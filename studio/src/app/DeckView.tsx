@@ -51,6 +51,7 @@ import type { Layout } from '../schema/layout'
 import { Icon, type IconName } from '../ui/Icon'
 import { IssueList } from '../ui/IssueList'
 import { Toast } from '../ui/Toast'
+import { ShareMenu } from './ShareMenu'
 import { href, navigate } from './route'
 import './DeckView.css'
 import '../editor/Editor.css'
@@ -524,6 +525,7 @@ function EditorShell({
           <span className={`save-status save-status--${editor.status}`} title={editor.saveIssues.map((i) => i.message).join('\n')}>
             {status}
           </span>
+          <ShareMenu name={name} disabled={!deck} />
           <button className="btn" onClick={() => openPresenter(name, slide?.id)} disabled={!slide} title="Referentenansicht in neuem Fenster: Notizen, Timer, Probe-Modus, Handy-Fernbedienung">
             Referentenansicht
           </button>

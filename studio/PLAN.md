@@ -431,9 +431,18 @@ Jede Phase endet mit etwas, das du **wirklich benutzen** kannst.
   Theme-Wechsel im Inspector setzt Hintergründe/Effekte passend neu. `npm run validate` prüft auch Bausteine und
   Vorlagen. Skill `/deck` unter `.claude/skills/deck/`, Erweiterungen in `EXTENDING.md`.
 
-### Phase 6: Teilen & Export
+### Phase 6: Teilen & Export ✅ erledigt
 - **Web-Link:** `npm run publish <deck>` baut einen eigenständigen Player (nur Ansehen, mit Animationen) und veröffentlicht ihn, z. B. über GitHub Pages, Netlify oder Vercel
 - **PowerPoint-Export:** Text, Bilder, Formen und Notizen als echte PPTX-Objekte. Effekte und Verläufe werden als Bilder eingebettet, Animationen gehen dabei verloren (das ist eine Grenze des Formats).
+- *Umgesetzt:* `npm run publish -- <deck>` baut nach `published/<deck>/` einen Player mit relativen Pfaden (läuft auf
+  Netlify, Vercel, GitHub Pages, in jedem Unterordner): Deck, Brand-Kit und Theme eingebaut, nur benutzte Medien und
+  die Schriften kopiert, Bedienleiste, Tastatur, Klick und Wischen, Folie in der Adresse (`#folien-id`), `--preview`.
+  `npm run pptx -- <deck>` rendert die Folien mit Playwright und baut mit PptxGenJS echte Texte (Schrift, Größe,
+  Zeilenabstand, Laufweite, fett/kursiv, Ausrichtung), zugeschnittene Bilder, Formen inkl. Rundung/Kontur/Glas-Tönung,
+  Linien/Pfeile, MP4-Videos mit Posterbild, Notizen und übersprungene Folien als ausgeblendet; Effekt-Hintergründe,
+  Icons, Charts, Lottie, SVG und eigene Komponenten als Bild. Beides auch im Editor über „Teilen“.
+  Entscheidung Web-Links: kein eigener Passwortschutz – wer ihn braucht, schaltet ihn bei Netlify/Vercel ein.
+  Bewusst offen: automatisches Hochladen (braucht Zugangsdaten auf deinem Mac), Charts als native PowerPoint-Diagramme.
 
 ---
 
@@ -453,7 +462,7 @@ Jede Phase endet mit etwas, das du **wirklich benutzen** kannst.
 | Thema | Umgang |
 |---|---|
 | **Große Videos im Git-Repo** | GitHub erlaubt max. 100 MB pro Datei, und das Repo wird schnell schwer. Empfehlung: Rohmaterial bleibt außerhalb, ins Repo kommen nur optimierte Web-Versionen. Für große Dateien ist **Git LFS** sinnvoll. Stand Phase 2: Der Import lehnt Videos über 100 MB ab und erklärt warum; Git LFS richten wir ein, sobald echte große Clips anfallen. |
-| **Web-Links sind öffentlich** | Wer den Link hat, sieht die Präsentation. Ein Passwortschutz ist z. B. über Netlify/Vercel möglich. Das entscheiden wir in Phase 6. |
+| **Web-Links sind öffentlich** | Wer den Link hat, sieht die Präsentation. Ein Passwortschutz ist z. B. über Netlify/Vercel möglich. Stand Phase 6: Der Player setzt `noindex` (keine Suchmaschinen), Passwortschutz bei Bedarf über den Hoster. |
 | **Eigene Komponenten** | Sie sind im Editor nur über ihre Regler bearbeitbar, nicht frei gestaltbar. Deshalb: das Schema zuerst, Komponenten nur für echte Spezialfälle. |
 | **PPTX verliert Motion** | Das ist eine Grenze des Formats. Der Web-Link ist die „echte“ Version. |
 | **Handy-Fernbedienung** | Funktioniert in Phase 4 nur, wenn Handy und Mac im selben WLAN sind. |

@@ -59,3 +59,74 @@
     filter: blur(6px);
   }
 }
+
+/* Web-Player (npm run publish) */
+.player-bar {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  z-index: 12;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 999px;
+  background: rgba(28, 28, 30, 0.6);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  box-shadow: inset 0 0.5px 0 rgba(255, 255, 255, 0.14), 0 8px 32px rgba(0, 0, 0, 0.35);
+  color: rgba(255, 255, 255, 0.86);
+  font: 13px var(--font-ui);
+  letter-spacing: var(--track-small);
+  transform: translateX(-50%);
+  transition: opacity var(--dur-base, 300ms) ease, translate var(--dur-base, 300ms) ease;
+}
+
+.present.is-idle .player-bar {
+  opacity: 0;
+  translate: 0 8px;
+  pointer-events: none;
+}
+
+.player-bar__btn {
+  min-width: 36px;
+  height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.player-bar__btn--text {
+  font-size: 13px;
+}
+
+.player-bar__btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.player-bar__count {
+  min-width: 52px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.player-bar__sep {
+  width: 0.5px;
+  height: 18px;
+  margin: 0 4px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+@media (hover: none) {
+  /* Touch: Leiste nur kurz nach dem Start, Bedienung per Wischen und Tippen. */
+  .player-bar {
+    bottom: 16px;
+  }
+}

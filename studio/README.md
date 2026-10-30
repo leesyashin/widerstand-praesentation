@@ -62,6 +62,27 @@ Medien (Fotos, Videos, Lottie) ziehst du einfach auf die Folie oder in die Medie
 auf max. 3840 px optimiert, Videos bekommen ein Posterbild. Eigene Schriften lädst du im Folie-Tab unter
 „Textstile → Schriften …“ hoch.
 
+## Teilen: Web-Link und PowerPoint
+
+Im Editor oben rechts **Teilen**:
+
+- **Web-Player bauen** → `studio/published/<deck>/`: eine eigenständige Seite mit allen Animationen und
+  Übergängen (nur Ansehen; Pfeiltasten, Klick, Wischen auf dem Handy, Bedienleiste). Den Ordner auf
+  [Netlify Drop](https://app.netlify.com/drop) ziehen – fertig ist der Link. Alternativ `npx vercel deploy published/<deck> --prod`
+  oder GitHub Pages. Wer den Link hat, sieht die Präsentation; einen Passwortschutz gibt es bei Netlify/Vercel
+  in den Site-Einstellungen. Ein Link auf eine bestimmte Folie: `…/index.html#<folien-id>`.
+- **PowerPoint (.pptx)** → Download. Texte, Bilder, Formen, Videos und Notizen bleiben bearbeitbar; Licht-Verlauf,
+  Korn, Icons, Charts und Lottie werden als Bilder eingebettet. Animationen und Übergänge fehlen (Grenze des
+  Formats). Damit die Schriften stimmen, *Bricolage Grotesque* und *DM Sans* installieren (Google Fonts).
+
+Dasselbe im Terminal:
+
+```bash
+npm run publish -- <deck>            # Web-Player nach published/<deck>/
+npm run publish -- <deck> --preview  # … und lokal ansehen (http://localhost:4173)
+npm run pptx -- <deck>               # PowerPoint nach exports/<deck>.pptx
+```
+
 ## Prüfen
 
 ```bash

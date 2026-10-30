@@ -3,28 +3,15 @@
 //         npm run shots -- <deck>        → nur ein Deck
 //         npm run shots -- <deck> --steps → zusätzlich den Stand nach jedem Klick
 // Ausgabe: shots/<deck>/<nr>-<folie>.png (Endzustand), <nr>-<folie>-klick-<n>.png (nach n Klicks)
-import { existsSync } from 'node:fs'
 import { mkdir, rm } from 'node:fs/promises'
 import path from 'node:path'
 import { createServer } from 'vite'
+import { launchBrowser } from '../server/browser'
 import { listDeckNames, readDeck, STUDIO_ROOT } from '../server/decks'
 
 const args = process.argv.slice(2)
 const withSteps = args.includes('--steps')
 const only = args.filter((a) => !a.startsWith('-'))
-
-async function launchBrowser() {
-  const { chromium } = await import('playwright')
-  try {
-    return await chromium.launch()
-  } catch (err) {
-    // Vorinstallierter Browser in Cloud-Umgebungen
-    const fallback = '/opt/pw-browsers/chromium'
-    if (existsSync(fallback)) return chromium.launch({ executablePath: fallback })
-    console.error('Chromium fehlt. Einmalig ausführen: npx playwright install chromium')
-    throw err
-  }
-}
 
 const server = await createServer({ root: STUDIO_ROOT, logLevel: 'error', server: { port: 0, host: '127.0.0.1' } })
 await server.listen()

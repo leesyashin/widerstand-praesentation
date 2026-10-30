@@ -28,17 +28,30 @@ async function request<T>(url: string, pick: (body: Body) => T, init?: RequestIn
   }
 }
 
+/** Web-Player (npm run publish): Deck, Brand-Kit und Theme stecken fest im Build – ohne Datei-Dienst. */
+export type Bundle = { name: string; deck: Deck; brand: Brand; theme: Theme | null }
+
+let bundle: Bundle | null = null
+
+export function setBundle(value: Bundle) {
+  bundle = value
+}
+
+const fixed = <T>(value: T): Promise<Result<T>> => Promise.resolve({ ok: true, value })
+
 export const api = {
   listDecks: () => request('/api/decks', (b) => b.decks as DeckSummary[]),
-  getDeck: (name: string) => request(`/api/decks/${encodeURIComponent(name)}`, (b) => b.deck as Deck),
+  getDeck: (name: string) =>
+    bundle ? fixed(bundle.deck) : request(`/api/decks/${encodeURIComponent(name)}`, (b) => b.deck as Deck),
   saveDeck: (name: string, deck: Deck) =>
     request(`/api/decks/${encodeURIComponent(name)}`, (b) => b.deck as Deck, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(deck),
     }),
-  getBrand: () => request('/api/brand', (b) => b.brand as Brand),
-  getTheme: (name: string) => request(`/api/themes/${encodeURIComponent(name)}`, (b) => b.theme as Theme),
+  getBrand: () => (bundle ? fixed(bundle.brand) : request('/api/brand', (b) => b.brand as Brand)),
+  getTheme: (name: string) =>
+    bundle?.theme ? fixed(bundle.theme) : request(`/api/themes/${encodeURIComponent(name)}`, (b) => b.theme as Theme),
   listLayouts: () => request('/api/layouts', (b) => b.layouts as Layout[]),
   listThemes: () => request('/api/themes', (b) => b.themes as Theme[]),
   listBlocks: () => request('/api/blocks', (b) => b.blocks as Block[]),
@@ -77,9 +90,10 @@ export type AssetInfo = { path: string; size: number; kind: 'image' | 'video' | 
 
 /**
  * URL einer Datei: "assets/foto.jpg" → "/decks/<name>/assets/foto.jpg",
- * "brand/logo.svg" → "/brand/logo.svg".
+ * "brand/logo.svg" → "/brand/logo.svg". Im Web-Player relativ ("./decks/…"), damit er in jedem Unterordner läuft.
  */
 export function assetUrl(deckName: string, src: string): string {
   const path = src.split('/').map(encodeURIComponent).join('/')
-  return src.startsWith('brand/') ? `/${path}` : `/decks/${encodeURIComponent(deckName)}/${path}`
+  const base = import.meta.env.BASE_URL
+  return src.startsWith('brand/') ? `${base}${path}` : `${base}decks/${encodeURIComponent(deckName)}/${path}`
 }

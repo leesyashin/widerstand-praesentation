@@ -1,0 +1,95 @@
+.share {
+  position: relative;
+}
+
+.share .btn.is-on {
+  background: var(--fill-hover);
+}
+
+.share__menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 300px;
+  padding: 6px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg), inset 0 0.5px 0 var(--material-edge);
+  animation: share-in var(--dur-spring, 360ms) var(--ease-spring, ease-out) both;
+}
+
+@keyframes share-in {
+  from {
+    opacity: 0;
+    translate: 0 -4px;
+    scale: 0.98;
+  }
+}
+
+.share__item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text);
+  font: 13px var(--font-ui);
+  text-align: left;
+  cursor: default;
+}
+
+.share__item span,
+.share__status span {
+  color: var(--text-2);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+@media (hover: hover) {
+  .share__item:hover {
+    background: var(--fill);
+  }
+}
+
+.share__item:disabled {
+  opacity: 0.5;
+}
+
+.share__status {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+  padding: 10px 10px 6px;
+  border-top: 0.5px solid var(--separator);
+  font: 13px var(--font-ui);
+  user-select: text;
+}
+
+.share__status--error strong {
+  color: #ff453a;
+}
+
+.share__spinner::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 8px;
+  border: 1.5px solid var(--text-2);
+  border-right-color: transparent;
+  border-radius: 50%;
+  vertical-align: -1px;
+  animation: share-spin 0.8s linear infinite;
+}
+
+@keyframes share-spin {
+  to {
+    rotate: 1turn;
+  }
+}

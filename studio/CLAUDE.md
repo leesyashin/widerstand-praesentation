@@ -12,6 +12,8 @@ Gesamtplan und Phasen: `PLAN.md`. Gestaltungsregeln: `STYLE.md` – **vor jedem 
 | `npm run shots -- <name>` | Jede Folie als PNG nach `shots/<name>/` (Endzustand). Mit `--steps` auch den Stand nach jedem Klick. |
 | `npm run schema` | JSON-Schemas neu erzeugen – **nach jeder Änderung in `src/schema/*.ts`**. |
 | `npm run check` | Alles: Schema aktuell, Typen, Lint, Decks. Muss vor jedem Commit grün sein. |
+| `npm run publish -- <name>` | Web-Player nach `published/<name>/` (eigenständig, mit Animationen). `--preview` zum Ansehen. |
+| `npm run pptx -- <name>` | PowerPoint nach `exports/<name>.pptx` (Text/Bilder/Formen/Notizen nativ, Effekte als Bild). |
 
 ## Präsentationen bauen und ändern
 
@@ -143,3 +145,17 @@ optional `schema` (Zod für `props` – wird geprüft, Fehler erscheinen als Pla
   verteilt alles über seine Live-Verbindung (`server/showPlugin.ts`) – auch an Geräte im WLAN (`npm run dev:remote`).
 - Probe-Zeiten liegen in `decks/<deck>/rehearsal.json` (Schema `src/schema/rehearsal.ts`), nicht in der `deck.json`.
   Die Datei nicht von Hand anlegen – sie entsteht beim Proben. `targetMinutes` = geplante Gesamtdauer.
+
+## Teilen & Export (Phase 6)
+
+- Web-Player: `server/publish.ts` baut `player.html` + `src/player/main.tsx` mit `base: './'`. Deck, Brand-Kit und
+  Theme kommen als Modul `virtual:studio-bundle` fest in den Build (`setBundle` in `src/api/client.ts` ersetzt dann
+  die `/api`-Abfragen); benutzte Medien und Schriften werden nach `decks/<name>/…` und `brand/…` kopiert. Datei-URLs
+  laufen deshalb immer über `assetUrl()` bzw. `import.meta.env.BASE_URL` – nie fest mit `/` beginnen lassen.
+  Der Player ist `Present` mit `player` (keine Referentenansicht, Bedienleiste, Wischen, Folie in der Adresse).
+- PowerPoint: `server/pptx.ts` öffnet jede Folie über `#/render/…` (Endzustand) und liest die berechneten Stile.
+  Text, Bilder (Raster, auf den Rahmen zugeschnitten), Rechteck/Ellipse/Linie/Pfeil, MP4/MOV-Videos und Notizen
+  werden echte Objekte; Hintergründe mit Effekten, SVG, Icons, Charts, Lottie, eigene Komponenten und geneigte
+  Elemente werden als Bild (2×) eingebettet. Am Folienende ausgeblendete Elemente fehlen. 1 px = 1/144 Zoll = 0,5 pt.
+- Im Editor: Menü „Teilen“ (`src/app/ShareMenu.tsx`) ruft `POST /api/decks/<name>/publish` und
+  `GET /api/decks/<name>/export.pptx` auf. `published/` und `exports/` sind nicht im Git.

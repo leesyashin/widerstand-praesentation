@@ -48,7 +48,7 @@ export function brandFontFaces(brand: Brand): string {
     .flatMap((f) =>
       (f.files ?? []).map(
         (file) =>
-          `@font-face{font-family:'${f.family}';src:url('/brand/${file.src}');font-weight:${file.weight};font-style:${file.style ?? 'normal'};font-display:block}`,
+          `@font-face{font-family:'${f.family}';src:url('${import.meta.env.BASE_URL}brand/${file.src}');font-weight:${file.weight};font-style:${file.style ?? 'normal'};font-display:block}`,
       ),
     )
     .join('\n')

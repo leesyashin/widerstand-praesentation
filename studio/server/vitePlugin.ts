@@ -11,11 +11,14 @@ import {
   readTheme,
   TEMPLATES_DIR,
   readDeck,
+  STUDIO_ROOT,
   summarizeDeck,
   writeDeck,
 } from './decks'
 import { createDeck, listThemes, readBlocks, readDeckTemplates } from './templates'
 import { deleteAsset, listAssets, listBrandAssets, uploadAsset, uploadFont, writeBrand } from './assets'
+import { exportPptx } from './pptx'
+import { publishDeck } from './publish'
 import { BRAND_CHANGED, DECK_CHANGED, TEMPLATES_CHANGED } from '../src/api/events'
 
 const MAX_BODY = 10 * 1024 * 1024
@@ -190,6 +193,42 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<boolea
   return true
 }
 
+/**
+ * Teilen & Export (Phase 6), brauchen den laufenden Server:
+ *   GET  /api/decks/<name>/export.pptx → PowerPoint-Datei (rendert die Folien über #/render)
+ *   POST /api/decks/<name>/publish     → baut den Web-Player nach published/<name>/
+ */
+async function handleShare(server: ViteDevServer, req: IncomingMessage, res: ServerResponse): Promise<boolean> {
+  const parts = new URL(req.url ?? '/', 'http://studio').pathname.split('/').filter(Boolean)
+  if (parts[0] !== 'api' || parts[1] !== 'decks' || parts.length !== 4) return false
+  const name = parts[2] ?? ''
+  const action = `${req.method} ${parts[3]}`
+  if (action !== 'GET export.pptx' && action !== 'POST publish') return false
+  if (!isDeckName(name)) {
+    send(res, 400, { ok: false, issues: [{ path: '', message: `Ungültiger Deck-Name: ${name}` }] })
+    return true
+  }
+  if (action === 'POST publish') {
+    const result = await publishDeck(name)
+    if (!result.ok) send(res, 422, result)
+    else send(res, 200, { ok: true, dir: path.relative(STUDIO_ROOT, result.dir), files: result.files, bytes: result.bytes })
+    return true
+  }
+  const address = server.httpServer?.address()
+  const port = typeof address === 'object' && address ? address.port : 5173
+  const result = await exportPptx(name, `http://127.0.0.1:${port}`)
+  if (!result.ok) {
+    send(res, 422, result)
+    return true
+  }
+  res.statusCode = 200
+  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.presentationml.presentation')
+  res.setHeader('Content-Disposition', `attachment; filename="${name}.pptx"`)
+  res.setHeader('Cache-Control', 'no-store')
+  res.end(result.buffer)
+  return true
+}
+
 /** Welches Deck betrifft eine geänderte Datei? (deck.json oder ein Asset im Deck-Ordner) */
 function deckForFile(file: string): string | null {
   const rel = path.relative(DECKS_DIR, file)
@@ -234,6 +273,13 @@ export function studioFiles(): Plugin {
     name: 'studio-files',
     configureServer(server) {
       watchFiles(server)
+      server.middlewares.use((req, res, next) => {
+        handleShare(server, req, res)
+          .then((handled) => {
+            if (!handled) next()
+          })
+          .catch((err: Error) => send(res, 500, { ok: false, issues: [{ path: '', message: err.message }] }))
+      })
       server.middlewares.use((req, res, next) => {
         handle(req, res)
           .then((handled) => {
