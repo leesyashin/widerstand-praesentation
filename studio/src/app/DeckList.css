@@ -1,0 +1,113 @@
+.decks {
+  height: 100%;
+  overflow: auto;
+  padding: var(--space-7) clamp(var(--space-4), 6vw, 96px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.decks__header h1 {
+  margin: 0;
+  font-family: var(--font-ui-display);
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.decks__header p {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-lg);
+}
+
+.decks__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-6) var(--space-5);
+}
+
+.decks__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-7) var(--space-4);
+  color: var(--text-3);
+  text-align: center;
+}
+
+.decks__empty h2 {
+  margin: var(--space-2) 0 0;
+  color: var(--text);
+  font-size: var(--text-xl);
+  font-weight: 600;
+}
+
+.deck-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--radius-lg);
+}
+
+.deck-card__thumb {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius-lg);
+  background: var(--canvas);
+  overflow: hidden;
+  padding: var(--space-3);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform var(--dur-base) var(--ease-smooth),
+    box-shadow var(--dur-base) var(--ease-smooth);
+}
+
+.deck-card__thumb .stage__frame {
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+}
+
+.deck-card:hover .deck-card__thumb {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: var(--shadow-lg);
+}
+
+.deck-card:active .deck-card__thumb {
+  transform: scale(0.99);
+}
+
+.deck-card__blank {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-sm);
+  background: var(--fill);
+}
+
+.deck-card__badge {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--warning);
+  color: #000;
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+
+.deck-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 var(--space-1);
+}
+
+.deck-card__meta strong {
+  font-weight: 600;
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "../src/schema/brand.schema.json",
+  "name": "Mein Brand (Platzhalter)",
+  "colors": {
+    "background": "#0b0b0f",
+    "surface": "#1c1c22",
+    "text": "#f5f5f7",
+    "textMuted": "#a1a1a6",
+    "accent": "#ff9f0a",
+    "accent2": "#5e5ce6",
+    "light": "#fbfbfd",
+    "ink": "#1d1d1f"
+  },
+  "fonts": {
+    "display": { "family": "SF Pro Display", "fallback": "-apple-system, BlinkMacSystemFont, Inter, system-ui, sans-serif" },
+    "text": { "family": "SF Pro Text", "fallback": "-apple-system, BlinkMacSystemFont, Inter, system-ui, sans-serif" },
+    "mono": { "family": "SF Mono", "fallback": "ui-monospace, Menlo, monospace" }
+  },
+  "motion": { "intensity": 0.3 }
+}

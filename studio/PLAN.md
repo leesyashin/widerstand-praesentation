@@ -338,13 +338,17 @@ Leistungsziel: **60 fps** auf deinem Mac. Alle Effekte laufen auf einer gemeinsa
 
 Jede Phase endet mit etwas, das du **wirklich benutzen** kannst.
 
-### Phase 0: Fundament
+### Phase 0: Fundament ✅ erledigt
 - Projekt in `studio/` aufsetzen (Vite, React, TypeScript, Linting)
 - Deck-Schema v1 (Zod → `deck.schema.json`) und `npm run validate`
 - Datei-Dienst im Dev-Server: Decks laden und speichern, Live-Reload bei Änderungen von außen
 - App-Designsystem: Tokens, Hell/Dunkel, Grundkomponenten
 - `CLAUDE.md`, erste Fassung von `STYLE.md`, Brand-Kit-Gerüst
 - **Ergebnis:** Eine von Claude geschriebene `deck.json` erscheint sofort im Browser.
+- *Umgesetzt:* Schema v1 mit strikter Prüfung (Tippfehler, doppelte IDs, fehlende Dateien, unbekannte Brand-Farben),
+  Datei-API mit atomarem Speichern, Live-Updates (ungültige Dateien zeigen den letzten gültigen Stand plus Hinweis),
+  Deck-Übersicht, Deck-Ansicht mit Navigator und Inspector, Notizen werden direkt in die `deck.json` gespeichert,
+  statischer Renderer inkl. CSS-Vorschau von Grain, Vignette, Letterbox und Farblooks, Beispiel-Deck `decks/willkommen`.
 
 ### Phase 1: MVP: Bauen & Präsentieren
 - Renderer: Text, Bild, Video, Form, Linie, Icon/SVG; Skalierung auf 16:9, 4:3 und eigene Formate

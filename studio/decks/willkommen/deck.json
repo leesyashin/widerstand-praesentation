@@ -1,0 +1,187 @@
+{
+  "$schema": "../../src/schema/deck.schema.json",
+  "version": 1,
+  "title": "Willkommen in Studio",
+  "format": { "preset": "16:9", "width": 1920, "height": 1080 },
+  "intensity": 0.3,
+  "slides": [
+    {
+      "id": "intro",
+      "layout": "title",
+      "background": { "type": "meshGradient", "colors": ["#0b0b0f", "brand.accent2", "brand.accent"], "animate": true },
+      "effects": [{ "type": "grain", "amount": 0.12 }, { "type": "vignette", "amount": 0.35 }],
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Studio · Phase 0",
+          "color": "brand.accent",
+          "align": "center",
+          "frame": { "x": 160, "y": 380, "w": 1600, "h": 40 }
+        },
+        {
+          "id": "headline",
+          "match": "headline",
+          "type": "text",
+          "style": "display",
+          "content": "Licht. Bewegung.\nGeschichte.",
+          "align": "center",
+          "frame": { "x": 160, "y": 440, "w": 1600, "h": 340 },
+          "build": { "in": { "preset": "blurRise", "duration": 800 }, "trigger": "click" }
+        }
+      ],
+      "notes": "Diese Folie kommt direkt aus decks/willkommen/deck.json."
+    },
+    {
+      "id": "idee",
+      "transition": { "type": "magicMove", "duration": 900, "easing": "spring" },
+      "background": { "type": "color", "color": "brand.background" },
+      "elements": [
+        {
+          "id": "headline",
+          "match": "headline",
+          "type": "text",
+          "style": "title",
+          "content": "Eine Datei. Drei Wege.",
+          "frame": { "x": 160, "y": 140, "w": 1600, "h": 130 }
+        },
+        {
+          "id": "linie",
+          "type": "shape",
+          "shape": "line",
+          "stroke": { "color": "brand.accent", "width": 4 },
+          "frame": { "x": 160, "y": 300, "w": 160, "h": 4 }
+        },
+        {
+          "id": "karte-1",
+          "type": "shape",
+          "shape": "rect",
+          "fill": "brand.surface",
+          "radius": 28,
+          "frame": { "x": 160, "y": 400, "w": 500, "h": 480 },
+          "build": { "in": { "preset": "rise" }, "trigger": "click" }
+        },
+        {
+          "id": "karte-1-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Claude",
+          "frame": { "x": 220, "y": 460, "w": 380, "h": 80 },
+          "build": { "in": { "preset": "rise" }, "trigger": "withPrevious" }
+        },
+        {
+          "id": "karte-1-text",
+          "type": "text",
+          "style": "body",
+          "color": "brand.textMuted",
+          "content": "Schreibt und ändert die deck.json direkt.",
+          "frame": { "x": 220, "y": 560, "w": 380, "h": 200 },
+          "build": { "in": { "preset": "rise" }, "trigger": "withPrevious" }
+        },
+        {
+          "id": "karte-2",
+          "type": "shape",
+          "shape": "rect",
+          "fill": "brand.surface",
+          "radius": 28,
+          "frame": { "x": 710, "y": 400, "w": 500, "h": 480 },
+          "build": { "in": { "preset": "rise" }, "trigger": "afterPrevious" }
+        },
+        {
+          "id": "karte-2-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Editor",
+          "frame": { "x": 770, "y": 460, "w": 380, "h": 80 },
+          "build": { "in": { "preset": "rise" }, "trigger": "withPrevious" }
+        },
+        {
+          "id": "karte-2-text",
+          "type": "text",
+          "style": "body",
+          "color": "brand.textMuted",
+          "content": "Du bearbeitest visuell – gespeichert wird in dieselbe Datei.",
+          "frame": { "x": 770, "y": 560, "w": 380, "h": 200 },
+          "build": { "in": { "preset": "rise" }, "trigger": "withPrevious" }
+        },
+        {
+          "id": "karte-3",
+          "type": "shape",
+          "shape": "rect",
+          "fill": "brand.surface",
+          "radius": 28,
+          "frame": { "x": 1260, "y": 400, "w": 500, "h": 480 },
+          "build": { "in": { "preset": "rise" }, "trigger": "afterPrevious" }
+        },
+        {
+          "id": "karte-3-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Bühne",
+          "frame": { "x": 1320, "y": 460, "w": 380, "h": 80 },
+          "build": { "in": { "preset": "rise" }, "trigger": "withPrevious" }
+        },
+        {
+          "id": "karte-3-text",
+          "type": "text",
+          "style": "body",
+          "color": "brand.textMuted",
+          "content": "Präsentiert live – mit **Motion** und Effekten.",
+          "frame": { "x": 1320, "y": 560, "w": 380, "h": 200 },
+          "build": { "in": { "preset": "rise" }, "trigger": "withPrevious" }
+        }
+      ],
+      "notes": "Magic Move: die Headline fließt von Folie 1 hierher (ab Phase 1)."
+    },
+    {
+      "id": "bild",
+      "transition": { "type": "blurDissolve", "duration": 700 },
+      "background": { "type": "image", "src": "assets/horizont.svg" },
+      "effects": [{ "type": "letterbox", "amount": 0.6 }, { "type": "grain", "amount": 0.1 }],
+      "elements": [
+        {
+          "id": "zitat",
+          "type": "text",
+          "style": "title",
+          "content": "Jedes Bild erzählt\n*eine Bewegung.*",
+          "frame": { "x": 160, "y": 300, "w": 1100, "h": 260 },
+          "build": { "in": { "preset": "maskReveal", "direction": "right", "duration": 900 }, "trigger": "click" }
+        }
+      ]
+    },
+    {
+      "id": "ende",
+      "transition": { "type": "dissolve" },
+      "background": { "type": "gradient", "from": "brand.light", "to": "#e8e8ed", "angle": 180 },
+      "elements": [
+        {
+          "id": "kreis",
+          "type": "shape",
+          "shape": "ellipse",
+          "fill": "brand.accent",
+          "frame": { "x": 900, "y": 300, "w": 120, "h": 120 },
+          "build": { "in": { "preset": "scaleIn", "easing": "spring" } }
+        },
+        {
+          "id": "danke",
+          "type": "text",
+          "style": "title",
+          "color": "brand.ink",
+          "align": "center",
+          "content": "Bereit für Phase 1.",
+          "frame": { "x": 160, "y": 480, "w": 1600, "h": 130 }
+        },
+        {
+          "id": "hinweis",
+          "type": "text",
+          "style": "subtitle",
+          "color": "#6e6e73",
+          "align": "center",
+          "content": "Ändere diese Datei – die App aktualisiert sich sofort.",
+          "frame": { "x": 160, "y": 620, "w": 1600, "h": 70 }
+        }
+      ]
+    }
+  ]
+}

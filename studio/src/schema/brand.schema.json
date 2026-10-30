@@ -1,0 +1,202 @@
+{
+  "title": "Studio Brand-Kit",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "colors": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[a-zA-Z][a-zA-Z0-9]*$"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$"
+      }
+    },
+    "fonts": {
+      "type": "object",
+      "properties": {
+        "display": {
+          "type": "object",
+          "properties": {
+            "family": {
+              "type": "string",
+              "minLength": 1
+            },
+            "fallback": {
+              "type": "string"
+            },
+            "files": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "src": {
+                    "type": "string",
+                    "pattern": "^fonts\\/[^\\s]+\\.(woff2|woff|otf|ttf)$"
+                  },
+                  "weight": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 900
+                  },
+                  "style": {
+                    "type": "string",
+                    "enum": [
+                      "normal",
+                      "italic"
+                    ]
+                  }
+                },
+                "required": [
+                  "src",
+                  "weight"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "family"
+          ],
+          "additionalProperties": false
+        },
+        "text": {
+          "type": "object",
+          "properties": {
+            "family": {
+              "type": "string",
+              "minLength": 1
+            },
+            "fallback": {
+              "type": "string"
+            },
+            "files": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "src": {
+                    "type": "string",
+                    "pattern": "^fonts\\/[^\\s]+\\.(woff2|woff|otf|ttf)$"
+                  },
+                  "weight": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 900
+                  },
+                  "style": {
+                    "type": "string",
+                    "enum": [
+                      "normal",
+                      "italic"
+                    ]
+                  }
+                },
+                "required": [
+                  "src",
+                  "weight"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "family"
+          ],
+          "additionalProperties": false
+        },
+        "mono": {
+          "type": "object",
+          "properties": {
+            "family": {
+              "type": "string",
+              "minLength": 1
+            },
+            "fallback": {
+              "type": "string"
+            },
+            "files": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "src": {
+                    "type": "string",
+                    "pattern": "^fonts\\/[^\\s]+\\.(woff2|woff|otf|ttf)$"
+                  },
+                  "weight": {
+                    "type": "integer",
+                    "minimum": 100,
+                    "maximum": 900
+                  },
+                  "style": {
+                    "type": "string",
+                    "enum": [
+                      "normal",
+                      "italic"
+                    ]
+                  }
+                },
+                "required": [
+                  "src",
+                  "weight"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "family"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "display",
+        "text"
+      ],
+      "additionalProperties": false
+    },
+    "logo": {
+      "type": "object",
+      "properties": {
+        "primary": {
+          "type": "string"
+        },
+        "mono": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "motion": {
+      "type": "object",
+      "properties": {
+        "intensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "intensity"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "name",
+    "colors",
+    "fonts"
+  ],
+  "additionalProperties": false
+}

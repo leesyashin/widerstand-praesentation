@@ -1,0 +1,223 @@
+.deck {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) minmax(0, 1fr) var(--inspector-w);
+  grid-template-rows: var(--toolbar-h) minmax(0, 1fr);
+  grid-template-areas:
+    'toolbar toolbar toolbar'
+    'nav canvas inspector';
+  height: 100%;
+}
+
+.deck__toolbar {
+  grid-area: toolbar;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 0 var(--space-3);
+  border-bottom: var(--hairline) solid var(--separator);
+}
+
+.deck__toolbar > :first-child {
+  justify-self: start;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.deck__toolbar > :last-child {
+  justify-self: end;
+}
+
+.deck__title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.2;
+}
+
+.deck__title strong {
+  font-weight: 600;
+}
+
+.deck__title span {
+  font-size: var(--text-xs);
+}
+
+/* Navigator */
+.deck__navigator {
+  grid-area: nav;
+  overflow-y: auto;
+  padding: var(--space-3) var(--space-3) var(--space-5);
+  border-right: var(--hairline) solid var(--separator);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.nav-slide {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  align-items: start;
+  gap: var(--space-2);
+  color: var(--text-2);
+  text-decoration: none;
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.nav-slide__number {
+  padding-top: 2px;
+  text-align: right;
+}
+
+.nav-slide__thumb {
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--canvas);
+  box-shadow: 0 0 0 var(--hairline) var(--separator);
+  transition: box-shadow var(--dur-fast) var(--ease-smooth);
+}
+
+.nav-slide:hover .nav-slide__thumb {
+  box-shadow: 0 0 0 1px var(--text-3);
+}
+
+.nav-slide.is-active .nav-slide__thumb {
+  box-shadow: 0 0 0 3px var(--accent);
+}
+
+.nav-slide.is-active .nav-slide__number {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.nav-slide.is-skipped .nav-slide__thumb {
+  opacity: 0.35;
+}
+
+/* Arbeitsfläche */
+.deck__canvas {
+  grid-area: canvas;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  background: var(--canvas);
+  padding: var(--space-6);
+}
+
+.deck__banner {
+  position: absolute;
+  top: var(--space-4);
+  left: 50%;
+  z-index: 3;
+  width: min(720px, calc(100% - var(--space-6)));
+  transform: translateX(-50%);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-md);
+}
+
+.deck__stage {
+  flex: 1;
+  min-height: 0;
+}
+
+.deck__stage .stage__frame {
+  box-shadow:
+    var(--shadow-lg),
+    0 0 0 var(--hairline) var(--separator);
+}
+
+/* Inspector */
+.deck__inspector {
+  grid-area: inspector;
+  overflow-y: auto;
+  border-left: var(--hairline) solid var(--separator);
+}
+
+.inspector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-4);
+}
+
+.inspector .section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.props {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  gap: var(--space-2) var(--space-3);
+  margin: 0;
+}
+
+.props dt {
+  color: var(--text-2);
+}
+
+.props dd {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.layers {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.layers li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 5px var(--space-2);
+  border-radius: var(--radius-sm);
+}
+
+.layers li:hover {
+  background: var(--fill);
+}
+
+.layers li.is-hidden {
+  opacity: 0.45;
+}
+
+.layers__type {
+  width: 72px;
+  flex: none;
+  color: var(--text-3);
+  font-size: var(--text-xs);
+}
+
+.layers__name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.layers__tag {
+  color: var(--accent);
+  font-size: var(--text-xs);
+}
+
+.deck-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  height: 100%;
+  padding: var(--space-4);
+}

@@ -1,0 +1,91 @@
+/*
+ * Studio – App-Designsystem (Oberfläche, nicht die Folien).
+ * Apple-Anmutung: Systemschrift, 8-pt-Raster, Haarlinien, Materialien mit Unschärfe.
+ * Hell/Dunkel folgt automatisch der Systemeinstellung.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* Typografie */
+  --font-ui: -apple-system, BlinkMacSystemFont, 'SF Pro Text', Inter, system-ui, sans-serif;
+  --font-ui-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Inter, system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-md: 13px;
+  --text-lg: 15px;
+  --text-xl: 22px;
+  --text-2xl: 28px;
+
+  /* Raster */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  /* Formen */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --hairline: 0.5px;
+
+  /* Motion */
+  --ease-smooth: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 160ms;
+  --dur-base: 280ms;
+  --dur-slow: 480ms;
+
+  /* Layout */
+  --toolbar-h: 52px;
+  --sidebar-w: 212px;
+  --inspector-w: 272px;
+
+  /* Farben – hell */
+  --bg: #f5f5f7;
+  --canvas: #e8e8ed;
+  --surface: #ffffff;
+  --surface-2: #f2f2f4;
+  --material: rgba(246, 246, 248, 0.78);
+  --text: #1d1d1f;
+  --text-2: #6e6e73;
+  --text-3: #8e8e93;
+  --separator: rgba(0, 0, 0, 0.1);
+  --fill: rgba(120, 120, 128, 0.12);
+  --fill-hover: rgba(120, 120, 128, 0.2);
+  --accent: #0071e3;
+  --accent-text: #ffffff;
+  --danger: #ff3b30;
+  --warning: #ff9f0a;
+  --success: #34c759;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06), 0 1px 1px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.14), 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1c1e;
+    --canvas: #111113;
+    --surface: #2c2c2e;
+    --surface-2: #232325;
+    --material: rgba(36, 36, 38, 0.78);
+    --text: #f5f5f7;
+    --text-2: #a1a1a6;
+    --text-3: #7c7c80;
+    --separator: rgba(255, 255, 255, 0.1);
+    --fill: rgba(120, 120, 128, 0.24);
+    --fill-hover: rgba(120, 120, 128, 0.34);
+    --accent: #0a84ff;
+    --danger: #ff453a;
+    --warning: #ffd60a;
+    --success: #30d158;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55), 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+}
