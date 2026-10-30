@@ -1,0 +1,438 @@
+/* Referentenansicht – immer dunkel, ruhig, gut lesbar aus einem Meter Abstand. */
+.presenter {
+  --p-bg: #0e0e10;
+  --p-panel: #18181b;
+  --p-line: rgba(255, 255, 255, 0.09);
+  --p-text: #f2f1ee;
+  --p-muted: #8e8d8a;
+  --p-accent: #0a84ff;
+  --p-warn: #ff9f0a;
+  --p-rec: #ff453a;
+
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  background: var(--p-bg);
+  color: var(--p-text);
+  font-family: var(--font-ui);
+  color-scheme: dark;
+}
+
+.presenter--loading {
+  display: grid;
+  place-items: center;
+  color: var(--p-muted);
+}
+
+.presenter .muted {
+  color: var(--p-muted);
+}
+
+.presenter .is-over {
+  color: var(--p-warn);
+}
+
+.presenter__bar {
+  display: grid;
+  grid-template-columns: 1fr auto auto 1fr;
+  align-items: center;
+  gap: 24px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--p-line);
+}
+
+.presenter__status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--p-muted);
+  font-size: 13px;
+}
+
+.presenter__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--p-muted);
+}
+
+.presenter__dot.is-live {
+  background: #30d158;
+  box-shadow: 0 0 0 4px rgba(48, 209, 88, 0.18);
+}
+
+.presenter__clock,
+.presenter__timer {
+  font-family: var(--font-ui-display);
+  font-size: 30px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--track-display);
+}
+
+.presenter__timer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--p-text);
+}
+
+.presenter__timer .muted {
+  font-size: 20px;
+}
+
+.presenter__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.presenter__progress {
+  height: 3px;
+  background: var(--p-line);
+}
+
+.presenter__progress span {
+  display: block;
+  height: 100%;
+  background: var(--p-accent);
+  transition: width 0.5s linear;
+}
+
+.presenter__progress span.is-over {
+  background: var(--p-warn);
+}
+
+.presenter__main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+  gap: 24px;
+  padding: 20px;
+  min-height: 0;
+}
+
+.presenter__now,
+.presenter__side {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+
+.presenter__label {
+  color: var(--p-muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.slide-preview {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 0 0 1px var(--p-line);
+}
+
+.presenter__now .slide-preview {
+  flex: 0 1 auto;
+}
+
+.presenter__slide-time {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.presenter__end {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  background: var(--p-panel);
+  color: var(--p-muted);
+}
+
+.presenter__notes-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.presenter__notes {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 18px 28px;
+  border-radius: 10px;
+  background: var(--p-panel);
+  line-height: 1.45;
+  letter-spacing: var(--track-body);
+  white-space: pre-wrap;
+  /* Scroll-Kante statt harter Abbruchlinie */
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent);
+}
+
+.presenter__controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px 18px;
+  border-top: 1px solid var(--p-line);
+}
+
+/* Knöpfe */
+.pbtn {
+  height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--p-text);
+  font: 500 13px var(--font-ui);
+  white-space: nowrap;
+  cursor: default;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background var(--dur-fast) var(--ease-smooth),
+    transform var(--dur-spring) var(--ease-spring),
+    opacity var(--dur-fast);
+}
+
+@media (hover: hover) {
+  .pbtn:hover {
+    background: rgba(255, 255, 255, 0.16);
+  }
+
+  .pbtn--primary:hover {
+    background: #2b95ff;
+  }
+}
+
+/* Feedback beim Drücken – sofort */
+.pbtn:active {
+  transform: scale(0.97);
+  background: rgba(255, 255, 255, 0.22);
+  transition-duration: var(--dur-press);
+  transition-timing-function: ease-out;
+}
+
+.pbtn--primary:active {
+  background: #0070e0;
+}
+
+.pbtn:disabled {
+  opacity: 0.35;
+}
+
+.pbtn--primary {
+  background: var(--p-accent);
+  color: #fff;
+}
+
+.pbtn--ghost {
+  background: transparent;
+  color: var(--p-muted);
+}
+
+.pbtn--big {
+  height: 48px;
+  min-width: 180px;
+  font-size: 16px;
+}
+
+.pbtn--rec {
+  background: rgba(255, 69, 58, 0.18);
+  color: var(--p-rec);
+}
+
+/* Hinweis ohne Publikumsfenster */
+.presenter__waiting {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: min(520px, calc(100% - 32px));
+  padding: 24px 28px;
+  border-radius: 16px;
+  background: rgba(24, 24, 27, 0.94);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--p-line);
+  transform: translate(-50%, -50%);
+  text-align: center;
+  line-height: 1.5;
+  animation: materialize var(--dur-spring) var(--ease-spring) both;
+}
+
+.presenter__waiting p {
+  margin: 0;
+}
+
+kbd {
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.14);
+  font: 12px var(--font-mono);
+}
+
+/* Panels (Handy, Probe-Ergebnis) */
+.presenter__panel {
+  position: absolute;
+  right: 20px;
+  top: 72px;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  width: min(380px, calc(100% - 40px));
+  max-height: calc(100% - 100px);
+  overflow-y: auto;
+  padding: 20px 22px;
+  border-radius: 16px;
+  background: rgba(30, 30, 33, 0.82);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.6),
+    0 0 0 1px var(--p-line),
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.1);
+  /* Erscheint dort, wo der Knopf ist (oben rechts) – als Material, nicht als bloßes Einblenden */
+  transform-origin: top right;
+  animation: materialize-panel var(--dur-spring) var(--ease-spring) both;
+}
+
+@keyframes materialize-panel {
+  from {
+    opacity: 0;
+    scale: 0.94;
+    filter: blur(8px);
+  }
+}
+
+@keyframes materialize {
+  from {
+    opacity: 0;
+    scale: 0.96;
+    filter: blur(8px);
+  }
+}
+
+.presenter__panel--wide {
+  left: 50%;
+  right: auto;
+  width: min(720px, calc(100% - 40px));
+  transform: translateX(-50%);
+  transform-origin: top center;
+}
+
+.presenter__panel h2 {
+  margin: 0;
+  font: 650 22px var(--font-ui-display);
+}
+
+.presenter__panel p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.presenter__qr {
+  width: 240px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.presenter__qr svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.presenter__url {
+  font: 12px var(--font-mono);
+  color: var(--p-muted);
+  word-break: break-all;
+}
+
+.presenter__target {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.presenter__target input {
+  width: 80px;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--p-line);
+  border-radius: 6px;
+  background: var(--p-bg);
+  color: var(--p-text);
+  font: inherit;
+}
+
+.presenter__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.presenter__table th,
+.presenter__table td {
+  padding: 7px 8px;
+  border-bottom: 1px solid var(--p-line);
+  text-align: left;
+}
+
+.presenter__table th {
+  color: var(--p-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.presenter__table td:nth-child(3),
+.presenter__table td:nth-child(4),
+.presenter__table th:nth-child(3),
+.presenter__table th:nth-child(4) {
+  text-align: right;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pbtn,
+  .pbtn:active {
+    transform: none;
+  }
+
+  .presenter__panel,
+  .presenter__waiting {
+    animation-name: fade-in;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .presenter__panel,
+  .presenter__waiting {
+    background: #1e1e21;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}

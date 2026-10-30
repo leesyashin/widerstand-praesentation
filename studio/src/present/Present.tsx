@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useDeck } from '../api/live'
-import { navigate } from '../app/route'
+import { href, navigate } from '../app/route'
 import { useTextStyles } from '../engine/context'
 import { SlideView } from '../engine/SlideView'
 import { Stage } from '../engine/Stage'
@@ -9,6 +9,7 @@ import { createSlideTimeline, type SlideTimeline } from '../engine/timeline'
 import { matchPairs, runTransition } from '../engine/transitions'
 import { worldOf } from '../engine/world'
 import type { Deck } from '../schema/deck'
+import { onShow, sendShow } from './sync'
 import './Present.css'
 
 /** Vollbild-Präsentation: Klick für Klick durch Builds und Folien. */
@@ -38,15 +39,38 @@ function Show({ deck, name, startId }: { deck: Deck; name: string; startId?: str
   const [ended, setEnded] = useState(false)
   const [black, setBlack] = useState(false)
   const [idle, setIdle] = useState(false)
+  // Als Publikumsfenster aus der Referentenansicht geöffnet: erster Klick schaltet Vollbild ein.
+  const [needsFullscreen, setNeedsFullscreen] = useState(() => Boolean(window.opener) && !document.fullscreenElement)
 
   const layers = useRef(new Map<number, HTMLDivElement>())
   const timelines = useRef(new Map<number, SlideTimeline>())
   const build = useRef(0)
   const transition = useRef<gsap.core.Timeline | null>(null)
-  const latest = useRef({ deck, styles, order })
+  const latest = useRef({ deck, styles, order, nav, ended, black })
   useLayoutEffect(() => {
-    latest.current = { deck, styles, order }
+    latest.current = { deck, styles, order, nav, ended, black }
   })
+
+  /** Aktuellen Stand an Referentenansicht und Fernbedienung senden. */
+  const publish = useCallback(() => {
+    const { deck, order, nav, ended, black } = latest.current
+    const index = order[nav.pos] ?? 0
+    const tl = timelines.current.get(index)
+    sendShow({
+      deck: name,
+      kind: 'state',
+      state: {
+        slideIndex: index,
+        slideId: deck.slides[index]?.id ?? '',
+        position: nav.pos,
+        total: order.length,
+        build: build.current,
+        builds: tl ? tl.steps.length - 1 : 0,
+        ended,
+        black,
+      },
+    })
+  }, [name])
 
   const current = order[nav.pos] ?? 0
   const leaving = nav.from !== null && leftNav !== nav.id ? order[nav.from] : undefined
@@ -79,9 +103,11 @@ function Show({ deck, name, startId }: { deck: Deck; name: string; startId?: str
     if (nav.direction === 'back') {
       build.current = tl.steps.length - 1
       tl.seek(build.current)
+      publish()
       return
     }
     build.current = 0
+    publish()
     if (nav.direction === 'forward' && fromSlide && fromRoot) {
       const run = runTransition({
         from: fromRoot,
@@ -106,7 +132,7 @@ function Show({ deck, name, startId }: { deck: Deck; name: string; startId?: str
       }
     }
     tl.play(0)
-  }, [nav])
+  }, [nav, publish])
 
   const go = useCallback((pos: number, direction: Nav['direction']) => {
     setEnded(false)
@@ -127,12 +153,13 @@ function Show({ deck, name, startId }: { deck: Deck; name: string; startId?: str
     if (tl && build.current < tl.steps.length - 1) {
       build.current += 1
       tl.play(build.current)
+      publish()
       return
     }
     if (nav.pos < order.length - 1) go(nav.pos + 1, 'forward')
     else if (ended) exit()
     else setEnded(true)
-  }, [black, current, nav.pos, order.length, ended, go, exit])
+  }, [black, current, nav.pos, order.length, ended, go, exit, publish])
 
   const prev = useCallback(() => {
     if (black) return setBlack(false)
@@ -142,10 +169,11 @@ function Show({ deck, name, startId }: { deck: Deck; name: string; startId?: str
     if (tl && build.current > 0) {
       build.current -= 1
       tl.seek(build.current)
+      publish()
       return
     }
     if (nav.pos > 0) go(nav.pos - 1, 'back')
-  }, [black, ended, current, nav.pos, go])
+  }, [black, ended, current, nav.pos, go, publish])
 
   // Tastatur und Presenter-Clicker (senden meist Bild↑/Bild↓).
   useEffect(() => {
@@ -177,6 +205,9 @@ function Show({ deck, name, startId }: { deck: Deck; name: string; startId?: str
         case '.':
           setBlack((b) => !b)
           break
+        case 'r':
+          openPresenter(name, latest.current.deck.slides[current]?.id)
+          break
         case 'f':
           if (document.fullscreenElement) void document.exitFullscreen().catch(() => {})
           else void document.documentElement.requestFullscreen().catch(() => {})
@@ -191,7 +222,35 @@ function Show({ deck, name, startId }: { deck: Deck; name: string; startId?: str
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [next, prev, go, exit, order.length])
+  }, [next, prev, go, exit, order.length, name, current])
+
+  // Schwarzbild und Ende melden
+  useEffect(() => {
+    publish()
+  }, [ended, black, publish])
+
+  // Befehle von Referentenansicht und Handy
+  const commands = useRef({ next, prev, go })
+  useLayoutEffect(() => {
+    commands.current = { next, prev, go }
+  })
+  useEffect(
+    () =>
+      onShow(name, (message) => {
+        if (message.kind === 'hello') publish()
+        if (message.kind !== 'command') return
+        const { command } = message
+        if (command.type === 'next') commands.current.next()
+        if (command.type === 'prev') commands.current.prev()
+        if (command.type === 'black') setBlack((b) => !b)
+        if (command.type === 'goto') {
+          const { deck, order } = latest.current
+          const pos = order.indexOf(deck.slides.findIndex((s) => s.id === command.slideId))
+          if (pos >= 0) commands.current.go(pos, 'jump')
+        }
+      }),
+    [name, publish],
+  )
 
   // Esc im Vollbild beendet den Vollbildmodus ohne keydown – dann auch die Präsentation.
   useEffect(() => {
@@ -230,7 +289,14 @@ function Show({ deck, name, startId }: { deck: Deck; name: string; startId?: str
   return (
     <div
       className={`present ${idle ? 'is-idle' : ''}`}
-      onClick={next}
+      onClick={() => {
+        if (needsFullscreen) {
+          setNeedsFullscreen(false)
+          void document.documentElement.requestFullscreen?.().catch(() => {})
+          return
+        }
+        next()
+      }}
       onContextMenu={(e) => {
         e.preventDefault()
         prev()
@@ -261,9 +327,18 @@ function Show({ deck, name, startId }: { deck: Deck; name: string; startId?: str
           )
         })}
       </Stage>
+      {needsFullscreen && (
+        <div className="present__hint">Klicken für Vollbild · Steuerung über die Referentenansicht</div>
+      )}
       {(black || ended) && (
         <div className="present__black">{ended && !black && <span>Ende der Präsentation · Esc zum Beenden</span>}</div>
       )}
     </div>
   )
+}
+
+/** Referentenansicht in einem eigenen Fenster öffnen (zum Verschieben auf den Laptop-Bildschirm). */
+export function openPresenter(name: string, slideId?: string) {
+  const url = href({ page: 'presenter', name, slideId })
+  window.open(url, `studio-presenter-${name}`, 'popup,width=1280,height=800')
 }

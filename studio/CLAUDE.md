@@ -103,3 +103,11 @@ optional `schema` (Zod für `props` – wird geprüft, Fehler erscheinen als Pla
 - `templates/themes/`, `templates/layouts/` – Theme und Folien-Layouts (eigene Schemas in `src/schema/`).
 - UI-Texte auf Deutsch, Du-Form. App-Look: Apple-artig, ruhig, Hell/Dunkel automatisch.
 - Die alte Präsentation im Repo-Root (`../index.html`) **nicht anfassen**.
+
+## Präsentieren (Phase 4)
+
+- Show-Kanal `src/present/sync.ts`: Das Publikumsfenster (`Present.tsx`) sendet seinen Stand, Referentenansicht
+  (`Presenter.tsx`, `#/presenter/<deck>`) und Handy (`Remote.tsx`, `#/remote/<deck>`) senden Befehle. Der Dev-Server
+  verteilt alles über seine Live-Verbindung (`server/showPlugin.ts`) – auch an Geräte im WLAN (`npm run dev:remote`).
+- Probe-Zeiten liegen in `decks/<deck>/rehearsal.json` (Schema `src/schema/rehearsal.ts`), nicht in der `deck.json`.
+  Die Datei nicht von Hand anlegen – sie entsteht beim Proben. `targetMinutes` = geplante Gesamtdauer.

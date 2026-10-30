@@ -36,6 +36,18 @@ erscheint sofort im Browser – egal ob Claude sie macht oder du.
 | Präsentation | ← Bild↑ / Rechtsklick | Zurück |
 | Präsentation | B oder . | Schwarzbild |
 | Präsentation | F / Esc | Vollbild umschalten / Beenden |
+| Präsentation | R | Referentenansicht in eigenem Fenster öffnen |
+| Referentenansicht | → ← ␣ / B | Publikum steuern / Schwarzbild |
+
+## Präsentieren mit Referentenansicht und Handy
+
+1. `npm run dev:remote` statt `npm run dev` starten – dann erreicht dein Handy den Mac im selben WLAN.
+2. Referentenansicht öffnen: im Präsentationsmodus **R** drücken oder `http://localhost:5173/#/presenter/<deck>` aufrufen.
+3. In der Referentenansicht „Publikum öffnen“ – das Fenster auf den Beamer ziehen und einmal hineinklicken (Vollbild).
+   In Chrome schiebt Studio es nach einer Rückfrage selbst auf den zweiten Bildschirm.
+4. „Handy“ zeigt einen QR-Code für die Fernbedienung.
+5. „Probe starten“ misst die Zeit pro Folie. Ergebnisse landen in `decks/<deck>/rehearsal.json` und erscheinen beim
+   nächsten Mal als „Letzte Probe“ neben der aktuellen Folie.
 
 ## Prüfen
 

@@ -391,10 +391,16 @@ Jede Phase endet mit etwas, das du **wirklich benutzen** kannst.
   Verzerrung, Farbe und Rundung inklusive); Charts (Balken, Linie, Ring) mit Build „grow“; Lottie mit Start beim Build;
   Deck-Intensität. Farblooks bleiben als CSS-Filter (WebGL-LUTs bräuchten ein Rendern der Folie in eine Textur).
 
-### Phase 4: Bühne
+### Phase 4: Bühne ✅ erledigt
 - Referentenansicht (zweites Fenster, synchronisiert)
 - Probe-Modus mit Zeitmessung pro Folie
 - Handy-Fernbedienung per QR-Code im WLAN
+- *Umgesetzt:* Show-Kanal über die Live-Verbindung des Dev-Servers (alle Fenster und Geräte im WLAN), Referentenansicht
+  mit aktueller/nächster Folie im genauen Klick-Zustand, Notizen (Schriftgröße einstellbar), Uhr, Timer, Ziel-Fortschritt,
+  „Publikum öffnen“ (Chrome: automatisch auf den zweiten Bildschirm), Probe-Modus mit Zeiten pro Folie, Vergleich zur
+  letzten Probe und Ziel in Minuten (`rehearsal.json`), Handy-Fernbedienung mit QR-Code, Notizen, Schwarzbild,
+  Vibration und wach bleibendem Bildschirm. Ein Knopf im Editor folgt nach dem Merge von Phase 2 (Taste R im
+  Präsentationsmodus geht schon).
 
 ### Phase 5: Templates & Bibliothek
 - 3–4 Themes, vollständige Layout-Bibliothek

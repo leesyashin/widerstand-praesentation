@@ -172,6 +172,8 @@ function addIn(tl: gsap.core.Timeline, target: HTMLElement, item: BuildItem, at:
       const shapes = target.querySelectorAll<SVGGeometryElement>('path, line, circle, rect, polyline, polygon, ellipse')
       const strokes = [...shapes].filter((s) => getComputedStyle(s).stroke !== 'none')
       if (!strokes.length) break
+      // Ausgeblendet starten: runde Linienenden wären sonst schon als Punkte sichtbar.
+      tl.fromTo(target, { opacity: 0 }, { opacity: 1, duration: 0.12, ease: 'none' }, at)
       strokes.forEach((s) => {
         const len = s.getTotalLength()
         tl.fromTo(
