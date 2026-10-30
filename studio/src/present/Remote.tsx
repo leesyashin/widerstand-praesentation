@@ -41,7 +41,8 @@ export function Remote({ name }: { name: string }) {
 
   const slide = show && deck ? deck.slides[show.slideIndex] : undefined
   return (
-    <div className="remote">
+    // onTouchStart aktiviert :active auf iOS – Feedback schon beim Berühren.
+    <div className="remote" onTouchStart={() => {}}>
       <header className="remote__bar">
         <span className="remote__title">{deck?.title ?? name}</span>
         <span className="remote__meta">

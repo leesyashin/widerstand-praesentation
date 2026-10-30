@@ -12,7 +12,8 @@
   font-family: var(--font-ui-display);
   font-size: 34px;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  line-height: 1.1;
+  letter-spacing: var(--track-display);
 }
 
 .decks__header p {
@@ -41,6 +42,7 @@
   color: var(--text);
   font-size: var(--text-xl);
   font-weight: 600;
+  letter-spacing: var(--track-title);
 }
 
 .deck-card {
@@ -50,6 +52,14 @@
   color: inherit;
   text-decoration: none;
   border-radius: var(--radius-lg);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.deck-card:focus-visible .deck-card__thumb {
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--accent) 55%, transparent),
+    var(--shadow-md);
 }
 
 .deck-card__thumb {
@@ -60,9 +70,10 @@
   overflow: hidden;
   padding: var(--space-3);
   box-shadow: var(--shadow-sm);
+  /* Größere Fläche = dickeres Material: Schatten wächst mit dem Anheben */
   transition:
-    transform var(--dur-base) var(--ease-smooth),
-    box-shadow var(--dur-base) var(--ease-smooth);
+    transform var(--dur-spring) var(--ease-spring),
+    box-shadow var(--dur-spring) var(--ease-spring);
 }
 
 .deck-card__thumb .stage__frame {
@@ -70,13 +81,27 @@
   box-shadow: var(--shadow-md);
 }
 
-.deck-card:hover .deck-card__thumb {
-  transform: translateY(-2px) scale(1.01);
-  box-shadow: var(--shadow-lg);
+@media (hover: hover) {
+  .deck-card:hover .deck-card__thumb {
+    transform: translateY(-3px) scale(1.012);
+    box-shadow: var(--shadow-lg);
+  }
 }
 
+/* Druck: sofort, dann federt die Karte beim Loslassen zurück */
 .deck-card:active .deck-card__thumb {
-  transform: scale(0.99);
+  transform: scale(0.985);
+  box-shadow: var(--shadow-sm);
+  transition-duration: var(--dur-press);
+  transition-timing-function: ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-card .deck-card__thumb,
+  .deck-card:hover .deck-card__thumb,
+  .deck-card:active .deck-card__thumb {
+    transform: none;
+  }
 }
 
 .deck-card__blank {
@@ -110,4 +135,11 @@
 
 .deck-card__meta strong {
   font-weight: 600;
+  letter-spacing: var(--track-body);
+}
+
+.deck-card__meta .muted {
+  font-size: var(--text-sm);
+  letter-spacing: var(--track-small);
+  font-variant-numeric: tabular-nums;
 }

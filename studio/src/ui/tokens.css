@@ -33,12 +33,28 @@
   --radius-lg: 14px;
   --hairline: 0.5px;
 
-  /* Motion */
+  /* Motion
+   * Federn nach Apple (Damping/Response), als CSS linear() angenähert:
+   *   --ease-spring:        Damping 1.0, Response 0.35 s – Standard, kein Überschwingen
+   *   --ease-spring-bounce: Damping 0.8, Response 0.35 s – nur nach Bewegung mit Schwung
+   * Feedback beim Drücken ist sofort (--dur-press), das Loslassen federt zurück. */
   --ease-smooth: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: linear(0, 0.0586, 0.1833, 0.3254, 0.4607, 0.5788, 0.6769, 0.7554, 0.8169, 0.8642, 0.9, 0.9268, 0.9468, 0.9614, 0.9722, 0.98, 0.9857, 0.9898, 0.9927, 0.9948, 0.9963, 0.9974, 0.9982, 0.9987, 1);
+  --ease-spring-bounce: linear(0, 0.0791, 0.2478, 0.4364, 0.608, 0.7471, 0.8507, 0.9223, 0.9682, 0.9951, 1.0089, 1.0144, 1.015, 1.0132, 1.0105, 1.0076, 1.0052, 1.0033, 1.0019, 1.0009, 1.0003, 1, 0.9998, 0.9998, 1);
+  --dur-press: 100ms;
   --dur-fast: 160ms;
   --dur-base: 280ms;
   --dur-slow: 480ms;
+  --dur-spring: 520ms;
+  --dur-spring-bounce: 600ms;
+
+  /* Laufweite je Größe: große Schrift enger, kleine etwas weiter (nie ein Wert für alle) */
+  --track-display: -0.022em;
+  --track-title: -0.012em;
+  --track-body: -0.003em;
+  --track-small: 0.006em;
+  --track-label: 0.04em;
 
   /* Layout */
   --toolbar-h: 52px;
@@ -57,6 +73,10 @@
   --separator: rgba(0, 0, 0, 0.1);
   --fill: rgba(120, 120, 128, 0.12);
   --fill-hover: rgba(120, 120, 128, 0.2);
+  --fill-press: rgba(120, 120, 128, 0.28);
+  /* Lichtkante oben auf Materialien – wie Licht, das auf Glas fällt */
+  --material-edge: rgba(255, 255, 255, 0.7);
+  --scrim: rgba(0, 0, 0, 0.18);
   --accent: #0071e3;
   --accent-text: #ffffff;
   --danger: #ff3b30;
@@ -80,6 +100,9 @@
     --separator: rgba(255, 255, 255, 0.1);
     --fill: rgba(120, 120, 128, 0.24);
     --fill-hover: rgba(120, 120, 128, 0.34);
+    --fill-press: rgba(120, 120, 128, 0.44);
+    --material-edge: rgba(255, 255, 255, 0.07);
+    --scrim: rgba(0, 0, 0, 0.45);
     --accent: #0a84ff;
     --danger: #ff453a;
     --warning: #ffd60a;
@@ -87,5 +110,32 @@
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
     --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
     --shadow-lg: 0 24px 64px rgba(0, 0, 0, 0.55), 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* Transparenz reduzieren (macOS-Einstellung): Materialien werden fest */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --material: var(--surface-2);
+    --material-edge: transparent;
+  }
+}
+
+/* Kontrast erhöhen: klare Kanten, kräftigere Flächen */
+@media (prefers-contrast: more) {
+  :root {
+    --separator: rgba(0, 0, 0, 0.45);
+    --text-2: #3a3a3c;
+    --text-3: #48484a;
+    --fill: rgba(120, 120, 128, 0.24);
+    --material: var(--surface-2);
+  }
+}
+
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+  :root {
+    --separator: rgba(255, 255, 255, 0.5);
+    --text-2: #d1d1d6;
+    --text-3: #aeaeb2;
   }
 }
