@@ -4,17 +4,21 @@ import { useEffect, useState } from 'react'
  * Hash-Routing:
  *   #/                                → Decks
  *   #/deck/<name>/<folie>             → Editor
- *   #/present/<name>/<folie>          → Präsentation
+ *   #/present/<name>/<folie>          → Präsentation (Publikum)
+ *   #/presenter/<name>/<folie>        → Referentenansicht
+ *   #/remote/<name>                   → Handy-Fernbedienung
  *   #/render/<name>/<folie>/<schritt> → nackte Folie für Screenshots (npm run shots)
  */
 export type Route =
   | { page: 'decks' }
-  | { page: 'deck' | 'present'; name: string; slideId?: string }
+  | { page: 'deck' | 'present' | 'presenter' | 'remote'; name: string; slideId?: string }
   | { page: 'render'; name: string; slideId?: string; step?: number }
 
 function parse(hash: string): Route {
   const [page, name, slideId, step] = hash.replace(/^#\/?/, '').split('/').map(decodeURIComponent)
-  if ((page === 'deck' || page === 'present') && name) return { page, name, slideId: slideId || undefined }
+  if ((page === 'deck' || page === 'present' || page === 'presenter' || page === 'remote') && name) {
+    return { page, name, slideId: slideId || undefined }
+  }
   if (page === 'render' && name) {
     return { page, name, slideId: slideId || undefined, step: step === undefined ? undefined : Number(step) }
   }
