@@ -7,7 +7,7 @@ import type { Brand } from '../src/schema/brand'
 import type { Deck, Element, Slide } from '../src/schema/deck'
 import type { Issue } from '../src/schema/issues'
 import { launchBrowser } from './browser'
-import { BRAND_DIR, DECKS_DIR, readBrand, readDeck, STUDIO_ROOT } from './decks'
+import { BRAND_DIR, DECKS_DIR, readBrand, readDeck, readTheme, STUDIO_ROOT } from './decks'
 
 /**
  * PowerPoint-Export. Playwright öffnet jede Folie im Endzustand (#/render/…) und liest die
@@ -240,7 +240,11 @@ export async function exportPptx(name: string, baseUrl: string, browser?: Browse
   if (!read.ok) return read
   const brandResult = await readBrand()
   if (!brandResult.ok) return brandResult
-  const brand = brandResult.brand
+  // Themes dürfen die Palette umstellen (z. B. „papier“ hell) – Farb-Tokens wie in ThemeScope auflösen.
+  const theme = read.deck.theme ? await readTheme(read.deck.theme) : null
+  if (theme && !theme.ok) return theme
+  const colors = { ...brandResult.brand.colors, ...theme?.theme.colors }
+  const brand: Brand = { ...brandResult.brand, colors }
   const deck: Deck = resolveDeck(read.deck)
   const { width, height } = deck.format
 
