@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { Background, BuildPreset, TransitionType } from './deck'
 
 /**
  * Brand-Kit – Farben, Schriften, Logo und Motion-Grundton.
@@ -9,7 +10,8 @@ const hex = z.string().regex(/^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/, 'Hex-Farbe, z
 const fontFile = z.strictObject({
   /** Pfad relativ zu studio/brand/, z. B. "fonts/MeineSchrift-Bold.woff2". */
   src: z.string().regex(/^fonts\/[^\s]+\.(woff2|woff|otf|ttf)$/),
-  weight: z.number().int().min(100).max(900),
+  /** Einzelnes Gewicht (400) oder Bereich einer variablen Schrift ("200 800"). */
+  weight: z.union([z.number().int().min(100).max(900), z.string().regex(/^[1-9]00 [1-9]00$/, 'z. B. "200 800"')]),
   style: z.enum(['normal', 'italic']).optional(),
 })
 
@@ -41,6 +43,16 @@ export const Brand = z.strictObject({
     .strictObject({
       /** Standard-Intensität für neue Decks: 0 = ruhig, 1 = filmisch. */
       intensity: z.number().min(0).max(1),
+      /** Signature-Build: Standard für Headlines und neue Elemente. */
+      build: BuildPreset.optional(),
+      /** Standard-Übergang zwischen Folien. */
+      transition: TransitionType.optional(),
+    })
+    .optional(),
+  signature: z
+    .strictObject({
+      /** Wiedererkennbarer Hintergrund für Titel- und Kapitel-Folien. */
+      background: Background.optional(),
     })
     .optional(),
 })

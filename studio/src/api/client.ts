@@ -37,7 +37,11 @@ export const api = {
   getBrand: () => request('/api/brand', (b) => b.brand as Brand),
 }
 
-/** URL eines Assets im Deck-Ordner, z. B. "assets/foto.jpg" → "/decks/<name>/assets/foto.jpg". */
+/**
+ * URL einer Datei: "assets/foto.jpg" → "/decks/<name>/assets/foto.jpg",
+ * "brand/logo.svg" → "/brand/logo.svg".
+ */
 export function assetUrl(deckName: string, src: string): string {
-  return `/decks/${encodeURIComponent(deckName)}/${src.split('/').map(encodeURIComponent).join('/')}`
+  const path = src.split('/').map(encodeURIComponent).join('/')
+  return src.startsWith('brand/') ? `/${path}` : `/decks/${encodeURIComponent(deckName)}/${path}`
 }

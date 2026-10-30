@@ -8,6 +8,16 @@
 **Subtil & elegant.** Ruhig, präzise, hochwertig – wie eine Apple-Keynote, mit dem Blick eines Filmemachers.
 Filmische Mittel (Grain, Light Leaks, Kamerafahrten, Letterbox) sind Gewürz, nicht Hauptgericht.
 
+## Brand-Kit (festgelegt)
+
+| Bereich | Wahl | Umsetzung |
+|---|---|---|
+| Farbpalette | **Silbergelatine** | Schwarzweiß mit warmem Silberton (`brand/brand.json`) |
+| Schriftpaar | **Charakter-Grotesk** | Bricolage Grotesque (Headlines) + DM Sans (Text), lokal in `brand/fonts/` |
+| Logo | **Sucher** | „VINCENT“ in Sucher-Ecken: `brand/logo.svg` (hell), `brand/logo-mono.svg` (einfarbig) |
+| Motion | **Seide** | Signature-Build `blurRise`, Standard-Übergang `blurDissolve` |
+| Signature-Effekt | **Licht-Verlauf** | Langsam fließender Mesh-Gradient in Silbertönen |
+
 ## Komposition
 
 - **Eine Idee pro Folie.** Lieber eine Folie mehr als eine volle Folie.
@@ -22,14 +32,27 @@ Filmische Mittel (Grain, Light Leaks, Kamerafahrten, Letterbox) sind Gewürz, ni
 - Headlines: `display` oder `title`, enge Laufweite, kurze Zeilen (max. 2–3 Zeilen).
 - Kleine Labels (`label`) in Versalien mit weiter Laufweite – sparsam, als Kicker über Headlines.
 - Fließtext: `body`, gedeckte Farbe (`brand.textMuted`) für Nebeninformation.
+- Bricolage Grotesque hat viel Charakter: nur für Headlines und große Zahlen, nie für Fließtext.
 - Kursiv für Betonung oder Zitate, nicht fett im Fließtext.
 - Keine Silbentrennung in Headlines, keine Hurenkinder (Einzelwort in letzter Zeile).
 
 ## Farbe
 
-- Grundton dunkel (`brand.background`) mit hellem Text; helle Folien (`brand.light` + `brand.ink`) als bewusster Kontrast.
-- **Ein Akzent pro Folie** (`brand.accent`). `brand.accent2` nur in Verläufen und Licht.
+- Grundton dunkel (`brand.background` #0b0b0c) mit hellem Text (`brand.text`); helle Folien
+  (`brand.light` + `brand.ink`) als bewusster Kontrast, z. B. für Kapitel oder den Abschluss.
+- Der Akzent ist **Silber** (`brand.accent` #e4ddcc), kein Signalfarbton: für Kicker, feine Linien, Logo-Ecken,
+  Hervorhebungen. Auf hellen Folien ist er unsichtbar – dort `brand.ink` nehmen.
+- `brand.accent2` (dunkles Graphit) nur in Verläufen und Licht.
+- Farbige Fotos und Videos bei Bedarf mit `colorLook: "mono"` ins Brand holen. Farbe ist erlaubt, wenn sie
+  der Inhalt ist (Kundenarbeit, Farbstimmung) – dann bewusst und folienweise.
 - Verläufe weich und langsam, nie grell.
+
+## Logo
+
+- Auf dunklen Folien `brand/logo.svg` als Bild, auf hellen `brand/logo-mono.svg` als Icon mit `"color": "brand.ink"`.
+- Seitenverhältnis ca. 3,9 : 1 (z. B. 234 × 60). Position bevorzugt unten links (x 160, y 930) oder zentriert auf
+  Titel- und Schlussfolien. Nicht auf jeder Folie – Titel, Kapitel, Abschluss genügen.
+- Das Logo ist eine Arbeitsversion aus DM Sans; Feinschliff (Kerning, eigene Zeichnung) ist jederzeit möglich.
 
 ## Motion
 
@@ -39,12 +62,14 @@ Filmische Mittel (Grain, Light Leaks, Kamerafahrten, Letterbox) sind Gewürz, ni
 | Federn statt Bouncen | `smooth` als Standard, `spring` für Magic Move und Skalierung, kein sichtbares Überschwingen |
 | Ruhige Dauer | `base` 500 ms für Builds, `slow` 800 ms für Headlines/Bilder, `cinematic` 1400 ms nur für Kamerafahrten |
 | Lese-Richtung | Erst Headline, dann Detail. Bewegungen von unten nach oben oder links nach rechts |
-| Signature-Build | `blurRise` für Headlines, `rise` für Karten und Listen, `maskReveal` für Zitate |
+| Signature-Build („Seide“) | `blurRise` für Headlines und Bilder, `rise` für Karten und Listen, `maskReveal` für Zitate |
 | Übergänge | Standard `blurDissolve` oder `magicMove`. `camera`, `lightLeak`, `whipPan` nur an **Kapitelwechseln** |
 | Builds pro Folie | Möglichst ≤ 4 Klicks. Zusammengehöriges mit `withPrevious` gruppieren |
 
 ## Effekte
 
+- **Signature: Licht-Verlauf.** Titel- und Kapitel-Folien bekommen den Mesh-Gradient aus `brand.signature.background`
+  (Silbertöne, `animate: true`). Auf Inhaltsfolien ruhige Flächen (`brand.background`).
 - Grain: 0.08–0.15. Vignette: 0.2–0.4. Letterbox nur für Bild-/Video-Momente.
 - Glas & Blur für Karten über Bildern – nie über einfarbigen Flächen.
 - Farblooks pro Kapitel einheitlich halten.

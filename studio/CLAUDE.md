@@ -25,7 +25,10 @@ Gesamtplan und Phasen: `PLAN.md`. Gestaltungsregeln: `STYLE.md` – **vor jedem 
 - IDs (Folien, Elemente) in kebab-case, sprechend (`headline`, `karte-1-text`), pro Ebene eindeutig.
 - Magic Move: gleicher `match`-Wert auf zwei aufeinanderfolgenden Folien. Reihenfolge der `elements` = Ebenen
   (erstes Element ganz hinten).
-- Assets nur über `assets/…`-Pfade im Deck-Ordner. Große Videos: nur optimierte Web-Versionen (< 100 MB).
+- Assets über `assets/…` (Deck-Ordner) oder `brand/…` (Brand-Kit, z. B. `brand/logo.svg`).
+  Große Videos: nur optimierte Web-Versionen (< 100 MB).
+- Brand-Kit steht fest (Silbergelatine, Bricolage Grotesque + DM Sans, Sucher-Logo, Seide, Licht-Verlauf) –
+  Details und Logo-Regeln in `STYLE.md`. Schriften liegen lokal in `brand/fonts/` (OFL-Lizenz daneben).
 - Eigene Komponenten (`"type": "custom"`) nur, wenn das Schema es wirklich nicht abdeckt. Sie liegen in
   `custom/<Name>.tsx` (Rendering ab Phase 1).
 

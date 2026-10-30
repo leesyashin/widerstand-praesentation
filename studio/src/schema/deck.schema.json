@@ -150,7 +150,7 @@
                   },
                   "src": {
                     "type": "string",
-                    "pattern": "^assets\\/[^\\s]+$"
+                    "pattern": "^(assets|brand)\\/[^\\s]+$"
                   },
                   "fit": {
                     "type": "string",
@@ -175,11 +175,11 @@
                   },
                   "src": {
                     "type": "string",
-                    "pattern": "^assets\\/[^\\s]+$"
+                    "pattern": "^(assets|brand)\\/[^\\s]+$"
                   },
                   "poster": {
                     "type": "string",
-                    "pattern": "^assets\\/[^\\s]+$"
+                    "pattern": "^(assets|brand)\\/[^\\s]+$"
                   }
                 },
                 "required": [
@@ -806,7 +806,7 @@
                     },
                     "src": {
                       "type": "string",
-                      "pattern": "^assets\\/[^\\s]+$"
+                      "pattern": "^(assets|brand)\\/[^\\s]+$"
                     },
                     "alt": {
                       "type": "string"
@@ -1040,11 +1040,11 @@
                     },
                     "src": {
                       "type": "string",
-                      "pattern": "^assets\\/[^\\s]+$"
+                      "pattern": "^(assets|brand)\\/[^\\s]+$"
                     },
                     "poster": {
                       "type": "string",
-                      "pattern": "^assets\\/[^\\s]+$"
+                      "pattern": "^(assets|brand)\\/[^\\s]+$"
                     },
                     "fit": {
                       "type": "string",

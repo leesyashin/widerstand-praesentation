@@ -175,7 +175,7 @@ function ElementBody({ element: el, ctx }: { element: Element; ctx: Ctx }): Reac
     case 'shape':
       return <ShapeBody el={el} />
     case 'icon':
-      if (el.icon.startsWith('assets/')) {
+      if (el.icon.startsWith('assets/') || el.icon.startsWith('brand/')) {
         const url = `url("${assetUrl(ctx.deckName, el.icon)}")`
         return (
           <div

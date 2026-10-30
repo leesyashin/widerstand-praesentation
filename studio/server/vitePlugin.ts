@@ -2,7 +2,7 @@ import path from 'node:path'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import type { Plugin, ViteDevServer } from 'vite'
 import {
-  BRAND_FILE,
+  BRAND_DIR,
   DECKS_DIR,
   isDeckName,
   listDeckNames,
@@ -95,7 +95,7 @@ function deckForFile(file: string): string | null {
 }
 
 function watchFiles(server: ViteDevServer) {
-  server.watcher.add([DECKS_DIR, BRAND_FILE])
+  server.watcher.add([DECKS_DIR, BRAND_DIR])
   const timers = new Map<string, ReturnType<typeof setTimeout>>()
   // Mehrere Dateiereignisse kurz hintereinander (z. B. Editor speichert atomar) → ein Event.
   const notify = (event: string, data: Record<string, string>) => {
@@ -110,7 +110,8 @@ function watchFiles(server: ViteDevServer) {
     )
   }
   const onFile = (file: string) => {
-    if (path.resolve(file) === BRAND_FILE) return notify(BRAND_CHANGED, {})
+    // Alles im Brand-Ordner (brand.json, Logo, Schriften) betrifft alle Decks.
+    if (!path.relative(BRAND_DIR, path.resolve(file)).startsWith('..')) return notify(BRAND_CHANGED, {})
     const name = deckForFile(path.resolve(file))
     if (name) notify(DECK_CHANGED, { name })
   }

@@ -8,7 +8,8 @@ import { formatPath, fromZod, type Issue } from '../src/schema/issues'
 
 export const STUDIO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 export const DECKS_DIR = path.join(STUDIO_ROOT, 'decks')
-export const BRAND_FILE = path.join(STUDIO_ROOT, 'brand', 'brand.json')
+export const BRAND_DIR = path.join(STUDIO_ROOT, 'brand')
+export const BRAND_FILE = path.join(BRAND_DIR, 'brand.json')
 export const CUSTOM_DIR = path.join(STUDIO_ROOT, 'custom')
 
 const DECK_NAME = /^[a-z0-9][a-z0-9-]*$/
@@ -55,10 +56,12 @@ export async function readBrand(): Promise<BrandResult> {
   if (!json.ok) return json
   const parsed = Brand.safeParse(json.value)
   if (!parsed.success) return { ok: false, issues: fromZod(parsed.error) }
-  const missing = (parsed.data.fonts.display.files ?? [])
-    .concat(parsed.data.fonts.text.files ?? [], parsed.data.fonts.mono?.files ?? [])
-    .filter((f) => !existsSync(path.join(STUDIO_ROOT, 'brand', f.src)))
-    .map((f) => ({ path: 'fonts', message: `Schriftdatei fehlt: brand/${f.src}` }))
+  const { fonts, logo } = parsed.data
+  const missing = [fonts.display.files, fonts.text.files, fonts.mono?.files]
+    .flatMap((files) => (files ?? []).map((f) => f.src))
+    .concat(logo?.primary ?? [], logo?.mono ?? [])
+    .filter((src) => !existsSync(path.join(STUDIO_ROOT, 'brand', src)))
+    .map((src) => ({ path: '', message: `Datei fehlt: brand/${src}` }))
   return missing.length ? { ok: false, issues: missing } : { ok: true, brand: parsed.data }
 }
 
@@ -81,8 +84,12 @@ export async function checkDeck(name: string, deck: Deck): Promise<Issue[]> {
   walkStrings(deck, [], (s, at) => {
     const key = at[at.length - 1]
     // Asset-Pfade stehen in src/poster; Freitext (content, notes, props) wird nicht als Pfad gelesen.
-    if ((key === 'src' || key === 'poster') && s.startsWith('assets/') && !existsSync(path.join(dir, s))) {
+    const isFileRef = key === 'src' || key === 'poster' || key === 'icon'
+    if (isFileRef && s.startsWith('assets/') && !existsSync(path.join(dir, s))) {
       issues.push({ path: formatPath(at), message: `Datei fehlt: decks/${name}/${s}` })
+    }
+    if (isFileRef && s.startsWith('brand/') && !existsSync(path.join(STUDIO_ROOT, s))) {
+      issues.push({ path: formatPath(at), message: `Datei fehlt: ${s}` })
     }
     if (tokens && /^brand\./.test(s) && !tokens.has(s.slice(6))) {
       issues.push({

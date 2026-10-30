@@ -19,8 +19,10 @@ export const Color = z
     'Hex (#ff8800), rgb()/rgba(), "transparent" oder Brand-Token wie "brand.accent"',
   )
 
-/** Pfad relativ zum Deck-Ordner, z. B. "assets/reel.mp4". */
-const assetPath = z.string().regex(/^assets\/[^\s]+$/, 'Muss mit "assets/" beginnen, z. B. "assets/foto.jpg"')
+/** Datei im Deck-Ordner ("assets/reel.mp4") oder aus dem Brand-Kit ("brand/logo.svg"). */
+const assetPath = z
+  .string()
+  .regex(/^(assets|brand)\/[^\s]+$/, 'Muss mit "assets/" oder "brand/" beginnen, z. B. "assets/foto.jpg"')
 
 const duration = z.number().int().min(0).max(20000)
 const unit = z.number().min(0).max(1)
@@ -139,7 +141,7 @@ export const ShapeElement = z.strictObject({
 export const IconElement = z.strictObject({
   ...elementBase,
   type: z.literal('icon'),
-  /** Name aus der Icon-Bibliothek (ab Phase 1) oder eigene SVG-Datei "assets/…svg". */
+  /** Name aus der Icon-Bibliothek (ab Phase 1) oder eigene SVG-Datei "assets/…svg" bzw. "brand/…svg". */
   icon: z.string().min(1),
   color: Color.optional(),
   strokeWidth: z.number().positive().optional(),
