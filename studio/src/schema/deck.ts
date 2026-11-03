@@ -115,6 +115,28 @@ export const MotionProps = z.strictObject({
   draw: unit.optional(),
   /** Text auf Pfad: Position auf dem Pfad in Prozent (0–100). */
   textOffset: z.number().min(-100).max(200).optional(),
+  /** Partikel mit Form: 0 = verstreut, 1 = zur Form (Text/Bild) zusammengesetzt. */
+  form: unit.optional(),
+})
+
+/** Physik für eine Bewegung: das Element fällt, prallt ab, stößt andere Physik-Elemente desselben Schritts an. */
+export const Physics = z.strictObject({
+  /** Schwerkraft in px/s² (Standard 2400, 0 = schwerelos). */
+  gravity: z.number().min(-20000).max(20000).optional(),
+  /** Sprungkraft beim Aufprall 0–1 (Standard 0.5). */
+  bounce: unit.optional(),
+  /** Reibung am Boden 0–1 (Standard 0.15). */
+  friction: unit.optional(),
+  /** Startgeschwindigkeit in px/s. */
+  velocity: z.strictObject({ x: z.number().optional(), y: z.number().optional() }).optional(),
+  /** Drehung in Grad/s. */
+  spin: z.number().optional(),
+  /** Boden (y in Folien-Pixeln, Standard: Folienunterkante). */
+  floor: z.number().optional(),
+  /** An den Folienrändern abprallen (Standard ja). */
+  walls: z.boolean().optional(),
+  /** Mit anderen Physik-Elementen zusammenstoßen (Standard ja). */
+  collide: z.boolean().optional(),
 })
 
 export const MotionKey = MotionProps.extend({
@@ -156,10 +178,12 @@ export const Motion = z
     stagger: z.number().int().min(0).max(5000).optional(),
     /** Wo die Welle beginnt: vorn, hinten, in der Mitte oder zufällig. */
     staggerFrom: z.enum(['start', 'end', 'center', 'random']).optional(),
+    /** Physik statt fester Bahn: fallen, abprallen, anstoßen. `from` setzt dabei die Startlage (x/y/rotate). */
+    physics: Physics.optional(),
   })
   .superRefine((m, ctx) => {
     if (m.keys && (m.from || m.to)) ctx.addIssue({ code: 'custom', path: ['keys'], message: 'Entweder keys oder from/to' })
-    if (!m.keys && !m.from && !m.to && !m.path) ctx.addIssue({ code: 'custom', path: [], message: 'Bewegung braucht from, to, keys oder path' })
+    if (!m.keys && !m.from && !m.to && !m.path && !m.physics) ctx.addIssue({ code: 'custom', path: [], message: 'Bewegung braucht from, to, keys, path oder physics' })
   })
 
 /** Szenen-Folie: läuft von selbst durch wie ein Film (Builds und Bewegungen nach Zeit), ein Klick geht zur nächsten Folie. */
@@ -169,6 +193,37 @@ export const Scene = z.strictObject({
   /** Endlos wiederholen, bis weitergeklickt wird. */
   loop: z.boolean().optional(),
 })
+
+/**
+ * Shader-Look (SVG-Filter auf Folie oder Element):
+ * `distort` = flüssige Verzerrung / Hitzeflimmern / Wasser (`scale` = Größe der Wellen, 0–1),
+ * `chromatic` = Farbversatz (RGB auseinander), `glitch` = digitale Störung in Schüben.
+ */
+export const Look = z.strictObject({
+  type: z.enum(['distort', 'chromatic', 'glitch']),
+  amount: unit,
+  /** Tempo 0–1 (Standard 0.3). */
+  speed: unit.optional(),
+  /** Nur distort: Größe der Wellen 0 = groß/ruhig … 1 = fein/flirrend. */
+  scale: unit.optional(),
+})
+
+/** Generative Muster (WebGL): fließende Linien, Rauschwolken, Gitter, Wellen, Ringe, Plasma. */
+export const GenerativePattern = z.enum(['flow', 'noise', 'grid', 'waves', 'rings', 'plasma'])
+
+const generativeFields = {
+  pattern: GenerativePattern,
+  /** Erste Farbe = Grund, weitere = Licht/Linien (Brand-Tokens). */
+  colors: z.array(Color).min(1).max(5).optional(),
+  /** Tempo 0–1 (Standard 0.3). */
+  speed: unit.optional(),
+  /** Musterweite 0 = groß … 1 = fein (Standard 0.5). */
+  scale: unit.optional(),
+  /** Stärke/Helligkeit des Musters 0–1 (Standard 0.6). */
+  intensity: unit.optional(),
+  /** Bewegt sich (Standard ja). */
+  animate: z.boolean().optional(),
+}
 
 const elementBase = {
   id,
@@ -189,6 +244,8 @@ const elementBase = {
   build: Build.optional(),
   /** Freie Bewegungen auf der Zeitleiste (zusätzlich zu `build`). */
   motion: z.array(Motion).optional(),
+  /** Shader-Looks auf dem Element: Verzerrung, Farbversatz, Glitch. */
+  looks: z.array(Look).optional(),
 }
 
 export const TextStyle = z.enum(['display', 'title', 'heading', 'subtitle', 'body', 'caption', 'label'])
@@ -289,6 +346,42 @@ export const PathElement = z.strictObject({
     .optional(),
 })
 
+/**
+ * Partikel (WebGL, laufen auf der Grafikkarte – auch am iPad flüssig).
+ * `preset`: dust (Staub), snow (Schnee), sparks (Funken), bokeh (Licht-Kreise), confetti, stars (funkeln),
+ * shape (setzen sich zu `shape.text` oder `shape.src` zusammen – mit Bewegung `form` 0→1 oder Build `assemble`).
+ */
+export const ParticlesElement = z.strictObject({
+  ...elementBase,
+  type: z.literal('particles'),
+  preset: z.enum(['dust', 'snow', 'sparks', 'bokeh', 'confetti', 'stars', 'shape']),
+  /** Anzahl (Standard je nach Art, max. 20000). */
+  count: z.number().int().min(1).max(20000).optional(),
+  colors: z.array(Color).min(1).max(5).optional(),
+  /** Größe in Pixeln (Standard je nach Art). */
+  size: z.number().positive().max(400).optional(),
+  /** Tempo-Faktor (Standard 1). */
+  speed: z.number().min(0).max(10).optional(),
+  opacity: unit.optional(),
+  shape: z
+    .strictObject({
+      text: z.string().min(1).optional(),
+      src: assetPath.optional(),
+      style: z.enum(['display', 'title', 'heading', 'subtitle', 'body', 'caption', 'label']).optional(),
+    })
+    .optional(),
+  /** Startzustand der Form 0–1 (Standard 1 = zusammengesetzt). */
+  form: unit.optional(),
+})
+
+/** Generatives Muster als Element (Hauptmotiv oder Fläche) – gleiche Muster wie der Hintergrund `generative`. */
+export const GenerativeElement = z.strictObject({
+  ...elementBase,
+  type: z.literal('generative'),
+  ...generativeFields,
+  radius: z.number().min(0).optional(),
+})
+
 export const ChartPoint = z.strictObject({
   label: z.string(),
   value: z.number(),
@@ -331,6 +424,8 @@ export const CustomElement = z.strictObject({
 
 export const Element = z.discriminatedUnion('type', [
   PathElement,
+  ParticlesElement,
+  GenerativeElement,
   TextElement,
   ImageElement,
   VideoElement,
@@ -342,6 +437,7 @@ export const Element = z.discriminatedUnion('type', [
 ])
 
 export const Background = z.discriminatedUnion('type', [
+  z.strictObject({ type: z.literal('generative'), ...generativeFields }),
   z.strictObject({ type: z.literal('color'), color: Color }),
   z.strictObject({
     type: z.literal('gradient'),
@@ -376,6 +472,10 @@ export const Effect = z.discriminatedUnion('type', [
     look: z.enum(['warm', 'cool', 'tealOrange', 'muted', 'mono']),
     amount: unit.optional(),
   }),
+  /** Shader-Looks auf der ganzen Folie (siehe Look). */
+  z.strictObject({ type: z.literal('distort'), amount: unit, speed: unit.optional(), scale: unit.optional() }),
+  z.strictObject({ type: z.literal('chromatic'), amount: unit, speed: unit.optional() }),
+  z.strictObject({ type: z.literal('glitch'), amount: unit, speed: unit.optional() }),
 ])
 
 export const TransitionType = z.enum([
@@ -389,6 +489,8 @@ export const TransitionType = z.enum([
   'maskReveal',
   'lightLeak',
   'whipPan',
+  /** Digitale Störung: Farbversatz und Bildstreifen zucken über den Schnitt. */
+  'glitch',
 ])
 
 export const Transition = z.strictObject({
@@ -568,6 +670,10 @@ export type IconElement = z.infer<typeof IconElement>
 export type CustomElement = z.infer<typeof CustomElement>
 export type ChartElement = z.infer<typeof ChartElement>
 export type PathElement = z.infer<typeof PathElement>
+export type ParticlesElement = z.infer<typeof ParticlesElement>
+export type GenerativeElement = z.infer<typeof GenerativeElement>
+export type Look = z.infer<typeof Look>
+export type Physics = z.infer<typeof Physics>
 export type LottieElement = z.infer<typeof LottieElement>
 export type World = z.infer<typeof World>
 export type Background = z.infer<typeof Background>

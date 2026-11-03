@@ -3,7 +3,7 @@
  * Gemeinsam: Hash-Rauschen und Dithering gegen Banding in dunklen Verläufen.
  */
 
-const COMMON = `
+export const COMMON = `
 varying vec2 v_uv;
 uniform vec2 u_res;
 uniform float u_time;

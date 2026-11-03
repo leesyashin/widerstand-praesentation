@@ -3,6 +3,7 @@ import { CustomEase } from 'gsap/CustomEase'
 import type { Animation, Element, Motion, Slide } from '../schema/deck'
 import { BUILD_IN_EVENT } from './buildEvents'
 import { buildMotion, motionSpan, partCount } from './motion'
+import { simulate } from './physics'
 import { formatGermanNumber, parseGermanNumber } from './text'
 
 gsap.registerPlugin(CustomEase)
@@ -190,6 +191,12 @@ function addIn(tl: gsap.core.Timeline, target: HTMLElement, item: BuildItem, at:
   const { anim, duration } = item
   const e = ease(anim.easing)
   tl.call(() => void target.dispatchEvent(new CustomEvent(BUILD_IN_EVENT)), undefined, at)
+  // Partikel mit Form: „Zusammensetzen“ zieht die Teilchen aus dem Raum in die Form.
+  if (anim.preset === 'assemble' && target.querySelector('.el-particles')) {
+    tl.fromTo(target, { opacity: 0 }, { opacity: 1, duration: Math.min(0.4, duration * 0.3), ease: 'none' }, at)
+    tl.fromTo(target, { '--form': 0 }, { '--form': 1, duration, ease: 'power2.inOut' }, at)
+    return
+  }
   switch (anim.preset) {
     case 'wordByWord':
     case 'lineByLine': {
@@ -434,6 +441,12 @@ function scaleOf(el: HTMLElement): number {
 const CHAR_PRESETS = new Set(['charByChar', 'typewriter', 'scramble', 'assemble'])
 
 function addOut(tl: gsap.core.Timeline, target: HTMLElement, item: BuildItem, at: number) {
+  // Partikel mit Form zerfallen: Teilchen lösen sich und verblassen.
+  if (item.anim.preset === 'assemble' && target.querySelector('.el-particles')) {
+    tl.fromTo(target, { '--form': 1 }, { '--form': 0, duration: item.duration, ease: 'power2.in', immediateRender: false }, at)
+    tl.fromTo(target, { opacity: 1 }, { opacity: 0, duration: item.duration * 0.4, ease: 'none', immediateRender: false }, at + item.duration * 0.6)
+    return
+  }
   if (CHAR_PRESETS.has(item.anim.preset) && addCharsOut(tl, target, item, at)) return
   const hidden = hiddenVars(item.anim)
   // Nicht sofort anwenden: sonst überschreibt das Ausblenden den versteckten Startzustand der Einblendung.
@@ -482,13 +495,22 @@ export function createSlideTimeline(
       if (item.kind === 'in') addIn(timeline, target, item, t + item.start)
       else addOut(timeline, target, item, t + item.start)
     }
+    // Physik: alle Physik-Bewegungen des Schritts gemeinsam vorab berechnen (sie stoßen sich an).
+    const physicsItems = step.motions.filter((m) => m.motion.physics && !m.loop)
+    const tracks = physicsItems.length
+      ? simulate(
+          physicsItems.map((m) => ({ key: `${m.element.id}:${m.index}`, el: m.element, motion: m.motion, at: m.start, duration: m.duration })),
+          root.offsetWidth || 1920,
+          root.offsetHeight || 1080,
+        )
+      : new Map<string, Float32Array>()
     // Nach Startzeit, damit die erste Bewegung eines Elements dessen Startzustand bestimmt.
     for (const item of [...step.motions].sort((a, b) => a.start - b.start)) {
       const wrap = root.querySelector<HTMLElement>(`[data-element-id="${CSS.escape(item.element.id)}"] .el-motion`)
       if (!wrap) continue
       const first = !seen.has(item.element.id)
       seen.add(item.element.id)
-      const sub = buildMotion(wrap, item.element, item.motion, first)
+      const sub = buildMotion(wrap, item.element, item.motion, first, tracks.get(`${item.element.id}:${item.index}`))
       if (item.loop) {
         sub.pause(0)
         loops.push({ step: i, at: t + item.start, tl: sub })
@@ -557,6 +579,9 @@ export function createSlideTimeline(
       for (const l of loops) l.tl.revert()
       timeline.revert()
       timeline.kill()
+      // Physik setzt Werte direkt (nicht über Tweens) – die Hüllen haben keine eigenen React-Stile, also ganz leeren.
+      const wraps = root.querySelectorAll('.el-motion')
+      if (wraps.length) gsap.set(wraps, { clearProps: 'all' })
     },
   }
 }

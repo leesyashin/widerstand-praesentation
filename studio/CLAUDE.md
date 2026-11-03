@@ -48,8 +48,9 @@ ansehen – auf Überlappungen, Lesbarkeit, Abstände und Ränder achten. Bei An
   Build-Reihenfolge per Drag & Drop, Bausteine einfügen, Theme wechseln.
 - Bibliothek (Phase 5): 4 Themes (`silber`, `kino`, `sachlich`, `papier`), 16 Layouts, 6 animierte Bausteine,
   4 Deck-Vorlagen (`portfolio`, `angebot`, `pitch`, `vortrag`); neue Decks über die Startseite („Neues Deck“).
-- **Phase 8 „Animations-Paradies“** (Plan in `PLAN.md`): 8a + 8b fertig – freie Bewegungen, Kurven, Pfade,
-  Szenen, Zeitleiste, kinetische Typo, Formwandel, Text auf Pfad, Daten-Magic-Move (siehe unten). 8c–8e folgen. Motion-Charakter laut Vincent: *alles erlaubt* (Motion-Stufen in `STYLE.md`) –
+- **Phase 8 „Animations-Paradies“** (Plan in `PLAN.md`): 8a–8c fertig – freie Bewegungen, Kurven, Pfade,
+  Szenen, Zeitleiste, kinetische Typo, Formwandel, Text auf Pfad, Daten-Magic-Move, Partikel, generative Muster,
+  Shader-Looks, Physik (siehe unten). 8d (3D) und 8e (Bühne) folgen. Motion-Charakter laut Vincent: *alles erlaubt* (Motion-Stufen in `STYLE.md`) –
   für Schule/Uni (iPad am Beamer) aber leichtgewichtig bauen.
 
 ## Master-Folien, Textstile, Gruppen
@@ -98,7 +99,7 @@ Kurz:
   `wordByWord`, `lineByLine`, `charByChar`, `typewriter`, `scramble`, `assemble` (nur Text), `drawLine` (Linien, Pfeile, Lucide-Icons), `countUp` (erste Zahl im Text,
   deutsche Schreibweise „1.250“), `kenBurns` (Bilder; lang – nicht mit `afterPrevious` dahinter verketten).
 - `transition` gilt für den Übergang **zu** dieser Folie: `blurDissolve`, `dissolve`, `magicMove`, `push`, `zoom`,
-  `maskReveal`, `whipPan`, `camera`, `lightLeak`.
+  `maskReveal`, `whipPan`, `camera`, `lightLeak`, `glitch`.
 - Magic Move: Elemente mit gleichem `match` auf beiden Folien fließen ineinander (Text richtet sich an der sichtbaren
   Textkante aus, skaliert nach Schriftgröße). Ihr eigener Einblend-Build wird dabei übersprungen.
 - Icons: Lucide-Namen in kebab-case (`camera`, `aperture`, `film`, `sparkles` … siehe lucide.dev/icons).
@@ -149,6 +150,24 @@ Kurz:
 - Daten-Magic-Move: zwei `chart` gleicher Art mit gleichem `match` auf aufeinanderfolgenden Folien (Übergang
   `magicMove`) – Balken wachsen/schrumpfen, Linien und Flächen verformen sich, Ringsegmente wandern, Werte zählen von
   alt nach neu. Gleiche Anzahl Datenpunkte wirkt am besten; neue Balken wachsen aus der Grundlinie.
+
+## Partikel, Generativ, Shader-Looks, Physik (Phase 8c)
+
+- Element `particles` (WebGL, Bahnen auf der Grafikkarte berechnet – spulbar, auch am iPad flüssig): `preset` `dust`,
+  `snow`, `sparks`, `bokeh`, `confetti`, `stars` oder `shape` (setzt sich zu `shape.text` mit `shape.style` oder einem
+  Bild `shape.src` zusammen). Optional `count`, `size` (px), `speed`, `colors` (Tokens), `opacity`, `form` (Start 0–1).
+  Build `assemble` = Teilchen fügen sich zur Form, als `out` zerfallen sie; Bewegung `form` (0–1) steuert das frei.
+  Rahmen = Bereich der Partikel (für Staub/Schnee über die ganze Folie: 0, 0, 1920, 1080).
+- Generative Muster (WebGL): Hintergrund `{ "type": "generative", "pattern": … }` oder Element `generative`
+  (mit `radius`). `pattern`: `flow` (Strömung), `noise` (Wolken), `waves` (Höhenlinien), `grid` (Perspektiv-Gitter),
+  `rings`, `plasma`; `colors` (erste = Grund), `speed`, `scale` (0 groß … 1 fein), `intensity`, `animate`.
+- Shader-Looks (SVG-Filter auf echtem HTML): auf der Folie als `effects` `distort` / `chromatic` / `glitch`
+  (`amount`, `speed`, bei distort `scale`), am Element als `looks: [{ type, amount, speed?, scale? }]`.
+  Übergang `glitch` (Streifen + Farbversatz). Looks kosten auf dem iPad Leistung – für Schule/Uni sparsam.
+- Physik: Bewegung mit `physics` `{ gravity?, bounce?, friction?, velocity? { x, y }, spin?, floor?, walls?, collide? }`
+  – das Element fällt aus seiner `from`-Lage (x/y/rotate), prallt an Boden (Standard Folienunterkante) und Rändern ab
+  und stößt alle Physik-Elemente desselben Schritts an (als Kreise). Vorab berechnet → jedes Mal gleich; Standarddauer
+  3 s. Ruhe-Position `frame` = wo es ungefähr liegen bleiben soll (z. B. auf dem Boden).
 
 ## Grafik & Effekte
 

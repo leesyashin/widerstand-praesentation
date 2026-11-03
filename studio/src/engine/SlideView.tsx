@@ -1,6 +1,6 @@
-import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useId, useRef, type CSSProperties, type ReactNode } from 'react'
 import { assetUrl } from '../api/client'
-import type { Background, Effect, Element, PathElement, Slide, VideoElement } from '../schema/deck'
+import type { Background, Effect, Element, Look, PathElement, Slide, VideoElement } from '../schema/deck'
 import { resolveColor, type TextStyles } from './brand'
 import { ChartBody } from './chart'
 import { useEffectScale, useTextStyles } from './context'
@@ -9,7 +9,10 @@ import { Grain, LightSweep, MeshBackground } from './effects'
 import { findIcon, LucideIcon } from './icons'
 import { BUILD_IN_EVENT } from './buildEvents'
 import { LottieView } from './lottie'
+import { GenerativeView } from './generative'
+import { LookFilter } from './looks'
 import { hasMotion } from './motion'
+import { ParticlesView } from './particles'
 import { renderInline, type TextSplit } from './text'
 import './engine.css'
 
@@ -21,7 +24,7 @@ import './engine.css'
  */
 export type RenderMode = 'view' | 'thumb' | 'present' | 'render'
 
-type Ctx = { deckName: string; mode: RenderMode; width: number; height: number }
+type Ctx = { deckName: string; mode: RenderMode; width: number; height: number; uid: string }
 
 export function SlideView({
   slide,
@@ -36,9 +39,21 @@ export function SlideView({
   width: number
   height: number
 }) {
-  const ctx: Ctx = { deckName, mode, width, height }
+  // Eigene Kennung je Darstellung: dieselbe Folie hängt oft mehrfach im Dokument (Editor, Vorschau, Präsentation).
+  const uid = useId().replace(/[^a-zA-Z0-9_-]/g, '')
+  const ctx: Ctx = { deckName, mode, width, height, uid }
   const fx = useEffectScale()
   const look = slide.effects?.find((e) => e.type === 'colorLook')
+  const live = isLive(mode)
+  // Shader-Looks der Folie (distort/chromatic/glitch) und der Elemente als SVG-Filter.
+  const slideLooks: Look[] = (slide.effects ?? []).flatMap((e) =>
+    e.type === 'distort' || e.type === 'chromatic' || e.type === 'glitch' ? [{ ...e, amount: Math.min(1, e.amount * fx) }] : [],
+  )
+  const elementLooks = slide.elements.flatMap((el) => (el.hidden ? [] : (el.looks ?? []).map((l, i) => ({ id: lookId(uid, el.id, i), look: l }))))
+  const contentFilter = [
+    ...slideLooks.map((_, i) => `url(#${lookId(uid, '', i)})`),
+    ...(look ? [colorLookFilter(look.look, look.amount ?? 1)] : []),
+  ].join(' ')
   const float = slide.effects?.find((e) => e.type === 'float')
   const classes = ['slide', `slide--${mode}`, isLive(mode) && 'slide--live', float && 'slide--float'].filter(Boolean)
   return (
@@ -47,7 +62,17 @@ export function SlideView({
       data-slide-id={slide.id}
       style={float ? ({ '--float': float.amount * fx } as CSSProperties) : undefined}
     >
-      <div className="slide__content" style={{ filter: look ? colorLookFilter(look.look, look.amount ?? 1) : undefined }}>
+      {(slideLooks.length > 0 || elementLooks.length > 0) && (
+        <svg className="fx-defs" width="0" height="0" aria-hidden>
+          {slideLooks.map((l, i) => (
+            <LookFilter key={`s${i}`} id={lookId(uid, '', i)} look={l} live={live} />
+          ))}
+          {elementLooks.map((l) => (
+            <LookFilter key={l.id} id={l.id} look={l.look} live={live} />
+          ))}
+        </svg>
+      )}
+      <div className="slide__content" style={{ filter: contentFilter || undefined }}>
         <BackgroundView background={slide.background} ctx={ctx} />
         {slide.elements.map((el) => (el.hidden ? null : <ElementView key={el.id} element={el} ctx={ctx} />))}
       </div>
@@ -64,11 +89,15 @@ export function SlideView({
 
 const isLive = (mode: RenderMode) => mode === 'view' || mode === 'present'
 
+const lookId = (uid: string, el: string, i: number) => `look-${uid}-${el || 'folie'}-${i}`
+
 /* ---------- Hintergründe ---------- */
 
 function BackgroundView({ background, ctx }: { background: Background | undefined; ctx: Ctx }) {
   const bg = background ?? { type: 'color', color: 'brand.background' }
   switch (bg.type) {
+    case 'generative':
+      return <GenerativeView props={bg} mode={ctx.mode} className="slide__bg" />
     case 'color':
       return <div className="slide__bg" style={{ background: resolveColor(bg.color) }} />
     case 'gradient':
@@ -179,6 +208,7 @@ function ElementView({ element, ctx }: { element: Element; ctx: Ctx }) {
     height: frame.h,
     transform: frame.rotation ? `rotate(${frame.rotation}deg)` : undefined,
     opacity: element.opacity,
+    filter: element.looks?.length ? element.looks.map((_, i) => `url(#${lookId(ctx.uid, element.id, i)})`).join(' ') : undefined,
   }
   if (element.depth) {
     style['--depth'] = element.depth
@@ -239,6 +269,10 @@ function ElementBody({ element: el, ctx }: { element: Element; ctx: Ctx }): Reac
       return <VideoBody el={el} ctx={ctx} />
     case 'path':
       return <PathBody el={el} styles={styles} />
+    case 'particles':
+      return <ParticlesView el={el} mode={ctx.mode} deckName={ctx.deckName} />
+    case 'generative':
+      return <GenerativeView props={el} mode={ctx.mode} className="el-generative" radius={el.radius} />
     case 'chart':
       return <ChartBody el={el} />
     case 'lottie':
@@ -396,7 +430,10 @@ function EffectView({ effect, ctx }: { effect: Effect; ctx: Ctx }) {
       )
     }
     case 'colorLook':
-      return null // wird als Filter auf den Inhalt angewendet
+    case 'distort':
+    case 'chromatic':
+    case 'glitch':
+      return null // wirken als Filter auf den Inhalt
   }
 }
 

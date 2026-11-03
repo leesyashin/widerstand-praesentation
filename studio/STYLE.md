@@ -19,7 +19,9 @@ Ohne Angabe: Stufe **Ruhig**.
 | **Spektakel** | Intro, Finale, Bühne | Alles: `bounce`, `elastic`, `wiggle`, Schleifen, Farbwechsel, schnelle Schnitte |
 
 **Schule/Uni (iPad am Beamer):** Sagt Vincent, dass ein Deck für Schule/Uni ist, leichtgewichtig bauen: wenige
-gleichzeitige Bewegungen, keine dauerhaften Schleifen auf vielen Elementen, Blur sparsam, Videos klein.
+gleichzeitige Bewegungen, keine dauerhaften Schleifen auf vielen Elementen, Blur sparsam, Videos klein,
+Shader-Looks (distort/chromatic/glitch) höchstens auf einer Folie, Partikel ≤ 1500, höchstens zwei WebGL-Ebenen
+(Licht-Verlauf, Generativ, Partikel) pro Folie.
 
 ## Brand-Kit (festgelegt)
 

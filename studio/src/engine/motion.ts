@@ -5,6 +5,7 @@ import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin'
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin'
 import type { Element, Motion, MotionProps } from '../schema/deck'
 import { plainText } from './markup'
+import { PHYSICS_FPS } from './physics'
 
 gsap.registerPlugin(CustomEase, CustomWiggle, MotionPathPlugin, MorphSVGPlugin)
 
@@ -15,6 +16,13 @@ gsap.registerPlugin(CustomEase, CustomWiggle, MotionPathPlugin, MorphSVGPlugin)
  */
 
 export const MOTION_DURATION = 800
+/** Physik läuft ohne Angabe 3 s. */
+export const PHYSICS_DURATION = 3000
+
+/** Dauer einer Runde in ms. */
+export function motionDuration(m: Motion): number {
+  return m.duration ?? (m.physics ? PHYSICS_DURATION : MOTION_DURATION)
+}
 
 /* ---------- Timing-Kurven ---------- */
 
@@ -96,6 +104,7 @@ function transformVars(p: MotionProps | undefined): Vars {
   if (p.skewY !== undefined) v.skewY = p.skewY
   if (p.opacity !== undefined) v.opacity = p.opacity
   if (p.blur !== undefined) v.filter = `blur(${p.blur}px)`
+  if (p.form !== undefined) v['--form'] = p.form
   return v
 }
 
@@ -114,6 +123,7 @@ const REST: Record<string, number | string> = {
   skewY: 0,
   opacity: 1,
   filter: 'blur(0px)',
+  '--form': 1,
 }
 
 function restFor(vars: Vars): Vars {
@@ -150,7 +160,7 @@ export function partCount(el: Element, split: Motion['split']): number {
 
 /** Gesamtdauer einer Bewegung in Sekunden (ohne endlose Wiederholung), inkl. Versatz der Teile. */
 export function motionSpan(m: Motion, parts = 0): number {
-  const d = (m.duration ?? MOTION_DURATION) / 1000 + (parts > 1 ? ((m.stagger ?? 40) / 1000) * (parts - 1) : 0)
+  const d = motionDuration(m) / 1000 + (parts > 1 ? ((m.stagger ?? 40) / 1000) * (parts - 1) : 0)
   const repeat = m.repeat && m.repeat > 0 ? m.repeat : 0
   return d * (repeat + 1) + ((m.repeatDelay ?? 0) / 1000) * repeat
 }
@@ -195,9 +205,9 @@ function strokesIn(node: HTMLElement): SVGGeometryElement[] {
  * Mit `split` bewegt sich jeder Buchstabe/jedes Wort/jede Zeile einzeln, versetzt um `stagger`.
  * Endlose Bewegungen (repeat −1) hängt der Aufrufer nicht in die Folien-Timeline, sondern startet sie selbst.
  */
-export function buildMotion(wrap: HTMLElement, el: Element, m: Motion, first: boolean): gsap.core.Timeline {
+export function buildMotion(wrap: HTMLElement, el: Element, m: Motion, first: boolean, physics?: Float32Array): gsap.core.Timeline {
   const sub = gsap.timeline({ paused: true, repeat: m.repeat ?? 0, yoyo: Boolean(m.yoyo), repeatDelay: (m.repeatDelay ?? 0) / 1000 })
-  const duration = (m.duration ?? MOTION_DURATION) / 1000
+  const duration = motionDuration(m) / 1000
   const ease = motionEase(m.ease)
   const root = (wrap.closest('.slide') as HTMLElement | null) ?? wrap
   if (needs3d(m)) gsap.set(wrap, { transformPerspective: 1800, transformStyle: 'preserve-3d' })
@@ -264,7 +274,20 @@ export function buildMotion(wrap: HTMLElement, el: Element, m: Motion, first: bo
       }
     }
 
-    if (m.path) {
+    if (physics && !parts) {
+      // Vorab berechnete Bahn abspielen (siehe physics.ts): ein Zähler läuft, jedes Bild setzt x/y/Drehung.
+      const frames = physics.length / 3
+      const apply = (i: number) => {
+        const k = Math.max(0, Math.min(frames - 1, Math.round(i))) * 3
+        gsap.set(target, { x: physics[k], y: physics[k + 1], rotation: physics[k + 2] })
+      }
+      if (first) apply(0)
+      const counter = { i: 0 }
+      sub.fromTo(counter, { i: 0 }, { i: frames - 1, duration: (frames - 1) / PHYSICS_FPS, ease: 'none', onUpdate: () => apply(counter.i), immediateRender: false }, t0)
+      // Übrige Eigenschaften (z. B. Deckkraft beim Hereinkommen) wie gewohnt.
+      const rest: MotionProps = { ...m.from, x: undefined, y: undefined, rotate: undefined }
+      if (Object.values(rest).some((v) => v !== undefined)) segment(rest, m.to, 0, Math.min(duration, 0.6), ease, first)
+    } else if (m.path) {
       const off = pathOffset(el)
       const startPt = pathStart(m.path)
       const fromV = transformVars(m.from)

@@ -3,6 +3,7 @@ import { useState, type DragEvent as ReactDragEvent } from 'react'
 import { useTextStyles } from '../engine/context'
 import { findMaster } from '../engine/masters'
 import { findPalette, PALETTES } from '../engine/palettes'
+import { particleDefaults } from '../engine/particles'
 import { computeSteps, PRESET_DURATION } from '../engine/timeline'
 import { TRANSITION_DURATION } from '../engine/transitions'
 import type { Animation, Build, Deck, DeckTextStyle, Effect, Element, Master, Slide, TextStyle, Transition } from '../schema/deck'
@@ -108,6 +109,7 @@ export const TRANSITIONS: { value: Transition['type']; label: string }[] = [
   { value: 'whipPan', label: 'Whip-Pan' },
   { value: 'camera', label: 'Kamerafahrt' },
   { value: 'lightLeak', label: 'Light Leak' },
+  { value: 'glitch', label: 'Glitch' },
 ]
 
 export function Inspector(props: Props) {
@@ -480,6 +482,49 @@ function ElementStyle(props: ElementProps) {
             </Row>
           )}
           <p className="field-hint muted">Die Form selbst (SVG-Pfad) und Verwandlungen baut Claude im deck.json.</p>
+        </Group>
+      )}
+
+      {el.type === 'particles' && (
+        <Group title="Partikel">
+          <Row label="Art">
+            <Select
+              value={el.preset}
+              options={[
+                { value: 'dust', label: 'Staub' },
+                { value: 'snow', label: 'Schnee' },
+                { value: 'sparks', label: 'Funken' },
+                { value: 'bokeh', label: 'Licht-Kreise' },
+                { value: 'confetti', label: 'Konfetti' },
+                { value: 'stars', label: 'Sterne' },
+                { value: 'shape', label: 'Form (Text/Bild)' },
+              ]}
+              onChange={(v) => set((x) => void (x.type === 'particles' && (x.preset = v)))}
+            />
+          </Row>
+          <div className="grid2">
+            <Row label="Anzahl">
+              <NumberField value={el.count} placeholder={String(particleDefaults(el).count)} min={1} max={20000} step={50} onChange={(v) => set((x) => void (x.type === 'particles' && (v ? (x.count = Math.round(v)) : delete x.count)), 'pcount')} />
+            </Row>
+            <Row label="Größe">
+              <NumberField value={el.size} placeholder={String(particleDefaults(el).size)} min={0.5} step={0.5} onChange={(v) => set((x) => void (x.type === 'particles' && (v ? (x.size = v) : delete x.size)), 'psize')} />
+            </Row>
+          </div>
+          <Row label="Tempo">
+            <Slider value={Math.min(1, (el.speed ?? 1) / 3)} onChange={(v) => set((x) => void (x.type === 'particles' && (x.speed = Math.round(v * 300) / 100)), 'pspeed')} />
+          </Row>
+          {el.preset === 'shape' && (
+            <Row label="Text">
+              <TextField value={el.shape?.text ?? ''} placeholder="z. B. VINCENT" onChange={(v) => set((x) => void (x.type === 'particles' && (x.shape = { ...x.shape, text: v || undefined })), 'ptext')} />
+            </Row>
+          )}
+          <p className="field-hint muted">Mit dem Effekt „Zusammensetzen“ (Animation) fügen sich Form-Partikel zusammen, als Ausblendung zerfallen sie.</p>
+        </Group>
+      )}
+
+      {el.type === 'generative' && (
+        <Group title="Generativ">
+          <GenerativeFields value={el} onChange={(patch, merge) => set((x) => void (x.type === 'generative' && Object.assign(x, patch)), merge)} />
         </Group>
       )}
 
@@ -1279,6 +1324,7 @@ function BackgroundGroup({ page, brand, set, inherited }: Props & { set: PageSet
             { value: 'color', label: 'Farbe' },
             { value: 'gradient', label: 'Verlauf' },
             { value: 'meshGradient', label: 'Licht-Verlauf' },
+            { value: 'generative', label: 'Generativ' },
             { value: 'image', label: 'Bild' },
             { value: 'video', label: 'Video' },
           ]}
@@ -1294,6 +1340,7 @@ function BackgroundGroup({ page, brand, set, inherited }: Props & { set: PageSet
                   animate: true,
                 }
               }
+              if (v === 'generative') s.background = { type: 'generative', pattern: 'flow', colors: ['brand.background', 'brand.accent', 'brand.textMuted'] }
               if (v === 'image') s.background = { type: 'image', src: 'brand/platzhalter.svg' }
               if (v === 'video') s.background = { type: 'video', src: 'assets/video.mp4' }
             })
@@ -1324,6 +1371,12 @@ function BackgroundGroup({ page, brand, set, inherited }: Props & { set: PageSet
           />
         </Row>
       )}
+      {bg?.type === 'generative' && (
+        <GenerativeFields
+          value={bg}
+          onChange={(patch, merge) => set((s) => void (s.background?.type === 'generative' && Object.assign(s.background, patch)), merge && `bg-${merge}`)}
+        />
+      )}
       {bg?.type === 'meshGradient' && (
         <Toggle
           label="Langsam fließen"
@@ -1335,9 +1388,44 @@ function BackgroundGroup({ page, brand, set, inherited }: Props & { set: PageSet
   )
 }
 
+const PATTERNS = [
+  { value: 'flow', label: 'Strömung' },
+  { value: 'noise', label: 'Wolken' },
+  { value: 'waves', label: 'Höhenlinien' },
+  { value: 'grid', label: 'Gitter' },
+  { value: 'rings', label: 'Ringe' },
+  { value: 'plasma', label: 'Plasma' },
+] as const
+
+/** Muster, Tempo, Weite, Stärke – für generative Hintergründe und Elemente. */
+function GenerativeFields({
+  value,
+  onChange,
+}: {
+  value: { pattern: (typeof PATTERNS)[number]['value']; speed?: number; scale?: number; intensity?: number }
+  onChange: (patch: Partial<{ pattern: (typeof PATTERNS)[number]['value']; speed: number; scale: number; intensity: number }>, merge?: string) => void
+}) {
+  return (
+    <>
+      <Row label="Muster">
+        <Select value={value.pattern} options={[...PATTERNS]} onChange={(v) => onChange({ pattern: v })} />
+      </Row>
+      <Row label="Tempo">
+        <Slider value={value.speed ?? 0.3} onChange={(v) => onChange({ speed: v }, 'gspeed')} />
+      </Row>
+      <Row label="Weite">
+        <Slider value={value.scale ?? 0.5} onChange={(v) => onChange({ scale: v }, 'gscale')} />
+      </Row>
+      <Row label="Stärke">
+        <Slider value={value.intensity ?? 0.6} onChange={(v) => onChange({ intensity: v }, 'gint')} />
+      </Row>
+    </>
+  )
+}
+
 function EffectsGroup({ page, set }: Props & { set: PageSetter }) {
   const effect = <T extends Effect['type']>(type: T) => page.effects?.find((e) => e.type === type) as Extract<Effect, { type: T }> | undefined
-  const setEffect = (type: 'grain' | 'vignette' | 'letterbox' | 'lightSweep' | 'float', amount: number) =>
+  const setEffect = (type: 'grain' | 'vignette' | 'letterbox' | 'lightSweep' | 'float' | 'distort' | 'chromatic' | 'glitch', amount: number) =>
     set((s) => {
       const list: Effect[] = (s.effects ?? []).filter((e) => e.type !== type)
       if (amount > 0) list.push({ type, amount })
@@ -1363,6 +1451,22 @@ function EffectsGroup({ page, set }: Props & { set: PageSetter }) {
         <Slider value={effect('float')?.amount ?? 0} onChange={(v) => setEffect('float', v)} />
       </Row>
       <p className="field-hint muted">Schweben bewegt Elemente mit „Tiefe“ (Stil-Tab) sanft gegeneinander.</p>
+      <Disclosure
+        key={`looks-${page.id}`}
+        title="Shader-Looks"
+        open={Boolean(effect('distort') || effect('chromatic') || effect('glitch'))}
+      >
+        <Row label="Verzerrung">
+          <Slider value={effect('distort')?.amount ?? 0} onChange={(v) => setEffect('distort', v)} />
+        </Row>
+        <Row label="Farbversatz">
+          <Slider value={effect('chromatic')?.amount ?? 0} onChange={(v) => setEffect('chromatic', v)} />
+        </Row>
+        <Row label="Glitch">
+          <Slider value={effect('glitch')?.amount ?? 0} onChange={(v) => setEffect('glitch', v)} />
+        </Row>
+        <p className="field-hint muted">Wirken auf die ganze Folie. Sparsam – auf dem iPad kosten sie Leistung.</p>
+      </Disclosure>
       <Row label="Farblook">
         <Select
           value={look?.look ?? 'none'}

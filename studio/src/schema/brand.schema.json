@@ -242,7 +242,8 @@
             "camera",
             "maskReveal",
             "lightLeak",
-            "whipPan"
+            "whipPan",
+            "glitch"
           ]
         }
       },
@@ -256,6 +257,58 @@
       "properties": {
         "background": {
           "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "const": "generative"
+                },
+                "pattern": {
+                  "type": "string",
+                  "enum": [
+                    "flow",
+                    "noise",
+                    "grid",
+                    "waves",
+                    "rings",
+                    "plasma"
+                  ]
+                },
+                "colors": {
+                  "minItems": 1,
+                  "maxItems": 5,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+                  }
+                },
+                "speed": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "scale": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "intensity": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "animate": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "type",
+                "pattern"
+              ],
+              "additionalProperties": false
+            },
             {
               "type": "object",
               "properties": {

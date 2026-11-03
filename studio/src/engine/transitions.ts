@@ -1,5 +1,6 @@
 import { gsap } from 'gsap'
 import { formatChartValue } from './chart'
+import { ensureTransitionFilter } from './looks'
 import type { Element, Slide, Transition, World } from '../schema/deck'
 import type { TextStyles } from './brand'
 import { resolveRgba } from './gl/color'
@@ -22,6 +23,7 @@ export const TRANSITION_DURATION: Record<Transition['type'], number> = {
   maskReveal: 900,
   lightLeak: 1000,
   whipPan: 550,
+  glitch: 700,
 }
 
 /** Ersatz, falls ein Übergang auf diesem Gerät nicht möglich ist. */
@@ -122,6 +124,9 @@ export function runTransition(args: Args): TransitionRun {
     case 'lightLeak':
       lightLeak(args, tl, duration)
       break
+    case 'glitch':
+      glitch(args, tl, duration)
+      break
   }
   // Ausgangsfolie am Ende sicher ausblenden; Eingangsfolie auf Normalzustand.
   tl.set(from, { opacity: 0 })
@@ -217,6 +222,34 @@ function cameraMove(args: Args, tl: gsap.core.Timeline, duration: number) {
 /* ---------- Light Leak ---------- */
 
 /** Organisches Licht flutet über den Schnitt (WebGL); darunter blendet die Folie über. */
+/**
+ * Glitch: beide Folien zucken in Streifen, mit Farbversatz – erst überwiegt die alte, dann die neue.
+ * Wiederholbarer Zufall, damit der Schnitt jedes Mal gleich aussieht.
+ */
+function glitch(args: Args, tl: gsap.core.Timeline, duration: number) {
+  const { from, to } = args
+  const filter = `url(#${ensureTransitionFilter()})`
+  const steps = 12
+  const rand = (i: number, k: number) => {
+    const x = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453
+    return x - Math.floor(x)
+  }
+  for (let i = 0; i < steps; i++) {
+    const t = (i / steps) * duration
+    const p = i / (steps - 1)
+    const showTo = rand(i, 1) < p * 1.1
+    const band = () => {
+      const top = Math.round(rand(i, 2) * 70)
+      const height = 8 + Math.round(rand(i, 3) * 40)
+      return `inset(${top}% 0 ${Math.max(0, 100 - top - height)}% 0)`
+    }
+    const jitter = (rand(i, 4) - 0.5) * 120
+    tl.set(to, { opacity: showTo ? 1 : rand(i, 5) > 0.6 ? 1 : 0, x: showTo ? jitter * 0.3 : jitter, clipPath: showTo ? 'none' : band(), filter }, t)
+    tl.set(from, { opacity: showTo ? (rand(i, 6) > 0.7 ? 1 : 0) : 1, x: -jitter * 0.5, clipPath: showTo ? band() : 'none', filter }, t)
+  }
+  tl.set(to, { opacity: 1, x: 0, clipPath: 'none', filter: 'none' }, duration)
+}
+
 function lightLeak(args: Args, tl: gsap.core.Timeline, duration: number) {
   const { to } = args
   tl.fromTo(to, { opacity: 0 }, { opacity: 1, duration: duration * 0.35, ease: 'none' }, duration * 0.3)

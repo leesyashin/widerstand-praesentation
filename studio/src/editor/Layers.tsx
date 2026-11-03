@@ -21,6 +21,8 @@ const TYPE_ICON: Record<Element['type'], IconName> = {
   shape: 'shape',
   icon: 'icon',
   path: 'line',
+  particles: 'sparkle',
+  generative: 'space',
   chart: 'chart',
   lottie: 'sparkle',
   custom: 'stack',

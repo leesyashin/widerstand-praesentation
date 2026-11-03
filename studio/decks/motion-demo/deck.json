@@ -2,7 +2,7 @@
   "$schema": "../../src/schema/deck.schema.json",
   "version": 1,
   "title": "Motion-Demo",
-  "description": "Phase 8a/8b: freie Bewegungen, Kurven, Pfade, Schleifen, Szenen, kinetische Typo, Formwandel, Daten-Magic-Move.",
+  "description": "Phase 8a–8c: Bewegung, Kurven, Pfade, Szenen, kinetische Typo, Formwandel, Daten, Partikel, Generativ, Shader-Looks, Physik.",
   "format": {
     "preset": "16:9",
     "width": 1920,
@@ -630,6 +630,453 @@
             "y": 320,
             "w": 1600,
             "h": 620
+          }
+        }
+      ]
+    },
+    {
+      "id": "partikel",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "background": {
+        "type": "generative",
+        "pattern": "noise",
+        "colors": [
+          "brand.background",
+          "brand.accent2",
+          "brand.surface"
+        ],
+        "speed": 0.2,
+        "intensity": 0.7
+      },
+      "notes": "Partikel: Staub im Raum, Funken unten, Schriftzug aus 3600 Teilchen – Klick 1 setzt ihn zusammen, Klick 2 zerfällt er.",
+      "elements": [
+        {
+          "id": "staub",
+          "type": "particles",
+          "preset": "dust",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "w": 1920,
+            "h": 1080
+          }
+        },
+        {
+          "id": "funken",
+          "type": "particles",
+          "preset": "sparks",
+          "count": 220,
+          "frame": {
+            "x": 360,
+            "y": 700,
+            "w": 1200,
+            "h": 380
+          }
+        },
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Phase 8c · Partikel",
+          "frame": {
+            "x": 160,
+            "y": 120,
+            "w": 1200,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "schriftzug",
+          "type": "particles",
+          "preset": "shape",
+          "shape": {
+            "text": "VINCENT",
+            "style": "display"
+          },
+          "colors": [
+            "brand.text",
+            "brand.accent"
+          ],
+          "frame": {
+            "x": 260,
+            "y": 330,
+            "w": 1400,
+            "h": 360
+          },
+          "build": {
+            "in": {
+              "preset": "assemble",
+              "duration": 2600
+            },
+            "out": {
+              "preset": "assemble",
+              "duration": 1800
+            },
+            "trigger": "click"
+          }
+        }
+      ]
+    },
+    {
+      "id": "generativ",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "background": {
+        "type": "generative",
+        "pattern": "noise",
+        "colors": [
+          "brand.background",
+          "brand.accent",
+          "brand.textMuted"
+        ],
+        "speed": 0.25,
+        "intensity": 0.6
+      },
+      "notes": "Generative Muster als Hintergrund (Strömung) und als Kacheln.",
+      "elements": [
+        {
+          "id": "titel",
+          "type": "text",
+          "style": "title",
+          "content": "Generativ.",
+          "frame": {
+            "x": 160,
+            "y": 120,
+            "w": 1600,
+            "h": 130
+          },
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "kachel-1",
+          "type": "generative",
+          "pattern": "waves",
+          "colors": [
+            "brand.surface",
+            "brand.accent"
+          ],
+          "radius": 28,
+          "frame": {
+            "x": 160,
+            "y": 360,
+            "w": 500,
+            "h": 500
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "kachel-2",
+          "type": "generative",
+          "pattern": "grid",
+          "colors": [
+            "brand.background",
+            "brand.accent",
+            "brand.text"
+          ],
+          "radius": 28,
+          "frame": {
+            "x": 710,
+            "y": 360,
+            "w": 500,
+            "h": 500
+          },
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 120
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "kachel-3",
+          "type": "generative",
+          "pattern": "rings",
+          "colors": [
+            "brand.surface",
+            "brand.textMuted",
+            "brand.accent"
+          ],
+          "radius": 28,
+          "frame": {
+            "x": 1260,
+            "y": 360,
+            "w": 500,
+            "h": 500
+          },
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 240
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ]
+    },
+    {
+      "id": "looks",
+      "transition": {
+        "type": "glitch"
+      },
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "notes": "Shader-Looks: Glitch-Übergang, Glitch und Farbversatz am Titel, flüssige Verzerrung auf der Karte.",
+      "elements": [
+        {
+          "id": "titel",
+          "type": "text",
+          "style": "display",
+          "content": "Signal.\nStörung.",
+          "frame": {
+            "x": 160,
+            "y": 160,
+            "w": 1100,
+            "h": 340
+          },
+          "looks": [
+            {
+              "type": "glitch",
+              "amount": 0.6,
+              "speed": 0.5
+            },
+            {
+              "type": "chromatic",
+              "amount": 0.35
+            }
+          ]
+        },
+        {
+          "id": "karte",
+          "type": "shape",
+          "shape": "rect",
+          "fill": "brand.accent",
+          "radius": 40,
+          "frame": {
+            "x": 1260,
+            "y": 200,
+            "w": 500,
+            "h": 640
+          },
+          "looks": [
+            {
+              "type": "distort",
+              "amount": 0.5,
+              "scale": 0.4,
+              "speed": 0.5
+            }
+          ]
+        },
+        {
+          "id": "karte-text",
+          "type": "text",
+          "style": "heading",
+          "color": "brand.ink",
+          "align": "center",
+          "verticalAlign": "middle",
+          "content": "Flüssig.",
+          "frame": {
+            "x": 1260,
+            "y": 200,
+            "w": 500,
+            "h": 640
+          },
+          "looks": [
+            {
+              "type": "distort",
+              "amount": 0.5,
+              "scale": 0.4,
+              "speed": 0.5
+            }
+          ]
+        },
+        {
+          "id": "hinweis",
+          "type": "text",
+          "style": "caption",
+          "content": "Übergang „Glitch“ · Looks: glitch, chromatic, distort",
+          "frame": {
+            "x": 160,
+            "y": 900,
+            "w": 1200,
+            "h": 40
+          }
+        }
+      ]
+    },
+    {
+      "id": "physik",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "notes": "Physik: Klick – alles fällt, prallt ab und stößt sich an.",
+      "elements": [
+        {
+          "id": "titel",
+          "type": "text",
+          "style": "title",
+          "content": "Schwerkraft.",
+          "frame": {
+            "x": 160,
+            "y": 120,
+            "w": 1600,
+            "h": 130
+          },
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "ball-1",
+          "type": "shape",
+          "shape": "ellipse",
+          "fill": "brand.accent",
+          "frame": {
+            "x": 700,
+            "y": 860,
+            "w": 180,
+            "h": 180
+          },
+          "motion": [
+            {
+              "step": 1,
+              "from": {
+                "y": -760,
+                "x": -300
+              },
+              "physics": {
+                "bounce": 0.6,
+                "velocity": {
+                  "x": 500
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "ball-2",
+          "type": "shape",
+          "shape": "ellipse",
+          "fill": "brand.textMuted",
+          "frame": {
+            "x": 1000,
+            "y": 900,
+            "w": 140,
+            "h": 140
+          },
+          "motion": [
+            {
+              "step": 1,
+              "at": 250,
+              "from": {
+                "y": -820,
+                "x": 200
+              },
+              "physics": {
+                "bounce": 0.7,
+                "velocity": {
+                  "x": -300
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "ball-3",
+          "type": "shape",
+          "shape": "ellipse",
+          "fill": "brand.text",
+          "frame": {
+            "x": 1300,
+            "y": 940,
+            "w": 100,
+            "h": 100
+          },
+          "motion": [
+            {
+              "step": 1,
+              "at": 500,
+              "from": {
+                "y": -860,
+                "x": 300
+              },
+              "physics": {
+                "bounce": 0.75,
+                "velocity": {
+                  "x": -700
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "kiste",
+          "type": "shape",
+          "shape": "rect",
+          "fill": "brand.surface",
+          "radius": 18,
+          "frame": {
+            "x": 300,
+            "y": 880,
+            "w": 200,
+            "h": 160
+          },
+          "motion": [
+            {
+              "step": 1,
+              "at": 150,
+              "from": {
+                "y": -700,
+                "rotate": -20
+              },
+              "physics": {
+                "bounce": 0.3,
+                "spin": 90,
+                "velocity": {
+                  "x": 200
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "hinweis",
+          "type": "text",
+          "style": "caption",
+          "content": "Klick: Schwerkraft, Abprallen, Zusammenstöße – vorab berechnet, darum jedes Mal gleich.",
+          "frame": {
+            "x": 160,
+            "y": 300,
+            "w": 1600,
+            "h": 40
           }
         }
       ]

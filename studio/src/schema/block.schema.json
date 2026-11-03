@@ -49,6 +49,58 @@
           "properties": {
             "type": {
               "type": "string",
+              "const": "generative"
+            },
+            "pattern": {
+              "type": "string",
+              "enum": [
+                "flow",
+                "noise",
+                "grid",
+                "waves",
+                "rings",
+                "plasma"
+              ]
+            },
+            "colors": {
+              "minItems": 1,
+              "maxItems": 5,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+              }
+            },
+            "speed": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "scale": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "intensity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "animate": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "type",
+            "pattern"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
               "const": "color"
             },
             "color": {
@@ -292,6 +344,83 @@
               "look"
             ],
             "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "distort"
+              },
+              "amount": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "speed": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "scale": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "required": [
+              "type",
+              "amount"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "chromatic"
+              },
+              "amount": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "speed": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "required": [
+              "type",
+              "amount"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "glitch"
+              },
+              "amount": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "speed": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "required": [
+              "type",
+              "amount"
+            ],
+            "additionalProperties": false
           }
         ]
       }
@@ -311,7 +440,8 @@
             "camera",
             "maskReveal",
             "lightLeak",
-            "whipPan"
+            "whipPan",
+            "glitch"
           ]
         },
         "duration": {
@@ -657,6 +787,11 @@
                           "type": "number",
                           "minimum": -100,
                           "maximum": 200
+                        },
+                        "form": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
                         }
                       },
                       "additionalProperties": false
@@ -728,6 +863,11 @@
                           "type": "number",
                           "minimum": -100,
                           "maximum": 200
+                        },
+                        "form": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
                         }
                       },
                       "additionalProperties": false
@@ -803,6 +943,11 @@
                             "minimum": -100,
                             "maximum": 200
                           },
+                          "form": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
                           "t": {
                             "type": "number",
                             "minimum": 0,
@@ -857,8 +1002,89 @@
                         "center",
                         "random"
                       ]
+                    },
+                    "physics": {
+                      "type": "object",
+                      "properties": {
+                        "gravity": {
+                          "type": "number",
+                          "minimum": -20000,
+                          "maximum": 20000
+                        },
+                        "bounce": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "friction": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "velocity": {
+                          "type": "object",
+                          "properties": {
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            }
+                          },
+                          "additionalProperties": false
+                        },
+                        "spin": {
+                          "type": "number"
+                        },
+                        "floor": {
+                          "type": "number"
+                        },
+                        "walls": {
+                          "type": "boolean"
+                        },
+                        "collide": {
+                          "type": "boolean"
+                        }
+                      },
+                      "additionalProperties": false
                     }
                   },
+                  "additionalProperties": false
+                }
+              },
+              "looks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "distort",
+                        "chromatic",
+                        "glitch"
+                      ]
+                    },
+                    "amount": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "speed": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "scale": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "amount"
+                  ],
                   "additionalProperties": false
                 }
               },
@@ -1266,6 +1492,11 @@
                           "type": "number",
                           "minimum": -100,
                           "maximum": 200
+                        },
+                        "form": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
                         }
                       },
                       "additionalProperties": false
@@ -1337,6 +1568,11 @@
                           "type": "number",
                           "minimum": -100,
                           "maximum": 200
+                        },
+                        "form": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
                         }
                       },
                       "additionalProperties": false
@@ -1412,6 +1648,11 @@
                             "minimum": -100,
                             "maximum": 200
                           },
+                          "form": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
                           "t": {
                             "type": "number",
                             "minimum": 0,
@@ -1466,8 +1707,1440 @@
                         "center",
                         "random"
                       ]
+                    },
+                    "physics": {
+                      "type": "object",
+                      "properties": {
+                        "gravity": {
+                          "type": "number",
+                          "minimum": -20000,
+                          "maximum": 20000
+                        },
+                        "bounce": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "friction": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "velocity": {
+                          "type": "object",
+                          "properties": {
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            }
+                          },
+                          "additionalProperties": false
+                        },
+                        "spin": {
+                          "type": "number"
+                        },
+                        "floor": {
+                          "type": "number"
+                        },
+                        "walls": {
+                          "type": "boolean"
+                        },
+                        "collide": {
+                          "type": "boolean"
+                        }
+                      },
+                      "additionalProperties": false
                     }
                   },
+                  "additionalProperties": false
+                }
+              },
+              "looks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "distort",
+                        "chromatic",
+                        "glitch"
+                      ]
+                    },
+                    "amount": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "speed": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "scale": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "amount"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "type": {
+                "type": "string",
+                "const": "particles"
+              },
+              "preset": {
+                "type": "string",
+                "enum": [
+                  "dust",
+                  "snow",
+                  "sparks",
+                  "bokeh",
+                  "confetti",
+                  "stars",
+                  "shape"
+                ]
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 20000
+              },
+              "colors": {
+                "minItems": 1,
+                "maxItems": 5,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+                }
+              },
+              "size": {
+                "type": "number",
+                "exclusiveMinimum": 0,
+                "maximum": 400
+              },
+              "speed": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 10
+              },
+              "shape": {
+                "type": "object",
+                "properties": {
+                  "text": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "src": {
+                    "type": "string",
+                    "pattern": "^(assets|brand)\\/[^\\s]+$"
+                  },
+                  "style": {
+                    "type": "string",
+                    "enum": [
+                      "display",
+                      "title",
+                      "heading",
+                      "subtitle",
+                      "body",
+                      "caption",
+                      "label"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
+              "form": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "required": [
+              "id",
+              "frame",
+              "type",
+              "preset"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
+              "match": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
+              "name": {
+                "type": "string"
+              },
+              "frame": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "w": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "h": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "rotation": {
+                    "type": "number",
+                    "minimum": -360,
+                    "maximum": 360
+                  }
+                },
+                "required": [
+                  "x",
+                  "y",
+                  "w",
+                  "h"
+                ],
+                "additionalProperties": false
+              },
+              "opacity": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "depth": {
+                "type": "number",
+                "minimum": -10,
+                "maximum": 10
+              },
+              "tilt": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "minimum": -60,
+                    "maximum": 60
+                  },
+                  "y": {
+                    "type": "number",
+                    "minimum": -60,
+                    "maximum": 60
+                  }
+                },
+                "additionalProperties": false
+              },
+              "locked": {
+                "type": "boolean"
+              },
+              "hidden": {
+                "type": "boolean"
+              },
+              "group": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
+              "build": {
+                "type": "object",
+                "properties": {
+                  "in": {
+                    "type": "object",
+                    "properties": {
+                      "preset": {
+                        "type": "string",
+                        "enum": [
+                          "fade",
+                          "rise",
+                          "blurRise",
+                          "scaleIn",
+                          "maskReveal",
+                          "wordByWord",
+                          "lineByLine",
+                          "drawLine",
+                          "countUp",
+                          "kenBurns",
+                          "grow",
+                          "charByChar",
+                          "typewriter",
+                          "scramble",
+                          "assemble"
+                        ]
+                      },
+                      "duration": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 20000
+                      },
+                      "delay": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 20000
+                      },
+                      "easing": {
+                        "type": "string",
+                        "enum": [
+                          "smooth",
+                          "spring",
+                          "linear",
+                          "in",
+                          "out",
+                          "inOut"
+                        ]
+                      },
+                      "direction": {
+                        "type": "string",
+                        "enum": [
+                          "up",
+                          "down",
+                          "left",
+                          "right"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "preset"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "out": {
+                    "type": "object",
+                    "properties": {
+                      "preset": {
+                        "type": "string",
+                        "enum": [
+                          "fade",
+                          "rise",
+                          "blurRise",
+                          "scaleIn",
+                          "maskReveal",
+                          "wordByWord",
+                          "lineByLine",
+                          "drawLine",
+                          "countUp",
+                          "kenBurns",
+                          "grow",
+                          "charByChar",
+                          "typewriter",
+                          "scramble",
+                          "assemble"
+                        ]
+                      },
+                      "duration": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 20000
+                      },
+                      "delay": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 20000
+                      },
+                      "easing": {
+                        "type": "string",
+                        "enum": [
+                          "smooth",
+                          "spring",
+                          "linear",
+                          "in",
+                          "out",
+                          "inOut"
+                        ]
+                      },
+                      "direction": {
+                        "type": "string",
+                        "enum": [
+                          "up",
+                          "down",
+                          "left",
+                          "right"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "preset"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "trigger": {
+                    "type": "string",
+                    "enum": [
+                      "click",
+                      "withPrevious",
+                      "afterPrevious"
+                    ]
+                  },
+                  "order": {
+                    "type": "number"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "motion": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "step": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 99
+                    },
+                    "at": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 120000
+                    },
+                    "duration": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 120000
+                    },
+                    "ease": {
+                      "type": "string",
+                      "pattern": "^(smooth|spring|linear|in|out|inOut|bounce|elastic|back|cubic-bezier\\(\\s*-?[\\d.]+\\s*,\\s*-?[\\d.]+\\s*,\\s*-?[\\d.]+\\s*,\\s*-?[\\d.]+\\s*\\)|spring\\(\\s*(0(\\.\\d+)?|\\.\\d+)\\s*\\)|wiggle\\(\\s*\\d{1,2}\\s*\\)|steps\\(\\s*\\d{1,2}\\s*\\))$"
+                    },
+                    "from": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number"
+                        },
+                        "y": {
+                          "type": "number"
+                        },
+                        "z": {
+                          "type": "number"
+                        },
+                        "scale": {
+                          "type": "number"
+                        },
+                        "scaleX": {
+                          "type": "number"
+                        },
+                        "scaleY": {
+                          "type": "number"
+                        },
+                        "rotate": {
+                          "type": "number"
+                        },
+                        "rotateX": {
+                          "type": "number"
+                        },
+                        "rotateY": {
+                          "type": "number"
+                        },
+                        "skewX": {
+                          "type": "number"
+                        },
+                        "skewY": {
+                          "type": "number"
+                        },
+                        "opacity": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "blur": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 200
+                        },
+                        "color": {
+                          "type": "string",
+                          "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+                        },
+                        "fill": {
+                          "type": "string",
+                          "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+                        },
+                        "d": {
+                          "type": "string",
+                          "minLength": 3
+                        },
+                        "draw": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "textOffset": {
+                          "type": "number",
+                          "minimum": -100,
+                          "maximum": 200
+                        },
+                        "form": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "to": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number"
+                        },
+                        "y": {
+                          "type": "number"
+                        },
+                        "z": {
+                          "type": "number"
+                        },
+                        "scale": {
+                          "type": "number"
+                        },
+                        "scaleX": {
+                          "type": "number"
+                        },
+                        "scaleY": {
+                          "type": "number"
+                        },
+                        "rotate": {
+                          "type": "number"
+                        },
+                        "rotateX": {
+                          "type": "number"
+                        },
+                        "rotateY": {
+                          "type": "number"
+                        },
+                        "skewX": {
+                          "type": "number"
+                        },
+                        "skewY": {
+                          "type": "number"
+                        },
+                        "opacity": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "blur": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 200
+                        },
+                        "color": {
+                          "type": "string",
+                          "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+                        },
+                        "fill": {
+                          "type": "string",
+                          "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+                        },
+                        "d": {
+                          "type": "string",
+                          "minLength": 3
+                        },
+                        "draw": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "textOffset": {
+                          "type": "number",
+                          "minimum": -100,
+                          "maximum": 200
+                        },
+                        "form": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "keys": {
+                      "minItems": 2,
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "x": {
+                            "type": "number"
+                          },
+                          "y": {
+                            "type": "number"
+                          },
+                          "z": {
+                            "type": "number"
+                          },
+                          "scale": {
+                            "type": "number"
+                          },
+                          "scaleX": {
+                            "type": "number"
+                          },
+                          "scaleY": {
+                            "type": "number"
+                          },
+                          "rotate": {
+                            "type": "number"
+                          },
+                          "rotateX": {
+                            "type": "number"
+                          },
+                          "rotateY": {
+                            "type": "number"
+                          },
+                          "skewX": {
+                            "type": "number"
+                          },
+                          "skewY": {
+                            "type": "number"
+                          },
+                          "opacity": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
+                          "blur": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 200
+                          },
+                          "color": {
+                            "type": "string",
+                            "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+                          },
+                          "fill": {
+                            "type": "string",
+                            "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+                          },
+                          "d": {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          "draw": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
+                          "textOffset": {
+                            "type": "number",
+                            "minimum": -100,
+                            "maximum": 200
+                          },
+                          "form": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
+                          "t": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
+                          "ease": {
+                            "type": "string",
+                            "pattern": "^(smooth|spring|linear|in|out|inOut|bounce|elastic|back|cubic-bezier\\(\\s*-?[\\d.]+\\s*,\\s*-?[\\d.]+\\s*,\\s*-?[\\d.]+\\s*,\\s*-?[\\d.]+\\s*\\)|spring\\(\\s*(0(\\.\\d+)?|\\.\\d+)\\s*\\)|wiggle\\(\\s*\\d{1,2}\\s*\\)|steps\\(\\s*\\d{1,2}\\s*\\))$"
+                          }
+                        },
+                        "additionalProperties": false
+                      }
+                    },
+                    "path": {
+                      "type": "string",
+                      "minLength": 3
+                    },
+                    "orient": {
+                      "type": "boolean"
+                    },
+                    "repeat": {
+                      "type": "integer",
+                      "minimum": -1,
+                      "maximum": 999
+                    },
+                    "yoyo": {
+                      "type": "boolean"
+                    },
+                    "repeatDelay": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 60000
+                    },
+                    "split": {
+                      "type": "string",
+                      "enum": [
+                        "char",
+                        "word",
+                        "line"
+                      ]
+                    },
+                    "stagger": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 5000
+                    },
+                    "staggerFrom": {
+                      "type": "string",
+                      "enum": [
+                        "start",
+                        "end",
+                        "center",
+                        "random"
+                      ]
+                    },
+                    "physics": {
+                      "type": "object",
+                      "properties": {
+                        "gravity": {
+                          "type": "number",
+                          "minimum": -20000,
+                          "maximum": 20000
+                        },
+                        "bounce": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "friction": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "velocity": {
+                          "type": "object",
+                          "properties": {
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            }
+                          },
+                          "additionalProperties": false
+                        },
+                        "spin": {
+                          "type": "number"
+                        },
+                        "floor": {
+                          "type": "number"
+                        },
+                        "walls": {
+                          "type": "boolean"
+                        },
+                        "collide": {
+                          "type": "boolean"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "looks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "distort",
+                        "chromatic",
+                        "glitch"
+                      ]
+                    },
+                    "amount": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "speed": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "scale": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "amount"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "type": {
+                "type": "string",
+                "const": "generative"
+              },
+              "pattern": {
+                "type": "string",
+                "enum": [
+                  "flow",
+                  "noise",
+                  "grid",
+                  "waves",
+                  "rings",
+                  "plasma"
+                ]
+              },
+              "colors": {
+                "minItems": 1,
+                "maxItems": 5,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+                }
+              },
+              "speed": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "scale": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "intensity": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "animate": {
+                "type": "boolean"
+              },
+              "radius": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "required": [
+              "id",
+              "frame",
+              "type",
+              "pattern"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
+              "match": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
+              "name": {
+                "type": "string"
+              },
+              "frame": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "number"
+                  },
+                  "y": {
+                    "type": "number"
+                  },
+                  "w": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "h": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "rotation": {
+                    "type": "number",
+                    "minimum": -360,
+                    "maximum": 360
+                  }
+                },
+                "required": [
+                  "x",
+                  "y",
+                  "w",
+                  "h"
+                ],
+                "additionalProperties": false
+              },
+              "opacity": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "depth": {
+                "type": "number",
+                "minimum": -10,
+                "maximum": 10
+              },
+              "tilt": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "minimum": -60,
+                    "maximum": 60
+                  },
+                  "y": {
+                    "type": "number",
+                    "minimum": -60,
+                    "maximum": 60
+                  }
+                },
+                "additionalProperties": false
+              },
+              "locked": {
+                "type": "boolean"
+              },
+              "hidden": {
+                "type": "boolean"
+              },
+              "group": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
+              "build": {
+                "type": "object",
+                "properties": {
+                  "in": {
+                    "type": "object",
+                    "properties": {
+                      "preset": {
+                        "type": "string",
+                        "enum": [
+                          "fade",
+                          "rise",
+                          "blurRise",
+                          "scaleIn",
+                          "maskReveal",
+                          "wordByWord",
+                          "lineByLine",
+                          "drawLine",
+                          "countUp",
+                          "kenBurns",
+                          "grow",
+                          "charByChar",
+                          "typewriter",
+                          "scramble",
+                          "assemble"
+                        ]
+                      },
+                      "duration": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 20000
+                      },
+                      "delay": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 20000
+                      },
+                      "easing": {
+                        "type": "string",
+                        "enum": [
+                          "smooth",
+                          "spring",
+                          "linear",
+                          "in",
+                          "out",
+                          "inOut"
+                        ]
+                      },
+                      "direction": {
+                        "type": "string",
+                        "enum": [
+                          "up",
+                          "down",
+                          "left",
+                          "right"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "preset"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "out": {
+                    "type": "object",
+                    "properties": {
+                      "preset": {
+                        "type": "string",
+                        "enum": [
+                          "fade",
+                          "rise",
+                          "blurRise",
+                          "scaleIn",
+                          "maskReveal",
+                          "wordByWord",
+                          "lineByLine",
+                          "drawLine",
+                          "countUp",
+                          "kenBurns",
+                          "grow",
+                          "charByChar",
+                          "typewriter",
+                          "scramble",
+                          "assemble"
+                        ]
+                      },
+                      "duration": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 20000
+                      },
+                      "delay": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 20000
+                      },
+                      "easing": {
+                        "type": "string",
+                        "enum": [
+                          "smooth",
+                          "spring",
+                          "linear",
+                          "in",
+                          "out",
+                          "inOut"
+                        ]
+                      },
+                      "direction": {
+                        "type": "string",
+                        "enum": [
+                          "up",
+                          "down",
+                          "left",
+                          "right"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "preset"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "trigger": {
+                    "type": "string",
+                    "enum": [
+                      "click",
+                      "withPrevious",
+                      "afterPrevious"
+                    ]
+                  },
+                  "order": {
+                    "type": "number"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "motion": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "step": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 99
+                    },
+                    "at": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 120000
+                    },
+                    "duration": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 120000
+                    },
+                    "ease": {
+                      "type": "string",
+                      "pattern": "^(smooth|spring|linear|in|out|inOut|bounce|elastic|back|cubic-bezier\\(\\s*-?[\\d.]+\\s*,\\s*-?[\\d.]+\\s*,\\s*-?[\\d.]+\\s*,\\s*-?[\\d.]+\\s*\\)|spring\\(\\s*(0(\\.\\d+)?|\\.\\d+)\\s*\\)|wiggle\\(\\s*\\d{1,2}\\s*\\)|steps\\(\\s*\\d{1,2}\\s*\\))$"
+                    },
+                    "from": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number"
+                        },
+                        "y": {
+                          "type": "number"
+                        },
+                        "z": {
+                          "type": "number"
+                        },
+                        "scale": {
+                          "type": "number"
+                        },
+                        "scaleX": {
+                          "type": "number"
+                        },
+                        "scaleY": {
+                          "type": "number"
+                        },
+                        "rotate": {
+                          "type": "number"
+                        },
+                        "rotateX": {
+                          "type": "number"
+                        },
+                        "rotateY": {
+                          "type": "number"
+                        },
+                        "skewX": {
+                          "type": "number"
+                        },
+                        "skewY": {
+                          "type": "number"
+                        },
+                        "opacity": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "blur": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 200
+                        },
+                        "color": {
+                          "type": "string",
+                          "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+                        },
+                        "fill": {
+                          "type": "string",
+                          "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+                        },
+                        "d": {
+                          "type": "string",
+                          "minLength": 3
+                        },
+                        "draw": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "textOffset": {
+                          "type": "number",
+                          "minimum": -100,
+                          "maximum": 200
+                        },
+                        "form": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "to": {
+                      "type": "object",
+                      "properties": {
+                        "x": {
+                          "type": "number"
+                        },
+                        "y": {
+                          "type": "number"
+                        },
+                        "z": {
+                          "type": "number"
+                        },
+                        "scale": {
+                          "type": "number"
+                        },
+                        "scaleX": {
+                          "type": "number"
+                        },
+                        "scaleY": {
+                          "type": "number"
+                        },
+                        "rotate": {
+                          "type": "number"
+                        },
+                        "rotateX": {
+                          "type": "number"
+                        },
+                        "rotateY": {
+                          "type": "number"
+                        },
+                        "skewX": {
+                          "type": "number"
+                        },
+                        "skewY": {
+                          "type": "number"
+                        },
+                        "opacity": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "blur": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 200
+                        },
+                        "color": {
+                          "type": "string",
+                          "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+                        },
+                        "fill": {
+                          "type": "string",
+                          "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+                        },
+                        "d": {
+                          "type": "string",
+                          "minLength": 3
+                        },
+                        "draw": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "textOffset": {
+                          "type": "number",
+                          "minimum": -100,
+                          "maximum": 200
+                        },
+                        "form": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    "keys": {
+                      "minItems": 2,
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "x": {
+                            "type": "number"
+                          },
+                          "y": {
+                            "type": "number"
+                          },
+                          "z": {
+                            "type": "number"
+                          },
+                          "scale": {
+                            "type": "number"
+                          },
+                          "scaleX": {
+                            "type": "number"
+                          },
+                          "scaleY": {
+                            "type": "number"
+                          },
+                          "rotate": {
+                            "type": "number"
+                          },
+                          "rotateX": {
+                            "type": "number"
+                          },
+                          "rotateY": {
+                            "type": "number"
+                          },
+                          "skewX": {
+                            "type": "number"
+                          },
+                          "skewY": {
+                            "type": "number"
+                          },
+                          "opacity": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
+                          "blur": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 200
+                          },
+                          "color": {
+                            "type": "string",
+                            "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+                          },
+                          "fill": {
+                            "type": "string",
+                            "pattern": "^(#[0-9a-fA-F]{3,8}|rgba?\\([^)]*\\)|brand\\.[a-zA-Z][a-zA-Z0-9]*|transparent)$"
+                          },
+                          "d": {
+                            "type": "string",
+                            "minLength": 3
+                          },
+                          "draw": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
+                          "textOffset": {
+                            "type": "number",
+                            "minimum": -100,
+                            "maximum": 200
+                          },
+                          "form": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
+                          "t": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
+                          "ease": {
+                            "type": "string",
+                            "pattern": "^(smooth|spring|linear|in|out|inOut|bounce|elastic|back|cubic-bezier\\(\\s*-?[\\d.]+\\s*,\\s*-?[\\d.]+\\s*,\\s*-?[\\d.]+\\s*,\\s*-?[\\d.]+\\s*\\)|spring\\(\\s*(0(\\.\\d+)?|\\.\\d+)\\s*\\)|wiggle\\(\\s*\\d{1,2}\\s*\\)|steps\\(\\s*\\d{1,2}\\s*\\))$"
+                          }
+                        },
+                        "additionalProperties": false
+                      }
+                    },
+                    "path": {
+                      "type": "string",
+                      "minLength": 3
+                    },
+                    "orient": {
+                      "type": "boolean"
+                    },
+                    "repeat": {
+                      "type": "integer",
+                      "minimum": -1,
+                      "maximum": 999
+                    },
+                    "yoyo": {
+                      "type": "boolean"
+                    },
+                    "repeatDelay": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 60000
+                    },
+                    "split": {
+                      "type": "string",
+                      "enum": [
+                        "char",
+                        "word",
+                        "line"
+                      ]
+                    },
+                    "stagger": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 5000
+                    },
+                    "staggerFrom": {
+                      "type": "string",
+                      "enum": [
+                        "start",
+                        "end",
+                        "center",
+                        "random"
+                      ]
+                    },
+                    "physics": {
+                      "type": "object",
+                      "properties": {
+                        "gravity": {
+                          "type": "number",
+                          "minimum": -20000,
+                          "maximum": 20000
+                        },
+                        "bounce": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "friction": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "velocity": {
+                          "type": "object",
+                          "properties": {
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            }
+                          },
+                          "additionalProperties": false
+                        },
+                        "spin": {
+                          "type": "number"
+                        },
+                        "floor": {
+                          "type": "number"
+                        },
+                        "walls": {
+                          "type": "boolean"
+                        },
+                        "collide": {
+                          "type": "boolean"
+                        }
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              },
+              "looks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "distort",
+                        "chromatic",
+                        "glitch"
+                      ]
+                    },
+                    "amount": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "speed": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "scale": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "amount"
+                  ],
                   "additionalProperties": false
                 }
               },
@@ -1850,6 +3523,11 @@
                           "type": "number",
                           "minimum": -100,
                           "maximum": 200
+                        },
+                        "form": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
                         }
                       },
                       "additionalProperties": false
@@ -1921,6 +3599,11 @@
                           "type": "number",
                           "minimum": -100,
                           "maximum": 200
+                        },
+                        "form": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
                         }
                       },
                       "additionalProperties": false
@@ -1996,6 +3679,11 @@
                             "minimum": -100,
                             "maximum": 200
                           },
+                          "form": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
                           "t": {
                             "type": "number",
                             "minimum": 0,
@@ -2050,8 +3738,89 @@
                         "center",
                         "random"
                       ]
+                    },
+                    "physics": {
+                      "type": "object",
+                      "properties": {
+                        "gravity": {
+                          "type": "number",
+                          "minimum": -20000,
+                          "maximum": 20000
+                        },
+                        "bounce": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "friction": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "velocity": {
+                          "type": "object",
+                          "properties": {
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            }
+                          },
+                          "additionalProperties": false
+                        },
+                        "spin": {
+                          "type": "number"
+                        },
+                        "floor": {
+                          "type": "number"
+                        },
+                        "walls": {
+                          "type": "boolean"
+                        },
+                        "collide": {
+                          "type": "boolean"
+                        }
+                      },
+                      "additionalProperties": false
                     }
                   },
+                  "additionalProperties": false
+                }
+              },
+              "looks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "distort",
+                        "chromatic",
+                        "glitch"
+                      ]
+                    },
+                    "amount": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "speed": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "scale": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "amount"
+                  ],
                   "additionalProperties": false
                 }
               },
@@ -2413,6 +4182,11 @@
                           "type": "number",
                           "minimum": -100,
                           "maximum": 200
+                        },
+                        "form": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
                         }
                       },
                       "additionalProperties": false
@@ -2484,6 +4258,11 @@
                           "type": "number",
                           "minimum": -100,
                           "maximum": 200
+                        },
+                        "form": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
                         }
                       },
                       "additionalProperties": false
@@ -2559,6 +4338,11 @@
                             "minimum": -100,
                             "maximum": 200
                           },
+                          "form": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
                           "t": {
                             "type": "number",
                             "minimum": 0,
@@ -2613,8 +4397,89 @@
                         "center",
                         "random"
                       ]
+                    },
+                    "physics": {
+                      "type": "object",
+                      "properties": {
+                        "gravity": {
+                          "type": "number",
+                          "minimum": -20000,
+                          "maximum": 20000
+                        },
+                        "bounce": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "friction": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "velocity": {
+                          "type": "object",
+                          "properties": {
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            }
+                          },
+                          "additionalProperties": false
+                        },
+                        "spin": {
+                          "type": "number"
+                        },
+                        "floor": {
+                          "type": "number"
+                        },
+                        "walls": {
+                          "type": "boolean"
+                        },
+                        "collide": {
+                          "type": "boolean"
+                        }
+                      },
+                      "additionalProperties": false
                     }
                   },
+                  "additionalProperties": false
+                }
+              },
+              "looks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "distort",
+                        "chromatic",
+                        "glitch"
+                      ]
+                    },
+                    "amount": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "speed": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "scale": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "amount"
+                  ],
                   "additionalProperties": false
                 }
               },
@@ -2972,6 +4837,11 @@
                           "type": "number",
                           "minimum": -100,
                           "maximum": 200
+                        },
+                        "form": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
                         }
                       },
                       "additionalProperties": false
@@ -3043,6 +4913,11 @@
                           "type": "number",
                           "minimum": -100,
                           "maximum": 200
+                        },
+                        "form": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
                         }
                       },
                       "additionalProperties": false
@@ -3118,6 +4993,11 @@
                             "minimum": -100,
                             "maximum": 200
                           },
+                          "form": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
                           "t": {
                             "type": "number",
                             "minimum": 0,
@@ -3172,8 +5052,89 @@
                         "center",
                         "random"
                       ]
+                    },
+                    "physics": {
+                      "type": "object",
+                      "properties": {
+                        "gravity": {
+                          "type": "number",
+                          "minimum": -20000,
+                          "maximum": 20000
+                        },
+                        "bounce": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "friction": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "velocity": {
+                          "type": "object",
+                          "properties": {
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            }
+                          },
+                          "additionalProperties": false
+                        },
+                        "spin": {
+                          "type": "number"
+                        },
+                        "floor": {
+                          "type": "number"
+                        },
+                        "walls": {
+                          "type": "boolean"
+                        },
+                        "collide": {
+                          "type": "boolean"
+                        }
+                      },
+                      "additionalProperties": false
                     }
                   },
+                  "additionalProperties": false
+                }
+              },
+              "looks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "distort",
+                        "chromatic",
+                        "glitch"
+                      ]
+                    },
+                    "amount": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "speed": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "scale": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "amount"
+                  ],
                   "additionalProperties": false
                 }
               },
@@ -3537,6 +5498,11 @@
                           "type": "number",
                           "minimum": -100,
                           "maximum": 200
+                        },
+                        "form": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
                         }
                       },
                       "additionalProperties": false
@@ -3608,6 +5574,11 @@
                           "type": "number",
                           "minimum": -100,
                           "maximum": 200
+                        },
+                        "form": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
                         }
                       },
                       "additionalProperties": false
@@ -3683,6 +5654,11 @@
                             "minimum": -100,
                             "maximum": 200
                           },
+                          "form": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
                           "t": {
                             "type": "number",
                             "minimum": 0,
@@ -3737,8 +5713,89 @@
                         "center",
                         "random"
                       ]
+                    },
+                    "physics": {
+                      "type": "object",
+                      "properties": {
+                        "gravity": {
+                          "type": "number",
+                          "minimum": -20000,
+                          "maximum": 20000
+                        },
+                        "bounce": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "friction": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "velocity": {
+                          "type": "object",
+                          "properties": {
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            }
+                          },
+                          "additionalProperties": false
+                        },
+                        "spin": {
+                          "type": "number"
+                        },
+                        "floor": {
+                          "type": "number"
+                        },
+                        "walls": {
+                          "type": "boolean"
+                        },
+                        "collide": {
+                          "type": "boolean"
+                        }
+                      },
+                      "additionalProperties": false
                     }
                   },
+                  "additionalProperties": false
+                }
+              },
+              "looks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "distort",
+                        "chromatic",
+                        "glitch"
+                      ]
+                    },
+                    "amount": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "speed": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "scale": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "amount"
+                  ],
                   "additionalProperties": false
                 }
               },
@@ -4074,6 +6131,11 @@
                           "type": "number",
                           "minimum": -100,
                           "maximum": 200
+                        },
+                        "form": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
                         }
                       },
                       "additionalProperties": false
@@ -4145,6 +6207,11 @@
                           "type": "number",
                           "minimum": -100,
                           "maximum": 200
+                        },
+                        "form": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
                         }
                       },
                       "additionalProperties": false
@@ -4220,6 +6287,11 @@
                             "minimum": -100,
                             "maximum": 200
                           },
+                          "form": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
                           "t": {
                             "type": "number",
                             "minimum": 0,
@@ -4274,8 +6346,89 @@
                         "center",
                         "random"
                       ]
+                    },
+                    "physics": {
+                      "type": "object",
+                      "properties": {
+                        "gravity": {
+                          "type": "number",
+                          "minimum": -20000,
+                          "maximum": 20000
+                        },
+                        "bounce": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "friction": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "velocity": {
+                          "type": "object",
+                          "properties": {
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            }
+                          },
+                          "additionalProperties": false
+                        },
+                        "spin": {
+                          "type": "number"
+                        },
+                        "floor": {
+                          "type": "number"
+                        },
+                        "walls": {
+                          "type": "boolean"
+                        },
+                        "collide": {
+                          "type": "boolean"
+                        }
+                      },
+                      "additionalProperties": false
                     }
                   },
+                  "additionalProperties": false
+                }
+              },
+              "looks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "distort",
+                        "chromatic",
+                        "glitch"
+                      ]
+                    },
+                    "amount": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "speed": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "scale": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "amount"
+                  ],
                   "additionalProperties": false
                 }
               },
@@ -4651,6 +6804,11 @@
                           "type": "number",
                           "minimum": -100,
                           "maximum": 200
+                        },
+                        "form": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
                         }
                       },
                       "additionalProperties": false
@@ -4722,6 +6880,11 @@
                           "type": "number",
                           "minimum": -100,
                           "maximum": 200
+                        },
+                        "form": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
                         }
                       },
                       "additionalProperties": false
@@ -4797,6 +6960,11 @@
                             "minimum": -100,
                             "maximum": 200
                           },
+                          "form": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
                           "t": {
                             "type": "number",
                             "minimum": 0,
@@ -4851,8 +7019,89 @@
                         "center",
                         "random"
                       ]
+                    },
+                    "physics": {
+                      "type": "object",
+                      "properties": {
+                        "gravity": {
+                          "type": "number",
+                          "minimum": -20000,
+                          "maximum": 20000
+                        },
+                        "bounce": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "friction": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "velocity": {
+                          "type": "object",
+                          "properties": {
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            }
+                          },
+                          "additionalProperties": false
+                        },
+                        "spin": {
+                          "type": "number"
+                        },
+                        "floor": {
+                          "type": "number"
+                        },
+                        "walls": {
+                          "type": "boolean"
+                        },
+                        "collide": {
+                          "type": "boolean"
+                        }
+                      },
+                      "additionalProperties": false
                     }
                   },
+                  "additionalProperties": false
+                }
+              },
+              "looks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "distort",
+                        "chromatic",
+                        "glitch"
+                      ]
+                    },
+                    "amount": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "speed": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "scale": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "amount"
+                  ],
                   "additionalProperties": false
                 }
               },
@@ -5193,6 +7442,11 @@
                           "type": "number",
                           "minimum": -100,
                           "maximum": 200
+                        },
+                        "form": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
                         }
                       },
                       "additionalProperties": false
@@ -5264,6 +7518,11 @@
                           "type": "number",
                           "minimum": -100,
                           "maximum": 200
+                        },
+                        "form": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
                         }
                       },
                       "additionalProperties": false
@@ -5339,6 +7598,11 @@
                             "minimum": -100,
                             "maximum": 200
                           },
+                          "form": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
                           "t": {
                             "type": "number",
                             "minimum": 0,
@@ -5393,8 +7657,89 @@
                         "center",
                         "random"
                       ]
+                    },
+                    "physics": {
+                      "type": "object",
+                      "properties": {
+                        "gravity": {
+                          "type": "number",
+                          "minimum": -20000,
+                          "maximum": 20000
+                        },
+                        "bounce": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "friction": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        },
+                        "velocity": {
+                          "type": "object",
+                          "properties": {
+                            "x": {
+                              "type": "number"
+                            },
+                            "y": {
+                              "type": "number"
+                            }
+                          },
+                          "additionalProperties": false
+                        },
+                        "spin": {
+                          "type": "number"
+                        },
+                        "floor": {
+                          "type": "number"
+                        },
+                        "walls": {
+                          "type": "boolean"
+                        },
+                        "collide": {
+                          "type": "boolean"
+                        }
+                      },
+                      "additionalProperties": false
                     }
                   },
+                  "additionalProperties": false
+                }
+              },
+              "looks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "distort",
+                        "chromatic",
+                        "glitch"
+                      ]
+                    },
+                    "amount": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "speed": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "scale": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "amount"
+                  ],
                   "additionalProperties": false
                 }
               },
