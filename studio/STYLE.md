@@ -5,8 +5,21 @@
 
 ## Haltung
 
-**Subtil & elegant.** Ruhig, präzise, hochwertig – wie eine Apple-Keynote, mit dem Blick eines Filmemachers.
-Filmische Mittel (Grain, Light Leaks, Kamerafahrten, Letterbox) sind Gewürz, nicht Hauptgericht.
+**Subtil & elegant ist der Standard** – ruhig, präzise, hochwertig, wie eine Apple-Keynote mit dem Blick eines
+Filmemachers. Filmische Mittel (Grain, Light Leaks, Kamerafahrten, Letterbox) sind dort Gewürz, nicht Hauptgericht.
+
+**Aber: alles ist erlaubt** (Vincent, Phase 8). Wünscht er mehr – „verspielt“, „laut“, „Showreel“, „Spektakel“ –,
+gilt für dieses Deck bzw. diese Folie die passende Motion-Stufe unten, inklusive Wackeln, Hüpfen, Drehen, 3D.
+Ohne Angabe: Stufe **Ruhig**.
+
+| Motion-Stufe | Wann | Was |
+|---|---|---|
+| **Ruhig** (Standard) | Pitch, Vortrag, Kunde | Seide (`blurRise`), `smooth`, ≤ 4 Klicks, Regeln unten |
+| **Ausdrucksstark** | Portfolio, Showreel-Momente | Pfade, Federn mit Nachschwingen (`spring(0.4)`), 3D-Drehungen, Szenen |
+| **Spektakel** | Intro, Finale, Bühne | Alles: `bounce`, `elastic`, `wiggle`, Schleifen, Farbwechsel, schnelle Schnitte |
+
+**Schule/Uni (iPad am Beamer):** Sagt Vincent, dass ein Deck für Schule/Uni ist, leichtgewichtig bauen: wenige
+gleichzeitige Bewegungen, keine dauerhaften Schleifen auf vielen Elementen, Blur sparsam, Videos klein.
 
 ## Brand-Kit (festgelegt)
 
@@ -78,6 +91,10 @@ Pro Deck ein Theme. Die Regeln unten gelten für alle; „dunkel/hell“ meint d
 | Übergänge | Standard `blurDissolve` oder `magicMove`. `camera`, `lightLeak`, `whipPan` nur an **Kapitelwechseln** |
 | Builds pro Folie | Möglichst ≤ 4 Klicks. Zusammengehöriges mit `withPrevious` gruppieren |
 
+Für Stufe **Ruhig**. Freie Bewegungen (`motion`, siehe CLAUDE.md) dort nur dezent: Hereinkommen mit `from`
+(Versatz ≤ 120 px, Blur, Deckkraft), Kurve `smooth` oder `spring(0.2)`, Schleifen höchstens als ruhiges Schweben
+(Amplitude ≤ 20 px, ≥ 2 s, `yoyo`). In den anderen Stufen gelten diese Grenzen nicht.
+
 ## Effekte
 
 - **Signature: Licht-Verlauf.** Titel- und Kapitel-Folien bekommen den Mesh-Gradient aus `brand.signature.background`
@@ -98,4 +115,5 @@ Pro Deck ein Theme. Die Regeln unten gelten für alle; „dunkel/hell“ meint d
 
 - Kein Clipart, keine Stock-Ästhetik, keine Schlagschatten mit harter Kante.
 - Keine Aufzählungen mit mehr als 4 Punkten.
-- Keine Effekte ohne Grund. Keine verspielten Animationen (Wackeln, Drehen, Hüpfen).
+- Keine Effekte ohne Grund. In Stufe **Ruhig** keine verspielten Animationen (Wackeln, Drehen, Hüpfen) –
+  in den anderen Stufen ausdrücklich erlaubt.

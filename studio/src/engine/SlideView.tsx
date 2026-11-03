@@ -9,6 +9,7 @@ import { Grain, LightSweep, MeshBackground } from './effects'
 import { findIcon, LucideIcon } from './icons'
 import { BUILD_IN_EVENT } from './buildEvents'
 import { LottieView } from './lottie'
+import { hasMotion } from './motion'
 import { renderInline } from './text'
 import './engine.css'
 
@@ -131,7 +132,9 @@ function ElementView({ element, ctx }: { element: Element; ctx: Ctx }) {
     style['--depth-abs'] = Math.abs(element.depth)
   }
   const tilt = element.tilt
-  const body = <ElementBody element={element} ctx={ctx} />
+  const inner = <ElementBody element={element} ctx={ctx} />
+  // Freie Bewegungen (motion) laufen auf einer eigenen Hülle – getrennt von den Builds auf .el-anim.
+  const body = hasMotion(element) ? <div className="el-motion">{inner}</div> : inner
   return (
     <div
       className={`el el--${element.type} ${element.depth ? 'el--depth' : ''}`}
@@ -276,7 +279,8 @@ function ShapeBody({ el }: { el: Extract<Element, { type: 'shape' }> }) {
         className={`el-shape ${glass > 0 ? 'el-shape--glass' : ''}`}
         style={
           {
-            background: glass > 0 ? `color-mix(in srgb, ${fill ?? 'white'} ${Math.round(12 + glass * 18)}%, transparent)` : fill,
+            // backgroundColor statt background: die Kurzform mit var() zerfällt, sobald eine Animation die Farbe setzt.
+            backgroundColor: glass > 0 ? `color-mix(in srgb, ${fill ?? 'white'} ${Math.round(12 + glass * 18)}%, transparent)` : fill,
             border: stroke ? `${stroke.width}px solid ${stroke.color}` : undefined,
             borderRadius: el.shape === 'ellipse' ? '50%' : el.radius,
             '--glass-blur': `${Math.round(8 + glass * 40)}px`,

@@ -37,6 +37,7 @@ import {
 import { Overview, SLIDE_MIME, slideTitle } from '../editor/Overview'
 import { SpaceView } from '../editor/SpaceView'
 import type { TextEditorStart } from '../editor/TextEditor'
+import { Timeline } from '../editor/Timeline'
 import { useEditor, type Editor } from '../editor/useEditor'
 import { usePalette } from '../engine/context'
 import { masterAsSlide, resolveDeck, resolveSlide } from '../engine/masters'
@@ -771,6 +772,9 @@ function EditorShell({
               }
             />
           </div>
+        )}
+        {deck && slide && !master && mode === 'edit' && (
+          <Timeline slide={slide} selected={selectedIds} onSelect={select} editPage={editPage} onPreview={preview} />
         )}
         {blockPicker && deck && (
           <BlockPicker deck={deck} deckName={name} blocks={blocks.value ?? []} theme={theme.value} onPick={insertBlock} onClose={() => setBlockPicker(false)} />

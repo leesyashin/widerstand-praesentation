@@ -70,6 +70,89 @@ export const Build = z.strictObject({
   order: z.number().optional(),
 })
 
+/* ---------- Bewegung (Phase 8a): freie Spuren auf der Zeitleiste ---------- */
+
+/**
+ * Timing-Kurve: Name (`smooth`, `spring`, `linear`, `in`, `out`, `inOut`, `bounce`, `elastic`, `back`),
+ * `cubic-bezier(x1,y1,x2,y2)`, Feder `spring(0.4)` (Nachschwingen 0–0.95), `wiggle(6)` (zittert n-mal und kehrt zurück),
+ * `steps(8)` (ruckweise).
+ */
+export const MotionEase = z
+  .string()
+  .regex(
+    /^(smooth|spring|linear|in|out|inOut|bounce|elastic|back|cubic-bezier\(\s*-?[\d.]+\s*,\s*-?[\d.]+\s*,\s*-?[\d.]+\s*,\s*-?[\d.]+\s*\)|spring\(\s*(0(\.\d+)?|\.\d+)\s*\)|wiggle\(\s*\d{1,2}\s*\)|steps\(\s*\d{1,2}\s*\))$/,
+    'Kurve: smooth, spring, spring(0.4), bounce, elastic, back, linear, in, out, inOut, cubic-bezier(.2,.8,.2,1), wiggle(6) oder steps(8)',
+  )
+
+/**
+ * Was sich bewegen kann – Abweichung von der Ruhe-Position (`frame`). x/y/z in logischen Pixeln, Winkel in Grad,
+ * blur in Pixeln. `color` färbt Text/Icons/Charts, `fill` die Fläche einer Form.
+ */
+export const MotionProps = z.strictObject({
+  x: z.number().optional(),
+  y: z.number().optional(),
+  z: z.number().optional(),
+  scale: z.number().optional(),
+  scaleX: z.number().optional(),
+  scaleY: z.number().optional(),
+  rotate: z.number().optional(),
+  rotateX: z.number().optional(),
+  rotateY: z.number().optional(),
+  skewX: z.number().optional(),
+  skewY: z.number().optional(),
+  opacity: unit.optional(),
+  blur: z.number().min(0).max(200).optional(),
+  color: Color.optional(),
+  fill: Color.optional(),
+})
+
+export const MotionKey = MotionProps.extend({
+  /** Position im Ablauf 0–1. Ohne Angabe: gleichmäßig verteilt. */
+  t: unit.optional(),
+  /** Kurve zum nächsten Schlüssel. */
+  ease: MotionEase.optional(),
+})
+
+export const Motion = z
+  .strictObject({
+    /** Klick-Schritt: 0 = automatisch beim Betreten, 1 = erster Klick … (auf Szenen-Folien ohne Bedeutung). */
+    step: z.number().int().min(0).max(99).optional(),
+    /** Start in ms ab Beginn des Schritts (auf Szenen-Folien: ab Beginn der Folie). */
+    at: z.number().int().min(0).max(120000).optional(),
+    duration: z.number().int().min(1).max(120000).optional(),
+    ease: MotionEase.optional(),
+    /** Startzustand (sonst der aktuelle). */
+    from: MotionProps.optional(),
+    /** Endzustand (sonst die Ruhe-Position). */
+    to: MotionProps.optional(),
+    /** Statt from/to: mehrere Zustände nacheinander. */
+    keys: z.array(MotionKey).min(2).optional(),
+    /**
+     * SVG-Pfad in Folien-Koordinaten (z. B. "M 0 900 C 400 200, 1200 1200, 960 540") – die Mitte des Elements folgt ihm.
+     * Mit `orient` dreht sich das Element in Laufrichtung.
+     */
+    path: z.string().min(3).optional(),
+    orient: z.boolean().optional(),
+    /** Wiederholungen: 1 = noch einmal, -1 = endlos (läuft dann neben den Klicks weiter). */
+    repeat: z.number().int().min(-1).max(999).optional(),
+    /** Beim Wiederholen hin und zurück. */
+    yoyo: z.boolean().optional(),
+    /** Pause zwischen Wiederholungen in ms. */
+    repeatDelay: z.number().int().min(0).max(60000).optional(),
+  })
+  .superRefine((m, ctx) => {
+    if (m.keys && (m.from || m.to)) ctx.addIssue({ code: 'custom', path: ['keys'], message: 'Entweder keys oder from/to' })
+    if (!m.keys && !m.from && !m.to && !m.path) ctx.addIssue({ code: 'custom', path: [], message: 'Bewegung braucht from, to, keys oder path' })
+  })
+
+/** Szenen-Folie: läuft von selbst durch wie ein Film (Builds und Bewegungen nach Zeit), ein Klick geht zur nächsten Folie. */
+export const Scene = z.strictObject({
+  /** Mindestdauer in ms (sonst so lang wie die längste Bewegung). */
+  duration: z.number().int().min(0).max(600000).optional(),
+  /** Endlos wiederholen, bis weitergeklickt wird. */
+  loop: z.boolean().optional(),
+})
+
 const elementBase = {
   id,
   /** Gleicher `match` auf zwei aufeinanderfolgenden Folien → Magic Move. */
@@ -87,6 +170,8 @@ const elementBase = {
   /** Gruppe: Elemente mit gleichem `group` werden im Editor gemeinsam ausgewählt und bewegt. */
   group: id.optional(),
   build: Build.optional(),
+  /** Freie Bewegungen auf der Zeitleiste (zusätzlich zu `build`). */
+  motion: z.array(Motion).optional(),
 }
 
 export const TextStyle = z.enum(['display', 'title', 'heading', 'subtitle', 'body', 'caption', 'label'])
@@ -285,6 +370,8 @@ export const Slide = z
     /** Übergang *zu* dieser Folie. */
     transition: Transition.optional(),
     world: World.optional(),
+    /** Folie als durchlaufende Szene statt Klick für Klick. */
+    scene: Scene.optional(),
     elements: z.array(Element),
     notes: z.string().optional(),
     /** In der Präsentation überspringen. */
@@ -419,6 +506,9 @@ export const Deck = z
 
 export type Deck = z.infer<typeof Deck>
 export type Slide = z.infer<typeof Slide>
+export type Motion = z.infer<typeof Motion>
+export type MotionProps = z.infer<typeof MotionProps>
+export type Scene = z.infer<typeof Scene>
 export type Master = z.infer<typeof Master>
 export type DeckTextStyle = z.infer<typeof DeckTextStyle>
 export type Element = z.infer<typeof Element>

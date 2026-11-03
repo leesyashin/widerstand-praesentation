@@ -498,7 +498,7 @@ Der Code ist fertig (PR #6), es fehlt die Einrichtung und der Test im echten Leb
   Kino, Sachlich, Papier) plus deine Auswahl Nachtblau, Tiefsee, Moos, Bordeaux, Graphit & Gold, Leinen, Salbei. **Regel:** Neue Paletten werden Vincent immer zuerst
   als gerenderte Beispiel-Folien gezeigt; in die Bibliothek kommen nur die, die er auswählt.
 
-### Phase 8: das Animations-Paradies ⏳ geplant
+### Phase 8: das Animations-Paradies ⏳ 8a fertig, 8b–8e geplant
 
 > Ziel: Studio kann jede Art von Bewegung – 1D, 2D, 2.5D, 3D, Partikel, Physik, Shader, generative Kunst – und bleibt
 > trotzdem ein ruhiger Editor. Claude baut die Animationen im Dateiformat, du feilst im Editor an Timing und Reihenfolge.
@@ -586,11 +586,19 @@ Eigene Komponenten (`custom/`) bleiben der Notausgang für alles, was das Schema
 
 | Phase | Inhalt | Fertig, wenn |
 |---|---|---|
-| **8a Motion-Kern** | Spuren/Keyframes, Timing-Kurven inkl. Federn, Pfade, Szenen-Folien, Presets intern als Spuren, Zeitleiste im Editor | Ein Deck mit Pfad-Flug, Feder und durchlaufender Szene läuft im Editor, in der Präsentation und im Web-Link |
+| **8a Motion-Kern** ✅ | Spuren/Keyframes, Timing-Kurven inkl. Federn, Pfade, Szenen-Folien, Zeitleiste im Editor | Ein Deck mit Pfad-Flug, Feder und durchlaufender Szene läuft im Editor, in der Präsentation und im Web-Link |
 | **8b Typo, Linien, Zahlen** | kinetische Typo-Presets, `path` mit Zeichnen/Verzweigen/Morphen, Daten-Magic-Move | Morph Kreis → Logo → Pfeil und ein Chart, das zwischen zwei Folien umbaut |
 | **8c 2D-Welten** | Partikel, Shader-Looks, generative Hintergründe, Physik | Logo zerfällt zu Partikeln; Glitch-Übergang; Flow-Field-Hintergrund läuft mit 60 fps auf dem iPad |
 | **8d 3D** | three.js-Ebene: GLB, 3D-Text, Licht/Schatten, Kamerapfade, prozedurale Szenen; 2.5D in der Folie | Ein Produktmodell dreht sich, die Kamera fährt drumherum, Text bleibt scharf darüber |
 | **8e Bühne & Interaktion** | Vorladen, Leistungs-Stufen, Geräte-Probe, Zeiger-Reaktion, Scroll-Story im Web-Link | Ganzes Demo-Deck läuft auf dem iPad am Beamer flüssig; Web-Link funktioniert als Scroll-Story |
+
+**Stand 8a (umgesetzt):** `motion` an jedem Element (from/to, Schlüssel, SVG-Pfad mit Mitdrehen, 3D-Drehung, Blur,
+Farbe/Füllung), Kurven inkl. Feder mit Nachschwingen, `cubic-bezier`, `wiggle`, `steps`, Wiederholung/Schleife/
+Hin-und-zurück, Szenen-Folien mit Schleife. Editor: Zeitleiste unter der Folie (ziehen = Start/Dauer), Bewegungen im
+Animation-Tab, Szene im Folien-Tab, Motion-Stufen in STYLE.md, Beispiel `decks/motion-demo`.
+Bewusst anders als geplant: Presets laufen weiter über ihren eigenen Code statt intern als Spuren – alte Decks
+bleiben dadurch exakt gleich; die Zeitleiste zeigt Builds und Bewegungen trotzdem gemeinsam. Marken in Szenen
+(Klick springt zu einer Stelle in der Szene) sind noch offen – ein Klick geht dort zur nächsten Folie.
 
 Zu jeder Phase: Schema (rückwärtskompatibel, alte Decks laufen unverändert), Validierung, Screenshots, Doku in
 `CLAUDE.md`/`EXTENDING.md`/`STYLE.md` und ein Beispiel-Deck `decks/motion-demo`.

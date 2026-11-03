@@ -203,6 +203,12 @@
 }
 
 /* 3D-Neigung */
+.el-motion {
+  position: absolute;
+  inset: 0;
+  transform-origin: center;
+}
+
 .el-3d {
   position: absolute;
   inset: 0;

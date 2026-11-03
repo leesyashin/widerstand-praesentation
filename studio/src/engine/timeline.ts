@@ -1,7 +1,8 @@
 import { gsap } from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
-import type { Animation, Element, Slide } from '../schema/deck'
+import type { Animation, Element, Motion, Slide } from '../schema/deck'
 import { BUILD_IN_EVENT } from './buildEvents'
+import { buildMotion, MOTION_DURATION, motionSpan } from './motion'
 import { formatGermanNumber, parseGermanNumber } from './text'
 
 gsap.registerPlugin(CustomEase)
@@ -50,23 +51,38 @@ export type BuildItem = {
  * Ein Schritt = was mit einem Klick passiert. Schritt 0 läuft automatisch beim Betreten der Folie
  * (alle Builds vor dem ersten "click"); er kann leer sein. Klicks auf der Folie = steps.length - 1.
  */
-export type Step = { items: BuildItem[]; duration: number }
+export type MotionItem = {
+  element: Element
+  motion: Motion
+  /** Index in `element.motion` (für den Editor). */
+  index: number
+  /** Start relativ zum Beginn des Schritts, in Sekunden. */
+  start: number
+  /** Dauer einer Runde inkl. endlicher Wiederholungen. */
+  duration: number
+  /** Endlos – zählt nicht zur Schrittdauer. */
+  loop: boolean
+}
+
+export type Step = { items: BuildItem[]; motions: MotionItem[]; duration: number }
 
 export function computeSteps(slide: Slide, skipIn: ReadonlySet<string> = new Set()): Step[] {
   type Entry = { element: Element; kind: 'in' | 'out'; anim: Animation; trigger: string; order: number }
+  // Szene: alles läuft nach Zeit in einem Durchgang – Klick-Auslöser werden zu „danach“.
+  const scene = Boolean(slide.scene)
   const entries: Entry[] = []
   slide.elements.forEach((element, index) => {
     const b = element.build
     if (!b || element.hidden) return
     const order = b.order ?? index
-    const trigger = b.trigger ?? 'click'
+    const trigger = scene && (b.trigger ?? 'click') === 'click' ? 'afterPrevious' : (b.trigger ?? 'click')
     if (b.in && !skipIn.has(element.id)) entries.push({ element, kind: 'in', anim: b.in, trigger, order })
     // Ausblendungen sind eigene Klicks nach allen Einblendungen der Folie.
-    if (b.out) entries.push({ element, kind: 'out', anim: b.out, trigger: 'click', order: 1e6 + order })
+    if (b.out) entries.push({ element, kind: 'out', anim: b.out, trigger: scene ? 'afterPrevious' : 'click', order: 1e6 + order })
   })
   entries.sort((a, b) => a.order - b.order)
 
-  const steps: Step[] = [{ items: [], duration: 0 }]
+  const steps: Step[] = [{ items: [], motions: [], duration: 0 }]
   let prev: BuildItem | null = null
   for (const e of entries) {
     const duration = (e.anim.duration ?? PRESET_DURATION[e.anim.preset]) / 1000
@@ -74,7 +90,7 @@ export function computeSteps(slide: Slide, skipIn: ReadonlySet<string> = new Set
     let step = steps[steps.length - 1]!
     let start: number
     if (e.trigger === 'click') {
-      step = { items: [], duration: 0 }
+      step = { items: [], motions: [], duration: 0 }
       steps.push(step)
       start = delay
     } else if (e.trigger === 'withPrevious' && prev) {
@@ -87,6 +103,22 @@ export function computeSteps(slide: Slide, skipIn: ReadonlySet<string> = new Set
     step.duration = Math.max(step.duration, start + duration)
     prev = item
   }
+
+  // Freie Bewegungen: an ihrem Schritt (fehlende Klick-Schritte entstehen dabei), Start = `at`.
+  for (const element of slide.elements) {
+    if (element.hidden) continue
+    element.motion?.forEach((motion, index) => {
+      const n = scene ? 0 : (motion.step ?? 0)
+      while (steps.length <= n) steps.push({ items: [], motions: [], duration: 0 })
+      const step = steps[n]!
+      const start = (motion.at ?? 0) / 1000
+      const loop = motion.repeat === -1
+      const duration = loop ? (motion.duration ?? MOTION_DURATION) / 1000 : motionSpan(motion)
+      step.motions.push({ element, motion, index, start, duration, loop })
+      if (!loop) step.duration = Math.max(step.duration, start + duration)
+    })
+  }
+  if (scene && slide.scene?.duration) steps[0]!.duration = Math.max(steps[0]!.duration, slide.scene.duration / 1000)
   return steps
 }
 
@@ -300,6 +332,9 @@ export function createSlideTimeline(
   const timeline = gsap.timeline({ paused: true })
   const starts: number[] = []
   const ends: number[] = []
+  /** Endlose Bewegungen laufen neben der Folien-Timeline: ab ihrem Schritt, bis die Folie geht. */
+  const loops: { step: number; at: number; tl: gsap.core.Timeline }[] = []
+  const seen = new Set<string>()
   let t = 0
   steps.forEach((step, i) => {
     starts.push(t)
@@ -310,12 +345,35 @@ export function createSlideTimeline(
       if (item.kind === 'in') addIn(timeline, target, item, t + item.start)
       else addOut(timeline, target, item, t + item.start)
     }
+    // Nach Startzeit, damit die erste Bewegung eines Elements dessen Startzustand bestimmt.
+    for (const item of [...step.motions].sort((a, b) => a.start - b.start)) {
+      const wrap = root.querySelector<HTMLElement>(`[data-element-id="${CSS.escape(item.element.id)}"] .el-motion`)
+      if (!wrap) continue
+      const first = !seen.has(item.element.id)
+      seen.add(item.element.id)
+      const sub = buildMotion(wrap, item.element, item.motion, first)
+      if (item.loop) {
+        sub.pause(0)
+        loops.push({ step: i, at: t + item.start, tl: sub })
+        timeline.call(() => void sub.restart(), undefined, t + item.start)
+      } else timeline.add(sub, t + item.start)
+    }
     // Kleine Lücke, damit Schrittgrenzen eindeutig sind.
     t += step.duration + 0.001
     ends.push(t)
   })
   timeline.seek(0, false)
 
+  /** Endlose Bewegungen passend zum Stand nach Schritt `index` (−1 = vor allem). */
+  const syncLoops = (index: number, startingNow = -2) => {
+    for (const l of loops) {
+      if (l.step < index || (l.step === index && l.step !== startingNow)) {
+        if (!l.tl.isActive()) l.tl.play()
+      } else if (l.step !== startingNow) l.tl.pause(0)
+    }
+  }
+
+  const scene = slide.scene
   let current: gsap.core.Tween | null = null
   const stop = () => {
     current?.kill()
@@ -329,21 +387,32 @@ export function createSlideTimeline(
     seek(index) {
       stop()
       timeline.seek(index < 0 ? 0 : (ends[index] ?? timeline.duration()), false)
+      syncLoops(index)
     },
     play(index) {
       stop()
       timeline.seek(starts[index] ?? 0, false)
-      current = timeline.tweenFromTo(starts[index] ?? 0, ends[index] ?? timeline.duration(), { ease: 'none' })
+      syncLoops(index - 1, index)
+      const from = starts[index] ?? 0
+      const to = ends[index] ?? timeline.duration()
+      // Szene mit Schleife: läuft immer wieder von vorn, bis weitergeklickt wird.
+      current = timeline.tweenFromTo(from, to, { ease: 'none', ...(scene?.loop ? { repeat: -1 } : {}) })
       return current
     },
     finish() {
+      // Szenen laufen weiter – ein Klick geht direkt zur nächsten Folie.
+      if (scene) return false
       if (!current?.isActive()) return false
       current.progress(1)
       current = null
+      syncLoops(steps.length)
       return true
     },
     kill() {
       stop()
+      // Zurück auf die gerenderten Werte: eine neue Timeline auf demselben DOM startet sonst vom alten Endzustand.
+      for (const l of loops) l.tl.revert()
+      timeline.revert()
       timeline.kill()
     },
   }

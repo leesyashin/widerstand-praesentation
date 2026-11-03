@@ -696,8 +696,8 @@ function AnimationTab(props: Props) {
       <Group>
         <div className="anim-summary">
           <span className="muted">
-            {clicks === 0 ? 'Keine Klicks' : clicks === 1 ? '1 Klick' : `${clicks} Klicks`}
-            {steps[0]?.items.length ? ' · Automatik beim Betreten' : ''}
+            {slide.scene ? 'Szene – läuft von selbst' : clicks === 0 ? 'Keine Klicks' : clicks === 1 ? '1 Klick' : `${clicks} Klicks`}
+            {!slide.scene && (steps[0]?.items.length || steps[0]?.motions.length) ? ' · Automatik beim Betreten' : ''}
           </span>
           <button type="button" className="btn" onClick={() => onPreview()}>
             ▶ Vorschau
@@ -741,7 +741,109 @@ function ElementAnimation(props: ElementProps) {
       <Group title="Ausblenden">
         <AnimFields kind="out" anim={build?.out} setAnim={setAnim} set={set} />
       </Group>
+      {el.motion?.length ? <MotionFields {...props} /> : null}
     </>
+  )
+}
+
+const MOTION_EASES = [
+  { value: 'smooth', label: 'Weich' },
+  { value: 'spring', label: 'Feder' },
+  { value: 'spring(0.6)', label: 'Feder, kräftig' },
+  { value: 'bounce', label: 'Aufprallen' },
+  { value: 'elastic', label: 'Elastisch' },
+  { value: 'back', label: 'Überschwingen' },
+  { value: 'out', label: 'Auslaufend' },
+  { value: 'inOut', label: 'Ein & aus' },
+  { value: 'in', label: 'Anlaufend' },
+  { value: 'linear', label: 'Linear' },
+  { value: 'wiggle(6)', label: 'Zittern' },
+  { value: 'steps(8)', label: 'Ruckweise' },
+]
+
+/** Freie Bewegungen eines Elements: Zeiten, Kurve, Wiederholung feilen – gebaut werden sie von Claude im JSON. */
+function MotionFields(props: ElementProps) {
+  const { element: el, page } = props
+  const set = useElementEdit(props)
+  const scene = Boolean((page as Slide).scene)
+  const patch = (i: number, recipe: (m: Draft<NonNullable<Element['motion']>[number]>) => void, merge?: string) =>
+    set((x) => {
+      const m = x.motion?.[i]
+      if (m) recipe(m)
+    }, merge ? `${merge}-${i}` : undefined)
+  const describe = (m: NonNullable<Element['motion']>[number]) =>
+    m.path ? 'Pfad' : m.keys ? `${m.keys.length} Schlüssel` : m.from && !m.to ? 'Herein' : m.to && !m.from ? 'Zum Ziel' : 'Von → zu'
+  return (
+    <Group title="Bewegung">
+      {el.motion!.map((m, i) => {
+        const ease = m.ease ?? 'smooth'
+        const options = MOTION_EASES.some((o) => o.value === ease) ? MOTION_EASES : [{ value: ease, label: ease }, ...MOTION_EASES]
+        const repeat = m.repeat ?? 0
+        return (
+          <div key={i} className="motion-card">
+            <div className="motion-card__head">
+              <span>
+                {describe(m)}
+                <span className="muted"> · {scene ? 'Szene' : (m.step ?? 0) === 0 ? 'Automatisch' : `Klick ${m.step}`}</span>
+              </span>
+              <button
+                type="button"
+                className="btn btn--plain btn--icon"
+                title="Bewegung entfernen"
+                onClick={() =>
+                  set((x) => {
+                    x.motion?.splice(i, 1)
+                    if (!x.motion?.length) delete x.motion
+                  })
+                }
+              >
+                <Icon name="trash" size={14} />
+              </button>
+            </div>
+            <div className="grid2">
+              {!scene && (
+                <Row label="Klick">
+                  <NumberField value={m.step ?? 0} min={0} max={99} onChange={(v) => patch(i, (x) => void (v ? (x.step = Math.round(v)) : delete x.step), 'step')} />
+                </Row>
+              )}
+              <Row label="Start">
+                <NumberField value={m.at} placeholder="0" suffix="ms" step={50} min={0} onChange={(v) => patch(i, (x) => void (v ? (x.at = Math.round(v)) : delete x.at), 'at')} />
+              </Row>
+              <Row label="Dauer">
+                <NumberField value={m.duration} placeholder="800" suffix="ms" step={50} min={1} onChange={(v) => patch(i, (x) => void (v ? (x.duration = Math.round(v)) : delete x.duration), 'dur')} />
+              </Row>
+            </div>
+            <Row label="Kurve">
+              <Select value={ease} options={options} onChange={(v) => patch(i, (x) => void (v === 'smooth' ? delete x.ease : (x.ease = v)))} />
+            </Row>
+            <Row label="Wiederh.">
+              <Select
+                value={repeat === -1 ? 'loop' : String(Math.min(repeat, 3))}
+                options={[
+                  { value: '0', label: 'Einmal' },
+                  { value: '1', label: '2 ×' },
+                  { value: '2', label: '3 ×' },
+                  { value: '3', label: '4 ×' },
+                  { value: 'loop', label: 'Endlos' },
+                ]}
+                onChange={(v) =>
+                  patch(i, (x) => {
+                    const n = v === 'loop' ? -1 : Number(v)
+                    if (n) x.repeat = n
+                    else {
+                      delete x.repeat
+                      delete x.yoyo
+                    }
+                  })
+                }
+              />
+            </Row>
+            {repeat !== 0 && <Toggle label="Hin und zurück" value={Boolean(m.yoyo)} onChange={(v) => patch(i, (x) => void (v ? (x.yoyo = true) : delete x.yoyo))} />}
+          </div>
+        )
+      })}
+      <p className="field-hint muted">Bewegungen baut Claude im deck.json (Pfade, Schlüssel, 3D). Hier feilst du Zeiten, Kurve und Wiederholung – oder ziehst die Balken in der Zeitleiste.</p>
+    </Group>
   )
 }
 
@@ -1012,6 +1114,29 @@ function SlideTab(props: Props) {
               onChange={(v) => setSlide((s) => void (s.transition && (s.transition.direction = v)))}
             />
           </Row>
+        )}
+      </Group>
+
+      <Group title="Ablauf">
+        <Toggle
+          label="Als Szene abspielen (läuft von selbst, Klick = nächste Folie)"
+          value={Boolean(slide.scene)}
+          onChange={(v) => setSlide((s) => void (v ? (s.scene = {}) : delete s.scene))}
+        />
+        {slide.scene && (
+          <>
+            <Toggle label="In Schleife" value={Boolean(slide.scene.loop)} onChange={(v) => setSlide((s) => void (s.scene && (v ? (s.scene.loop = true) : delete s.scene.loop)))} />
+            <Row label="Mindestens">
+              <NumberField
+                value={slide.scene.duration}
+                placeholder="automatisch"
+                suffix="ms"
+                step={500}
+                min={0}
+                onChange={(v) => setSlide((s) => void (s.scene && (v ? (s.scene.duration = Math.round(v)) : delete s.scene.duration)), 'scene-dur')}
+              />
+            </Row>
+          </>
         )}
       </Group>
 

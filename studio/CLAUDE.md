@@ -48,9 +48,9 @@ ansehen – auf Überlappungen, Lesbarkeit, Abstände und Ränder achten. Bei An
   Build-Reihenfolge per Drag & Drop, Bausteine einfügen, Theme wechseln.
 - Bibliothek (Phase 5): 4 Themes (`silber`, `kino`, `sachlich`, `papier`), 16 Layouts, 6 animierte Bausteine,
   4 Deck-Vorlagen (`portfolio`, `angebot`, `pitch`, `vortrag`); neue Decks über die Startseite („Neues Deck“).
-- Nächste große Erweiterung: **Phase 8 „Animations-Paradies“** (Plan und Vincents Entscheidungen in `PLAN.md`).
-  Bis sie umgesetzt ist, gelten die Presets oben. Motion-Charakter laut Vincent: *alles erlaubt* – für Schule/Uni
-  (iPad am Beamer) aber leichtgewichtig bauen.
+- **Phase 8 „Animations-Paradies“** (Plan in `PLAN.md`): 8a fertig – freie Bewegungen, Kurven, Pfade, Szenen,
+  Zeitleiste (siehe unten). 8b–8e folgen. Motion-Charakter laut Vincent: *alles erlaubt* (Motion-Stufen in `STYLE.md`) –
+  für Schule/Uni (iPad am Beamer) aber leichtgewichtig bauen.
 
 ## Master-Folien, Textstile, Gruppen
 
@@ -107,6 +107,29 @@ Kurz:
 - `camera`: Die Kamera fliegt zwischen den `world`-Positionen (x/y in logischen Pixeln, `z` = Tiefe, `rotate`, `scale`).
   Ohne `world` liegen die Folien auf einer Linie (Abstand 1,25 Folienbreiten). Elemente mit `depth` erzeugen dabei Parallax.
 - `lightLeak`: WebGL-Licht in der Akzentfarbe flutet über den Schnitt – Kapitelwechsel, sparsam.
+
+## Freie Bewegung & Szenen (Phase 8a)
+
+- `motion` an jedem Element: Liste von Spuren, zusätzlich zu `build` (Builds bewegen `.el-anim`, Bewegungen die Hülle
+  `.el-motion` darin – beides lässt sich kombinieren). Beispiel-Deck: `decks/motion-demo`.
+- Felder: `step` (0 = automatisch beim Betreten, 1 = erster Klick …; fehlende Klicks entstehen dadurch), `at` (Start in ms
+  im Schritt), `duration` (ms, Standard 800), `ease`, und **eins von**: `from`/`to`, `keys` (≥ 2 Zustände, optional `t`
+  0–1 und `ease` pro Abschnitt) oder `path` (SVG-Pfad in Folien-Koordinaten, die Element-Mitte folgt; `orient: true` dreht
+  mit). `repeat` (−1 = endlos, läuft neben den Klicks weiter), `yoyo`, `repeatDelay`.
+- Eigenschaften (Abweichung von der Ruhe-Position `frame`): `x`, `y`, `z`, `scale`, `scaleX`, `scaleY`, `rotate`,
+  `rotateX`, `rotateY` (3D, Perspektive automatisch), `skewX`, `skewY`, `opacity`, `blur` (px), `color` (Text/Icon/Chart),
+  `fill` (Form). Nur `from` = „hereinkommen“ (endet in der Ruhe-Position); nur `to` = „hinbewegen“ (bleibt dort).
+- **Frame = Ruhe-Position**, und der Editor zeigt sie so. Bewegungen deshalb möglichst so bauen, dass sie in der
+  Ruhe-Position enden (`from` statt `to`), dann stimmen Editor, Vorschaubilder und PowerPoint mit dem Endzustand überein.
+- Kurven (`ease`): `smooth`, `spring`, `spring(0.4)` (Nachschwingen 0–0.95), `bounce`, `elastic`, `back`, `linear`, `in`,
+  `out`, `inOut`, `cubic-bezier(x1,y1,x2,y2)`, `wiggle(n)` (zittert n-mal und kehrt zurück – mit `to: { rotate: 12 }`),
+  `steps(n)`.
+- **Szene**: `slide.scene = { loop?, duration? }` – die Folie läuft von selbst durch wie ein Film: Builds laufen nach
+  Zeit (Klick-Auslöser werden zu „danach“), `step` der Bewegungen zählt nicht, `at` ist ab Folienbeginn. Ein Klick geht
+  zur nächsten Folie. `loop` wiederholt die ganze Szene.
+- Editor: Zeitleiste unter der Folie (Balken ziehen = Start, rechte Kante = Dauer), Inspector → Animation → „Bewegung“
+  (Klick, Start, Dauer, Kurve, Wiederholung), Folie → „Ablauf“ (Szene an/aus, Schleife). Engine: `src/engine/motion.ts`,
+  Schritte in `computeSteps` (`timeline.ts`).
 
 ## Grafik & Effekte
 
