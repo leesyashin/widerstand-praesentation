@@ -20,7 +20,7 @@ let repo: Repo | null = null
 export function cloudRepo(): Repo {
   const config = loadConfig()
   if (!config) throw new CloudError('Nicht angemeldet', 401)
-  if (!repo || repo.config.token !== config.token || repo.config.repo !== config.repo || repo.config.branch !== config.branch) {
+  if (!repo || repo.config !== config) {
     repo = new Repo(config)
   }
   return repo
@@ -32,7 +32,8 @@ export function assetVersion(path: string): string | undefined {
 }
 
 const DECK_NAME = /^[a-z0-9][a-z0-9-]*$/
-const MAX_UPLOAD = 50 * 1024 * 1024
+/** Vercel nimmt pro Anfrage max. 4,5 MB an – base64 macht Dateien um ein Drittel größer. */
+const MAX_UPLOAD = 3 * 1024 * 1024
 const MEDIA_EXT = new Set(['jpg', 'jpeg', 'png', 'webp', 'avif', 'gif', 'svg', 'mp4', 'webm', 'mov', 'm4v', 'json'])
 const FONT_EXT = new Set(['woff2', 'woff', 'otf', 'ttf'])
 
@@ -108,6 +109,34 @@ function cleanFileName(name: string): string | null {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '') || 'datei'
   return `${stem}.${ext}`
+}
+
+/**
+ * Große Fotos (z. B. vom Handy) im Browser verkleinern, damit sie unter die Upload-Grenze passen:
+ * längste Seite 3840 px, sonst 2560 px, als JPEG. Gibt null zurück, wenn es kein Foto ist.
+ */
+async function shrinkPhoto(file: Blob, name: string): Promise<{ file: Blob; name: string } | null> {
+  if (!/\.(jpe?g|png|webp|avif)$/.test(name)) return null
+  let bitmap: ImageBitmap
+  try {
+    bitmap = await createImageBitmap(file)
+  } catch {
+    return null
+  }
+  try {
+    for (const [edge, quality] of [[3840, 0.86], [2560, 0.84], [1920, 0.8]] as const) {
+      const scale = Math.min(1, edge / Math.max(bitmap.width, bitmap.height))
+      const canvas = document.createElement('canvas')
+      canvas.width = Math.round(bitmap.width * scale)
+      canvas.height = Math.round(bitmap.height * scale)
+      canvas.getContext('2d')!.drawImage(bitmap, 0, 0, canvas.width, canvas.height)
+      const out = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', quality))
+      if (out && out.size <= MAX_UPLOAD) return { file: out, name: name.replace(/\.[a-z]+$/, '.jpg') }
+    }
+    return null
+  } finally {
+    bitmap.close()
+  }
 }
 
 function uniquePath(folder: string, file: string): string {
@@ -205,10 +234,13 @@ export const cloudApi = {
       const clean = cleanFileName(fileName)
       const ext = clean?.split('.').pop() ?? ''
       if (!clean || !MEDIA_EXT.has(ext)) return invalid([{ path: '', message: `Dateityp nicht unterstützt: ${fileName}` }])
-      if (file.size > MAX_UPLOAD) return invalid([{ path: '', message: 'Datei zu groß (unterwegs max. 50 MB) – große Videos am Mac importieren' }])
+      const fitted = file.size > MAX_UPLOAD ? await shrinkPhoto(file, clean) : { file, name: clean }
+      if (!fitted || fitted.file.size > MAX_UPLOAD) {
+        return invalid([{ path: '', message: 'Datei zu groß (unterwegs max. 3 MB) – Videos und große Dateien am Mac importieren' }])
+      }
       await cloudRepo().ready()
-      const full = uniquePath(`decks/${name}/assets`, clean)
-      await cloudRepo().put(full, await blobToBase64(file), `Studio: ${clean} zu ${name} hinzugefügt`, null)
+      const full = uniquePath(`decks/${name}/assets`, fitted.name)
+      await cloudRepo().put(full, await blobToBase64(fitted.file), `Studio: ${fitted.name} zu ${name} hinzugefügt`, null)
       return { ok: true, value: full.slice(`decks/${name}/`.length) }
     }),
 

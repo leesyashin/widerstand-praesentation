@@ -1,49 +1,59 @@
 /**
- * Studio unterwegs (Phase 7): Die gehostete App (npm run build:cloud, z. B. auf Vercel) liest und speichert direkt
- * im GitHub-Repo statt über den Datei-Dienst des Dev-Servers. Repo und Branch kommen beim Bauen aus Vercel
- * (VERCEL_GIT_*, siehe vite.config.ts), der Zugangsschlüssel nur aus diesem Gerät (localStorage).
+ * Studio unterwegs (Phase 7): Die gehostete App (npm run build:cloud, z. B. auf Vercel) liest und speichert im
+ * GitHub-Repo statt über den Datei-Dienst des Dev-Servers. Der GitHub-Schlüssel liegt nur auf dem Server
+ * (Vercel-Funktion api/studio.ts); die App meldet sich dort mit einem Passwort an und bekommt ein Sitzungs-Cookie.
  */
 export const CLOUD = import.meta.env.VITE_STUDIO_CLOUD === '1'
 
 export type CloudConfig = {
-  /** "owner/repo" */
+  /** "owner/repo" – nur zur Anzeige und für Commit-Ziele; erzwungen wird beides auf dem Server. */
   repo: string
   branch: string
-  token: string
-  /** GitHub-API – nur für Tests anders. */
-  api: string
   /** Ordner der App im Repo. */
   dir: string
+  /** Basis der Server-Funktion (…/api/), über die alle Zugriffe laufen. */
+  api: string
 }
 
-const KEY = 'studio.cloud'
+const API = `${import.meta.env.BASE_URL}api/`
 
-const defaults = {
-  repo: import.meta.env.VITE_GITHUB_REPO ?? '',
-  branch: import.meta.env.VITE_GITHUB_BRANCH || 'main',
-  api: (import.meta.env.VITE_GITHUB_API || 'https://api.github.com').replace(/\/$/, ''),
-  dir: import.meta.env.VITE_STUDIO_DIR ?? 'studio',
-}
+let session: CloudConfig | null = null
 
-/** Gespeicherte Anmeldung – null, solange kein Schlüssel eingegeben ist. */
+/** Aktuelle Anmeldung – null, solange nicht angemeldet. */
 export function loadConfig(): CloudConfig | null {
+  return session
+}
+
+type SessionInfo = { repo: string; branch: string; dir: string }
+
+const toConfig = (info: SessionInfo): CloudConfig => ({ ...info, api: API })
+
+/** Beim Start: Ist dieses Gerät schon angemeldet (gültiges Cookie)? */
+export async function checkSession(): Promise<CloudConfig | null> {
   try {
-    const saved = JSON.parse(localStorage.getItem(KEY) ?? 'null') as Partial<CloudConfig> | null
-    if (!saved?.token) return null
-    return { ...defaults, ...saved, api: defaults.api, dir: defaults.dir } as CloudConfig
+    const res = await fetch(`${API}session`, { cache: 'no-store' })
+    session = res.ok ? toConfig((await res.json()) as SessionInfo) : null
   } catch {
-    return null
+    session = null
   }
+  return session
 }
 
-export function saveConfig(config: Pick<CloudConfig, 'repo' | 'branch' | 'token'>) {
-  localStorage.setItem(KEY, JSON.stringify(config))
+/** Mit Passwort anmelden. Wirft mit verständlicher Meldung. */
+export async function signIn(password: string): Promise<CloudConfig> {
+  let res: Response
+  try {
+    res = await fetch(`${API}login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password }) })
+  } catch {
+    throw new Error('Keine Verbindung – bist du online?')
+  }
+  const body = (await res.json().catch(() => ({}))) as Partial<SessionInfo> & { message?: string }
+  if (!res.ok) throw new Error(body.message || `Anmelden fehlgeschlagen (${res.status})`)
+  session = toConfig(body as SessionInfo)
+  return session
 }
 
-export function clearConfig() {
-  localStorage.removeItem(KEY)
+export async function signOut() {
+  session = null
+  await fetch(`${API}logout`, { method: 'POST' }).catch(() => {})
 }
-
-export const defaultRepo = defaults.repo
-export const defaultBranch = defaults.branch
-export const apiBase = defaults.api

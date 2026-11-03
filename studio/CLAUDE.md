@@ -153,11 +153,17 @@ optional `schema` (Zod für `props` – wird geprüft, Fehler erscheinen als Pla
   Dort gibt es keinen Dev-Server: `src/api/client.ts` schaltet mit `CLOUD` auf `src/api/cloud/backend.ts` um, das
   dieselbe API über die GitHub-REST-API umsetzt (Dateibaum + Blobs lesen, Contents-API schreiben, ein Commit pro
   Datei). Live-Events ersetzt ein Abgleich alle 15 s (`onCloudEvent`). Speichern im Editor dort nach 2,5 s.
-- Medien laufen unterwegs über den Service Worker `public/sw.js` (lädt mit dem Schlüssel aus dem privaten Repo,
-  `?v=<blob-sha>` = dauerhaft im Cache, Range-Antworten für Safari-Videos). Datei-URLs deshalb immer über
-  `assetUrl()` bilden.
-- Anmeldung: `src/app/CloudLogin.tsx`, Schlüssel nur in `localStorage` (`studio.cloud`). Repo/Branch kommen beim
-  Vercel-Build aus `VERCEL_GIT_*` (siehe `vite.config.ts`).
+- Der GitHub-Schlüssel liegt **nur auf dem Server**: Vercel-Funktion `api/studio.ts` (Umgebung `GITHUB_TOKEN`,
+  `STUDIO_PASSWORD`, optional `STUDIO_REPO`/`STUDIO_BRANCH`/`STUDIO_DIR`). `vercel.json` leitet `/api/<weg>` dorthin.
+  Wege: `login` (Passwort → HttpOnly-Cookie, 180 Tage, HMAC mit Passwort+Schlüssel), `logout`, `session`,
+  `gh/<pfad>` (GitHub-API, nur freigegebene Pfade: Ref des Branches, Trees/Blobs per SHA, Contents unter `studio/`,
+  Schreiben nur auf den eigenen Branch) und `media?path=` (Datei roh, gestreamt). Neue GitHub-Zugriffe der App
+  müssen dort in `allowed()` freigegeben werden.
+- Medien laufen unterwegs über den Service Worker `public/sw.js` (holt sie über `/api/media`, `?v=<blob-sha>` =
+  dauerhaft im Cache, Range-Antworten für Safari-Videos). Datei-URLs deshalb immer über `assetUrl()` bilden.
+- Anmeldung: `src/app/CloudLogin.tsx` (nur Passwort), Sitzung in `src/api/cloud/config.ts` (`checkSession` beim Start).
+  Uploads unterwegs max. 3 MB (Vercel nimmt pro Anfrage 4,5 MB, base64 +⅓); größere Fotos werden im Browser
+  verkleinert.
 - Handy-Layout: Media Query in `src/app/DeckView.css` (≤ 760 px oder flaches Touch-Gerät), `.compact-only` für
   Knöpfe nur auf dem Handy. Doppeltippen = Doppelklick (`Canvas.tsx`).
 - Was Claude an Decks pusht, erscheint unterwegs nach ≤ 15 s. Was am Handy gespeichert wurde, liegt als Commit

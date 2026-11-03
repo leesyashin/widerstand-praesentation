@@ -30,25 +30,24 @@ export class Repo {
 
   constructor(readonly config: CloudConfig) {}
 
+  /** Alle Zugriffe laufen über die Server-Funktion (api/studio.ts), die den Schlüssel anhängt. */
   private url(path: string) {
-    return `${this.config.api}/repos/${this.config.repo}${path}`
+    return `${this.config.api}gh${path}`
   }
 
   async request<T>(path: string, init: RequestInit = {}, accept = 'application/vnd.github+json'): Promise<T> {
     let res: Response
     try {
       res = await fetch(this.url(path), {
-        cache: 'no-cache', // mit ETag nachfragen: 304 kostet kein Kontingent
+        cache: 'no-cache',
         ...init,
         headers: {
           Accept: accept,
-          Authorization: `Bearer ${this.config.token}`,
-          'X-GitHub-Api-Version': '2022-11-28',
           ...(init.body ? { 'Content-Type': 'application/json' } : {}),
         },
       })
     } catch {
-      throw new CloudError('Keine Verbindung zu GitHub – bist du online?', 0)
+      throw new CloudError('Keine Verbindung – bist du online?', 0)
     }
     if (!res.ok) {
       const body = (await res.json().catch(() => ({}))) as { message?: string }
@@ -156,10 +155,13 @@ export class Repo {
 }
 
 function explain(status: number, message = ''): string {
-  if (status === 401) return 'Zugangsschlüssel ungültig oder abgelaufen – bitte neu anmelden'
+  if (status === 401) return 'Abgemeldet – bitte die Seite neu laden und wieder anmelden'
   if (status === 403 && /rate limit/i.test(message)) return 'GitHub-Limit erreicht – in ein paar Minuten wieder'
-  if (status === 403) return 'Keine Berechtigung – der Schlüssel braucht „Contents: Read and write“ für dieses Repo'
-  if (status === 404) return 'Nicht gefunden – stimmen Repo und Branch, und darf der Schlüssel das Repo sehen?'
+  if (status === 403 && /Studio/.test(message)) return message
+  if (status === 403) return 'Keine Berechtigung – der GitHub-Schlüssel bei Vercel braucht „Contents: Read and write“ für dieses Repo'
+  if (status === 404) return 'Nicht gefunden – stimmen Repo und Branch, und darf der GitHub-Schlüssel bei Vercel das Repo sehen?'
+  if (status === 413) return 'Datei zu groß für den Upload unterwegs'
+  if (status === 502 || status === 503) return message || 'Server nicht richtig eingerichtet'
   if (status === 409) return 'Wurde inzwischen anderswo geändert (z. B. von Claude oder am Mac)'
   if (status === 422 && /too large|size/i.test(message)) return 'Datei zu groß für GitHub'
   return `GitHub: ${message || `Fehler ${status}`}`

@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { clearConfig, CLOUD } from '../api/cloud/config'
-import { syncWorkerConfig } from '../api/cloud/worker'
+import { CLOUD, signOut as cloudSignOut } from '../api/cloud/config'
+import { clearMediaCache } from '../api/cloud/worker'
 import type { DeckSummary } from '../api/client'
 import { useDeck, useDeckList } from '../api/live'
 import { SlideView } from '../engine/SlideView'
@@ -16,8 +16,8 @@ import './DeckList.css'
 
 async function signOut() {
   if (!confirm('Auf diesem Gerät abmelden? Deine Decks bleiben im Repo.')) return
-  clearConfig()
-  await syncWorkerConfig(null)
+  await cloudSignOut()
+  await clearMediaCache()
   location.reload()
 }
 
@@ -35,7 +35,7 @@ export function DeckList({ brandIssues }: { brandIssues: Issue[] }) {
         </div>
         <div className="decks__actions">
           {CLOUD && (
-            <button type="button" className="btn btn--plain" onClick={() => void signOut()} title="Zugangsschlüssel von diesem Gerät entfernen">
+            <button type="button" className="btn btn--plain" onClick={() => void signOut()} title="Dieses Gerät abmelden">
               Abmelden
             </button>
           )}

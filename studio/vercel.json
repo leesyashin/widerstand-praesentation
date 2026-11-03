@@ -4,6 +4,8 @@
   "buildCommand": "npm run build:cloud",
   "outputDirectory": "dist",
   "framework": null,
+  "functions": { "api/studio.ts": { "maxDuration": 60 } },
+  "rewrites": [{ "source": "/api/:route(.*)", "destination": "/api/studio?route=:route" }],
   "headers": [
     {
       "source": "/sw.js",

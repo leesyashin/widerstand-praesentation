@@ -1,20 +1,8 @@
-import type { CloudConfig } from './config'
-
 /** Service Worker (public/sw.js) für Medien aus dem privaten Repo – nur in der gehosteten App. */
 
-const CONFIG_CACHE = 'studio-config'
-const CONFIG_KEY = '/__studio/config'
-
-/** Anmeldedaten an den Service Worker geben (über den Cache Storage, den beide lesen können). */
-export async function syncWorkerConfig(config: CloudConfig | null) {
-  if (!('caches' in window)) return
-  const cache = await caches.open(CONFIG_CACHE)
-  if (config) await cache.put(CONFIG_KEY, new Response(JSON.stringify(config), { headers: { 'Content-Type': 'application/json' } }))
-  else {
-    await cache.delete(CONFIG_KEY)
-    await caches.delete('studio-media-v1')
-  }
-  navigator.serviceWorker?.controller?.postMessage('studio:config')
+/** Beim Abmelden: zwischengespeicherte Medien von diesem Gerät löschen. */
+export async function clearMediaCache() {
+  if ('caches' in window) await caches.delete('studio-media-v1')
 }
 
 /** Registrieren und warten, bis er die Seite steuert – sonst laufen die ersten Bild-Anfragen an ihm vorbei. */

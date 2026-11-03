@@ -446,18 +446,20 @@ Jede Phase endet mit etwas, das du **wirklich benutzen** kannst.
 
 ### Phase 7: Studio unterwegs ✅ erledigt
 - Studio läuft gehostet auf Vercel und funktioniert auf dem Handy – überall, ohne Mac.
-- Speicher bleibt das GitHub-Repo (eine Wahrheit für Mac, Handy und Claude), Anmeldung mit einem persönlichen
-  Zugangsschlüssel nur für dieses Repo.
+- Speicher bleibt das GitHub-Repo (eine Wahrheit für Mac, Handy und Claude). Der Zugangsschlüssel liegt nur bei
+  Vercel; auf dem Handy meldest du dich mit einem Passwort an.
 - Leichtes Bearbeiten auf dem Handy: Folien blättern, Text ändern, Elemente antippen/verschieben/löschen, Notizen,
   Folien sortieren/duplizieren/anlegen, präsentieren.
 - *Umgesetzt:* GitHub-Backend für die komplette App-API (Decks, Brand-Kit, Themes, Layouts, Bausteine, Vorlagen,
   Medien, Schriften, Proben) mit Inhalts-Cache über Blob-SHAs, ein Commit pro Speichern, Abgleich alle 15 s.
-  Service Worker lädt Medien aus dem privaten Repo (inkl. Video-Range für Safari). Anmeldeseite mit Prüfung der
-  Schreibrechte, Abmelden. Handy-Layout: große Folie, Werkzeugleiste zum Wischen, Folienstreifen mit ‹ › /
+  Service Worker lädt Medien aus dem privaten Repo (inkl. Video-Range für Safari). Anmeldeseite, Abmelden.
+  Nachgezogen: Schlüssel versteckt – eine Vercel-Funktion hängt ihn an und lässt nur
+  die nötigen Zugriffe zu (nur `studio/`, nur der eigene Branch); Anmeldung mit Passwort und Sitzungs-Cookie,
+  große Handy-Fotos werden vor dem Upload verkleinert. Handy-Layout: große Folie, Werkzeugleiste zum Wischen, Folienstreifen mit ‹ › /
   Duplizieren / Löschen, Details als Blatt von unten, Doppeltippen für Text, große Griffe, Mini-Toolbar bleibt im
   Bild, Wischen beim Präsentieren. Web-App-Manifest und Icon für „Zum Home-Bildschirm“. Getestet gegen eine
   nachgebaute GitHub-API (Anmelden, Laden, Medien, Speichern als Commit, Änderung von außen) im iPhone-Format.
-  Bewusst offen: Handy-Fernbedienung über das Internet, PowerPoint/Web-Player ohne Mac, Uploads über 50 MB,
+  Bewusst offen: Handy-Fernbedienung über das Internet, PowerPoint/Web-Player ohne Mac, Uploads über 3 MB (z. B. Videos),
   echtes Zusammenführen bei gleichzeitigen Änderungen (zuletzt gespeichert gewinnt, Konflikte werden gemeldet).
 
 ---
