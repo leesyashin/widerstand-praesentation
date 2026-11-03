@@ -494,7 +494,8 @@ Der Code ist fertig (PR #6), es fehlt die Einrichtung und der Test im echten Leb
   Speichervorgänge stören sich nicht, und der Editor versucht es bei Server-Fehlern selbst noch einmal. JSON-Dateien
   mit BOM (Notepad) werden gelesen.
 - **Paletten** unabhängig vom Theme: `deck.colors` überschreibt Brand-Kit und Theme-Farben, Auswahl im Editor unter
-  Folie → Deck → Palette. Bibliothek: `templates/palettes.json`. **Regel:** Neue Paletten werden Vincent immer zuerst
+  Folie → Deck → Palette. Bibliothek: `templates/palettes.json` – 11 Paletten: die 4 bisherigen (Silbergelatine,
+  Kino, Sachlich, Papier) plus deine Auswahl Nachtblau, Tiefsee, Moos, Bordeaux, Graphit & Gold, Leinen, Salbei. **Regel:** Neue Paletten werden Vincent immer zuerst
   als gerenderte Beispiel-Folien gezeigt; in die Bibliothek kommen nur die, die er auswählt.
 
 ### Phase 8: das Animations-Paradies ⏳ geplant

@@ -50,6 +50,86 @@
       }
     },
     {
+      "name": "nachtblau",
+      "label": "Nachtblau",
+      "description": "Tiefes Marineblau mit kühlem Himmelsblau als Akzent – ruhig, technisch, edel.",
+      "tone": "dark",
+      "colors": {
+        "background": "#0a0f1a",
+        "surface": "#151d2c",
+        "text": "#eef1f6",
+        "textMuted": "#8e98aa",
+        "accent": "#9fbcef",
+        "accent2": "#25365a",
+        "light": "#eef1f6",
+        "ink": "#0a0f1a"
+      }
+    },
+    {
+      "name": "tiefsee",
+      "label": "Tiefsee",
+      "description": "Petrol-Schwarz mit leuchtendem Türkis – Unterwasser, klar, modern.",
+      "tone": "dark",
+      "colors": {
+        "background": "#041318",
+        "surface": "#0b252d",
+        "text": "#e8f6f7",
+        "textMuted": "#87a8ae",
+        "accent": "#5fd6d1",
+        "accent2": "#0f4b57",
+        "light": "#e8f6f7",
+        "ink": "#041318"
+      }
+    },
+    {
+      "name": "moos",
+      "label": "Moos",
+      "description": "Dunkles Waldgrün mit hellem Lindgrün – natürlich, still, analog.",
+      "tone": "dark",
+      "colors": {
+        "background": "#0c120e",
+        "surface": "#17211a",
+        "text": "#eef2ec",
+        "textMuted": "#94a297",
+        "accent": "#b9d79c",
+        "accent2": "#2c4232",
+        "light": "#eef2ec",
+        "ink": "#0c120e"
+      }
+    },
+    {
+      "name": "bordeaux",
+      "label": "Bordeaux",
+      "description": "Weinrot im Dunkeln mit Rosé-Kupfer – elegant, kulturell, Theater.",
+      "tone": "dark",
+      "colors": {
+        "background": "#14090c",
+        "surface": "#241217",
+        "text": "#f8eef0",
+        "textMuted": "#ab939b",
+        "accent": "#eba897",
+        "accent2": "#55202c",
+        "light": "#f8eef0",
+        "ink": "#14090c"
+      }
+    },
+    {
+      "name": "graphit-gold",
+      "label": "Graphit & Gold",
+      "description": "Graphit mit gedämpftem Gold – Premium, Award, Abendveranstaltung.",
+      "tone": "dark",
+      "colors": {
+        "background": "#111111",
+        "surface": "#1e1d1a",
+        "text": "#f4f0e7",
+        "textMuted": "#9d988c",
+        "accent": "#cfa94e",
+        "accent2": "#3d3524",
+        "light": "#f4f0e7",
+        "ink": "#111111"
+      }
+    },
+    {
       "name": "papier",
       "label": "Papier",
       "description": "Warmes Papierweiß, tiefschwarze Schrift.",
@@ -63,6 +143,38 @@
         "accent2": "#d6cfbf",
         "light": "#141414",
         "ink": "#f4f2ed"
+      }
+    },
+    {
+      "name": "leinen",
+      "label": "Leinen",
+      "description": "Leinen-Beige mit Terrakotta – handgemacht, warm, Editorial.",
+      "tone": "light",
+      "colors": {
+        "background": "#efe9df",
+        "surface": "#e3dacb",
+        "text": "#2a241c",
+        "textMuted": "#7a6f61",
+        "accent": "#a5502c",
+        "accent2": "#d9c4a6",
+        "light": "#2a241c",
+        "ink": "#efe9df"
+      }
+    },
+    {
+      "name": "salbei",
+      "label": "Salbei",
+      "description": "Helles Salbeigrün mit tiefem Tannengrün – frisch, ruhig, Nachhaltigkeit.",
+      "tone": "light",
+      "colors": {
+        "background": "#e9eee6",
+        "surface": "#dbe3d6",
+        "text": "#1d2a21",
+        "textMuted": "#66766a",
+        "accent": "#3c6c4e",
+        "accent2": "#c2d2bd",
+        "light": "#1d2a21",
+        "ink": "#e9eee6"
       }
     }
   ]
