@@ -1,11 +1,12 @@
 import { existsSync } from 'node:fs'
-import { readFile, rename, writeFile } from 'node:fs/promises'
+import { readFile } from 'node:fs/promises'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import path from 'node:path'
 import type { Plugin, ViteDevServer } from 'vite'
 import { fromZod } from '../src/schema/issues'
 import { Rehearsal } from '../src/schema/rehearsal'
 import { DECKS_DIR, isDeckName } from './decks'
+import { parseJsonText, writeAtomic } from './fsSafe'
 
 /**
  * Präsentations-Dienste (Phase 4):
@@ -53,7 +54,7 @@ async function handle(server: ViteDevServer, req: IncomingMessage, res: ServerRe
         return true
       }
       try {
-        const parsed = Rehearsal.safeParse(JSON.parse(await readFile(file, 'utf8')))
+        const parsed = Rehearsal.safeParse(parseJsonText(await readFile(file, 'utf8')))
         send(res, parsed.success ? 200 : 422, parsed.success ? { ok: true, rehearsal: parsed.data } : { ok: false, issues: fromZod(parsed.error) })
       } catch (err) {
         send(res, 422, { ok: false, issues: [{ path: '', message: (err as Error).message }] })
@@ -73,9 +74,7 @@ async function handle(server: ViteDevServer, req: IncomingMessage, res: ServerRe
         send(res, 422, { ok: false, issues: fromZod(parsed.error) })
         return true
       }
-      const tmp = `${file}.${process.pid}.tmp`
-      await writeFile(tmp, JSON.stringify(parsed.data, null, 2) + '\n', 'utf8')
-      await rename(tmp, file)
+      await writeAtomic(file, JSON.stringify(parsed.data, null, 2) + '\n')
       send(res, 200, { ok: true, rehearsal: parsed.data })
       return true
     }

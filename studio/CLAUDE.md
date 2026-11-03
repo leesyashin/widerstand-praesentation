@@ -25,7 +25,7 @@ Gesamtplan und Phasen: `PLAN.md`. Gestaltungsregeln: `STYLE.md` – **vor jedem 
 - Farben **immer als Brand-Token** (`"brand.accent"`, `"brand.text"` …) aus `brand/brand.json`.
   Feste Hex-Werte nur, wenn es bewusst eine Ausnahme ist.
 - Text: `style` aus der Typo-Skala (`display`, `title`, `heading`, `subtitle`, `body`, `caption`, `label`).
-  `fontSize` usw. nur überschreiben, wenn nötig. Inline: `**fett**`, `*kursiv*`, `\n`.
+  `fontSize` usw. nur überschreiben, wenn nötig. Inline: `**fett**`, `*kursiv*`, `***beides***`, `\n`.
 - IDs (Folien, Elemente) in kebab-case, sprechend (`headline`, `karte-1-text`), pro Ebene eindeutig.
 - Magic Move: gleicher `match`-Wert auf zwei aufeinanderfolgenden Folien. Reihenfolge der `elements` = Ebenen
   (erstes Element ganz hinten).
@@ -48,7 +48,10 @@ ansehen – auf Überlappungen, Lesbarkeit, Abstände und Ränder achten. Bei An
   Build-Reihenfolge per Drag & Drop, Bausteine einfügen, Theme wechseln.
 - Bibliothek (Phase 5): 4 Themes (`silber`, `kino`, `sachlich`, `papier`), 16 Layouts, 6 animierte Bausteine,
   4 Deck-Vorlagen (`portfolio`, `angebot`, `pitch`, `vortrag`); neue Decks über die Startseite („Neues Deck“).
-- Noch nicht: Web-Link und PowerPoint-Export (Phase 6).
+- **Phase 8 „Animations-Paradies“** (Plan in `PLAN.md`): 8a–8c fertig – freie Bewegungen, Kurven, Pfade,
+  Szenen, Zeitleiste, kinetische Typo, Formwandel, Text auf Pfad, Daten-Magic-Move, Partikel, generative Muster,
+  Shader-Looks, Physik (siehe unten). 8d (3D) und 8e (Bühne) folgen. Motion-Charakter laut Vincent: *alles erlaubt* (Motion-Stufen in `STYLE.md`) –
+  für Schule/Uni (iPad am Beamer) aber leichtgewichtig bauen.
 
 ## Master-Folien, Textstile, Gruppen
 
@@ -80,7 +83,11 @@ Kurz:
 - Ein Theme kann mit `colors` Brand-Tokens für seine Decks umstellen (z. B. `papier`: helles `background`, dunkles
   `text`; `light`/`ink` sind dort die dunkle Kontrastfläche). Deshalb Farben in Decks und Vorlagen **immer als Token**
   und Logos als Icon `brand/logo-mono.svg` mit `"color": "brand.text"` – dann passt alles in jedem Theme.
-- `*kursiv*`/`**fett**` gelten nur innerhalb einer Zeile: über `\n` hinweg jede Zeile einzeln markieren.
+- Paletten unabhängig vom Theme: `deck.colors` (Hex je Token) überschreibt Brand-Kit und Theme; fertige Sätze in
+  `templates/palettes.json`. **Neue Paletten Vincent immer erst als gerenderte Beispiele zeigen** – aufgenommen wird nur,
+  was er auswählt (siehe `EXTENDING.md`).
+- `*kursiv*`/`**fett**`/`***beides***` gelten nur innerhalb einer Zeile: über `\n` hinweg jede Zeile einzeln markieren.
+  Parser: `src/engine/markup.ts` (Folie, Editor und PowerPoint nutzen denselben).
 - Wie man Themes, Layouts, Bausteine, Vorlagen, Komponenten und Engine-Features ergänzt: `EXTENDING.md`.
 
 ## Builds und Übergänge (wie die Engine sie liest)
@@ -89,10 +96,10 @@ Kurz:
 - `trigger`: `click` startet einen neuen Klick-Schritt. `withPrevious` startet gleichzeitig mit dem vorigen Build,
   `afterPrevious` direkt nach dessen Ende. Builds vor dem ersten `click` laufen **automatisch** beim Betreten der Folie.
 - Presets: `fade`, `rise`, `blurRise` (Signature „Seide“), `scaleIn`, `maskReveal` (mit `direction`),
-  `wordByWord`, `lineByLine` (nur Text), `drawLine` (Linien, Pfeile, Lucide-Icons), `countUp` (erste Zahl im Text,
+  `wordByWord`, `lineByLine`, `charByChar`, `typewriter`, `scramble`, `assemble` (nur Text), `drawLine` (Linien, Pfeile, Lucide-Icons), `countUp` (erste Zahl im Text,
   deutsche Schreibweise „1.250“), `kenBurns` (Bilder; lang – nicht mit `afterPrevious` dahinter verketten).
 - `transition` gilt für den Übergang **zu** dieser Folie: `blurDissolve`, `dissolve`, `magicMove`, `push`, `zoom`,
-  `maskReveal`, `whipPan`, `camera`, `lightLeak`.
+  `maskReveal`, `whipPan`, `camera`, `lightLeak`, `glitch`.
 - Magic Move: Elemente mit gleichem `match` auf beiden Folien fließen ineinander (Text richtet sich an der sichtbaren
   Textkante aus, skaliert nach Schriftgröße). Ihr eigener Einblend-Build wird dabei übersprungen.
 - Icons: Lucide-Namen in kebab-case (`camera`, `aperture`, `film`, `sparkles` … siehe lucide.dev/icons).
@@ -101,6 +108,66 @@ Kurz:
 - `camera`: Die Kamera fliegt zwischen den `world`-Positionen (x/y in logischen Pixeln, `z` = Tiefe, `rotate`, `scale`).
   Ohne `world` liegen die Folien auf einer Linie (Abstand 1,25 Folienbreiten). Elemente mit `depth` erzeugen dabei Parallax.
 - `lightLeak`: WebGL-Licht in der Akzentfarbe flutet über den Schnitt – Kapitelwechsel, sparsam.
+
+## Freie Bewegung & Szenen (Phase 8a)
+
+- `motion` an jedem Element: Liste von Spuren, zusätzlich zu `build` (Builds bewegen `.el-anim`, Bewegungen die Hülle
+  `.el-motion` darin – beides lässt sich kombinieren). Beispiel-Deck: `decks/motion-demo`.
+- Felder: `step` (0 = automatisch beim Betreten, 1 = erster Klick …; fehlende Klicks entstehen dadurch), `at` (Start in ms
+  im Schritt), `duration` (ms, Standard 800), `ease`, und **eins von**: `from`/`to`, `keys` (≥ 2 Zustände, optional `t`
+  0–1 und `ease` pro Abschnitt) oder `path` (SVG-Pfad in Folien-Koordinaten, die Element-Mitte folgt; `orient: true` dreht
+  mit). `repeat` (−1 = endlos, läuft neben den Klicks weiter), `yoyo`, `repeatDelay`.
+- Eigenschaften (Abweichung von der Ruhe-Position `frame`): `x`, `y`, `z`, `scale`, `scaleX`, `scaleY`, `rotate`,
+  `rotateX`, `rotateY` (3D, Perspektive automatisch), `skewX`, `skewY`, `opacity`, `blur` (px), `color` (Text/Icon/Chart),
+  `fill` (Form). Nur `from` = „hereinkommen“ (endet in der Ruhe-Position); nur `to` = „hinbewegen“ (bleibt dort).
+- **Frame = Ruhe-Position**, und der Editor zeigt sie so. Bewegungen deshalb möglichst so bauen, dass sie in der
+  Ruhe-Position enden (`from` statt `to`), dann stimmen Editor, Vorschaubilder und PowerPoint mit dem Endzustand überein.
+- Kurven (`ease`): `smooth`, `spring`, `spring(0.4)` (Nachschwingen 0–0.95), `bounce`, `elastic`, `back`, `linear`, `in`,
+  `out`, `inOut`, `cubic-bezier(x1,y1,x2,y2)`, `wiggle(n)` (zittert n-mal und kehrt zurück – mit `to: { rotate: 12 }`),
+  `steps(n)`.
+- **Szene**: `slide.scene = { loop?, duration? }` – die Folie läuft von selbst durch wie ein Film: Builds laufen nach
+  Zeit (Klick-Auslöser werden zu „danach“), `step` der Bewegungen zählt nicht, `at` ist ab Folienbeginn. Ein Klick geht
+  zur nächsten Folie. `loop` wiederholt die ganze Szene.
+- Editor: Zeitleiste unter der Folie (Balken ziehen = Start, rechte Kante = Dauer), Inspector → Animation → „Bewegung“
+  (Klick, Start, Dauer, Kurve, Wiederholung), Folie → „Ablauf“ (Szene an/aus, Schleife). Engine: `src/engine/motion.ts`,
+  Schritte in `computeSteps` (`timeline.ts`).
+
+## Kinetische Typo, Pfade, Daten (Phase 8b)
+
+- Text-Builds: `charByChar` (Buchstabe für Buchstabe, mit `direction`), `typewriter` (Schreibmaschine), `scramble`
+  (Zeichen wirbeln zum Wort), `assemble` (fliegt aus Einzelteilen zusammen – als `out` zerfällt der Text). Gehen auch
+  als Ausblendung (`out`).
+- Freie Bewegung für Textteile: `split: "char" | "word" | "line"` + `stagger` (ms, Standard 40) + `staggerFrom`
+  (`start`/`end`/`center`/`random`) – jedes Teil bekommt die Bewegung versetzt, z. B. eine Welle:
+  `{ "step": 1, "split": "char", "stagger": 45, "duration": 700, "repeat": -1, "yoyo": true, "to": { "y": -28 } }`.
+  Buchstaben liegen als `.c` in Wörtern `.w` (Wörter brechen nie mitten im Wort um).
+- Element `path`: freie Vektorform. `d` = SVG-Pfad im `viewBox` (Standard: Rahmengröße), `stroke { color, width }`,
+  `fill`, `lineCap`. Zeichnet sich mit Build `drawLine`. Formwandel per Bewegung `to: { d: "…" }` (auch in `keys`)
+  oder per Magic Move zwischen zwei `path` mit gleichem `match` – **beide Formen im selben viewBox** zeichnen.
+  `text: { content, style?, fontSize?, color?, offset? (0–100 %), anchor? }` setzt Text auf den Pfad; ohne `stroke`
+  bleibt der Pfad unsichtbar. Bewegung `textOffset` lässt den Text den Pfad entlanglaufen.
+- `draw` (0–1) in Bewegungen zeichnet Konturen von Pfaden, Linien und Icons an/ab (z. B. `from: { draw: 0 }`).
+- Daten-Magic-Move: zwei `chart` gleicher Art mit gleichem `match` auf aufeinanderfolgenden Folien (Übergang
+  `magicMove`) – Balken wachsen/schrumpfen, Linien und Flächen verformen sich, Ringsegmente wandern, Werte zählen von
+  alt nach neu. Gleiche Anzahl Datenpunkte wirkt am besten; neue Balken wachsen aus der Grundlinie.
+
+## Partikel, Generativ, Shader-Looks, Physik (Phase 8c)
+
+- Element `particles` (WebGL, Bahnen auf der Grafikkarte berechnet – spulbar, auch am iPad flüssig): `preset` `dust`,
+  `snow`, `sparks`, `bokeh`, `confetti`, `stars` oder `shape` (setzt sich zu `shape.text` mit `shape.style` oder einem
+  Bild `shape.src` zusammen). Optional `count`, `size` (px), `speed`, `colors` (Tokens), `opacity`, `form` (Start 0–1).
+  Build `assemble` = Teilchen fügen sich zur Form, als `out` zerfallen sie; Bewegung `form` (0–1) steuert das frei.
+  Rahmen = Bereich der Partikel (für Staub/Schnee über die ganze Folie: 0, 0, 1920, 1080).
+- Generative Muster (WebGL): Hintergrund `{ "type": "generative", "pattern": … }` oder Element `generative`
+  (mit `radius`). `pattern`: `flow` (Strömung), `noise` (Wolken), `waves` (Höhenlinien), `grid` (Perspektiv-Gitter),
+  `rings`, `plasma`; `colors` (erste = Grund), `speed`, `scale` (0 groß … 1 fein), `intensity`, `animate`.
+- Shader-Looks (SVG-Filter auf echtem HTML): auf der Folie als `effects` `distort` / `chromatic` / `glitch`
+  (`amount`, `speed`, bei distort `scale`), am Element als `looks: [{ type, amount, speed?, scale? }]`.
+  Übergang `glitch` (Streifen + Farbversatz). Looks kosten auf dem iPad Leistung – für Schule/Uni sparsam.
+- Physik: Bewegung mit `physics` `{ gravity?, bounce?, friction?, velocity? { x, y }, spin?, floor?, walls?, collide? }`
+  – das Element fällt aus seiner `from`-Lage (x/y/rotate), prallt an Boden (Standard Folienunterkante) und Rändern ab
+  und stößt alle Physik-Elemente desselben Schritts an (als Kreise). Vorab berechnet → jedes Mal gleich; Standarddauer
+  3 s. Ruhe-Position `frame` = wo es ungefähr liegen bleiben soll (z. B. auf dem Boden).
 
 ## Grafik & Effekte
 
@@ -131,7 +198,8 @@ optional `schema` (Zod für `props` – wird geprüft, Fehler erscheinen als Pla
   (GET/POST/DELETE), `/api/brand` (GET/PUT), `/api/brand/fonts` (POST), Live-Events.
 - `src/engine/masters.ts` – Master-Folien auflösen (`resolveSlide`/`resolveDeck`) für Editor, Präsentation, Screenshots.
 - `src/engine/` – Rendering (`SlideView`), Builds (`timeline.ts`), Übergänge (`transitions.ts`).
-- `src/editor/` – Editor (Zustand/Verlauf in `useEditor.ts`, Arbeitsfläche `Canvas.tsx`, Inspector, Ebenen,
+- `src/editor/` – Editor (Zustand/Verlauf in `useEditor.ts`, Arbeitsfläche `Canvas.tsx`, Text auf der Folie
+  `TextEditor.tsx`, Inspector, Ebenen,
   Mini-Toolbar, Übersicht, Medien, Schriften; Bearbeitungslogik in `model.ts`). `src/present/` – Präsentation.
 - `src/app/` – Ansichten und Routing. `src/ui/` – App-Designsystem (Tokens in `tokens.css`).
 - `templates/themes/`, `templates/layouts/`, `templates/blocks/`, `templates/decks/` – Themes, Layouts, Bausteine,

@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import type { Browser, Page } from 'playwright'
 import PptxGenJS from 'pptxgenjs'
+import { parseLine } from '../src/engine/markup'
 import { resolveDeck } from '../src/engine/masters'
 import type { Brand } from '../src/schema/brand'
 import type { Deck, Element, Slide } from '../src/schema/deck'
@@ -61,17 +62,13 @@ export function textRuns(content: string, uppercase: boolean): Run[] {
   const lines = content.split('\n')
   lines.forEach((line, i) => {
     const start = runs.length
-    let last = 0
-    const push = (text: string, opts: Run['options'] = {}) => {
-      if (text) runs.push({ text: uppercase ? text.toLocaleUpperCase('de-DE') : text, options: { ...opts } })
+    for (const span of parseLine(line)) {
+      const opts: Run['options'] = {}
+      if (span.bold) opts.bold = true
+      if (span.italic) opts.italic = true
+      if (span.text) runs.push({ text: uppercase ? span.text.toLocaleUpperCase('de-DE') : span.text, options: opts })
     }
-    for (const m of line.matchAll(/\*\*(.+?)\*\*|\*(.+?)\*/g)) {
-      push(line.slice(last, m.index))
-      push(m[1] ?? m[2] ?? '', m[1] !== undefined ? { bold: true } : { italic: true })
-      last = m.index + m[0].length
-    }
-    push(line.slice(last))
-    if (runs.length === start) push(' ') // Leerzeile behalten
+    if (runs.length === start) runs.push({ text: ' ', options: {} }) // Leerzeile behalten
     if (i < lines.length - 1) runs[runs.length - 1]!.options.breakLine = true
   })
   return runs
@@ -243,7 +240,7 @@ export async function exportPptx(name: string, baseUrl: string, browser?: Browse
   // Themes dürfen die Palette umstellen (z. B. „papier“ hell) – Farb-Tokens wie in ThemeScope auflösen.
   const theme = read.deck.theme ? await readTheme(read.deck.theme) : null
   if (theme && !theme.ok) return theme
-  const colors = { ...brandResult.brand.colors, ...theme?.theme.colors }
+  const colors = { ...brandResult.brand.colors, ...theme?.theme.colors, ...read.deck.colors }
   const brand: Brand = { ...brandResult.brand, colors }
   const deck: Deck = resolveDeck(read.deck)
   const { width, height } = deck.format

@@ -51,6 +51,11 @@ export const BuildPreset = z.enum([
   'kenBurns',
   /** Charts: Balken wachsen, Linien zeichnen sich, Ringe füllen sich. */
   'grow',
+  /** Kinetische Typo (nur Text): Buchstabe für Buchstabe, Schreibmaschine, Zeichen-Wirbel, aus Einzelteilen zusammensetzen. */
+  'charByChar',
+  'typewriter',
+  'scramble',
+  'assemble',
 ])
 
 export const Animation = z.strictObject({
@@ -70,6 +75,156 @@ export const Build = z.strictObject({
   order: z.number().optional(),
 })
 
+/* ---------- Bewegung (Phase 8a): freie Spuren auf der Zeitleiste ---------- */
+
+/**
+ * Timing-Kurve: Name (`smooth`, `spring`, `linear`, `in`, `out`, `inOut`, `bounce`, `elastic`, `back`),
+ * `cubic-bezier(x1,y1,x2,y2)`, Feder `spring(0.4)` (Nachschwingen 0–0.95), `wiggle(6)` (zittert n-mal und kehrt zurück),
+ * `steps(8)` (ruckweise).
+ */
+export const MotionEase = z
+  .string()
+  .regex(
+    /^(smooth|spring|linear|in|out|inOut|bounce|elastic|back|cubic-bezier\(\s*-?[\d.]+\s*,\s*-?[\d.]+\s*,\s*-?[\d.]+\s*,\s*-?[\d.]+\s*\)|spring\(\s*(0(\.\d+)?|\.\d+)\s*\)|wiggle\(\s*\d{1,2}\s*\)|steps\(\s*\d{1,2}\s*\))$/,
+    'Kurve: smooth, spring, spring(0.4), bounce, elastic, back, linear, in, out, inOut, cubic-bezier(.2,.8,.2,1), wiggle(6) oder steps(8)',
+  )
+
+/**
+ * Was sich bewegen kann – Abweichung von der Ruhe-Position (`frame`). x/y/z in logischen Pixeln, Winkel in Grad,
+ * blur in Pixeln. `color` färbt Text/Icons/Charts, `fill` die Fläche einer Form.
+ */
+export const MotionProps = z.strictObject({
+  x: z.number().optional(),
+  y: z.number().optional(),
+  z: z.number().optional(),
+  scale: z.number().optional(),
+  scaleX: z.number().optional(),
+  scaleY: z.number().optional(),
+  rotate: z.number().optional(),
+  rotateX: z.number().optional(),
+  rotateY: z.number().optional(),
+  skewX: z.number().optional(),
+  skewY: z.number().optional(),
+  opacity: unit.optional(),
+  blur: z.number().min(0).max(200).optional(),
+  color: Color.optional(),
+  fill: Color.optional(),
+  /** Pfad-Elemente: neue Form (SVG-Pfad im viewBox des Elements) – die Form verwandelt sich. */
+  d: z.string().min(3).optional(),
+  /** Linien, Pfade, Icons: gezeichneter Anteil der Kontur 0–1. */
+  draw: unit.optional(),
+  /** Text auf Pfad: Position auf dem Pfad in Prozent (0–100). */
+  textOffset: z.number().min(-100).max(200).optional(),
+  /** Partikel mit Form: 0 = verstreut, 1 = zur Form (Text/Bild) zusammengesetzt. */
+  form: unit.optional(),
+})
+
+/** Physik für eine Bewegung: das Element fällt, prallt ab, stößt andere Physik-Elemente desselben Schritts an. */
+export const Physics = z.strictObject({
+  /** Schwerkraft in px/s² (Standard 2400, 0 = schwerelos). */
+  gravity: z.number().min(-20000).max(20000).optional(),
+  /** Sprungkraft beim Aufprall 0–1 (Standard 0.5). */
+  bounce: unit.optional(),
+  /** Reibung am Boden 0–1 (Standard 0.15). */
+  friction: unit.optional(),
+  /** Startgeschwindigkeit in px/s. */
+  velocity: z.strictObject({ x: z.number().optional(), y: z.number().optional() }).optional(),
+  /** Drehung in Grad/s. */
+  spin: z.number().optional(),
+  /** Boden (y in Folien-Pixeln, Standard: Folienunterkante). */
+  floor: z.number().optional(),
+  /** An den Folienrändern abprallen (Standard ja). */
+  walls: z.boolean().optional(),
+  /** Mit anderen Physik-Elementen zusammenstoßen (Standard ja). */
+  collide: z.boolean().optional(),
+})
+
+export const MotionKey = MotionProps.extend({
+  /** Position im Ablauf 0–1. Ohne Angabe: gleichmäßig verteilt. */
+  t: unit.optional(),
+  /** Kurve zum nächsten Schlüssel. */
+  ease: MotionEase.optional(),
+})
+
+export const Motion = z
+  .strictObject({
+    /** Klick-Schritt: 0 = automatisch beim Betreten, 1 = erster Klick … (auf Szenen-Folien ohne Bedeutung). */
+    step: z.number().int().min(0).max(99).optional(),
+    /** Start in ms ab Beginn des Schritts (auf Szenen-Folien: ab Beginn der Folie). */
+    at: z.number().int().min(0).max(120000).optional(),
+    duration: z.number().int().min(1).max(120000).optional(),
+    ease: MotionEase.optional(),
+    /** Startzustand (sonst der aktuelle). */
+    from: MotionProps.optional(),
+    /** Endzustand (sonst die Ruhe-Position). */
+    to: MotionProps.optional(),
+    /** Statt from/to: mehrere Zustände nacheinander. */
+    keys: z.array(MotionKey).min(2).optional(),
+    /**
+     * SVG-Pfad in Folien-Koordinaten (z. B. "M 0 900 C 400 200, 1200 1200, 960 540") – die Mitte des Elements folgt ihm.
+     * Mit `orient` dreht sich das Element in Laufrichtung.
+     */
+    path: z.string().min(3).optional(),
+    orient: z.boolean().optional(),
+    /** Wiederholungen: 1 = noch einmal, -1 = endlos (läuft dann neben den Klicks weiter). */
+    repeat: z.number().int().min(-1).max(999).optional(),
+    /** Beim Wiederholen hin und zurück. */
+    yoyo: z.boolean().optional(),
+    /** Pause zwischen Wiederholungen in ms. */
+    repeatDelay: z.number().int().min(0).max(60000).optional(),
+    /** Text in Buchstaben, Wörter oder Zeilen zerlegen – jedes Teil bewegt sich einzeln (kinetische Typo). */
+    split: z.enum(['char', 'word', 'line']).optional(),
+    /** Versatz zwischen den Teilen in ms (mit `split`). */
+    stagger: z.number().int().min(0).max(5000).optional(),
+    /** Wo die Welle beginnt: vorn, hinten, in der Mitte oder zufällig. */
+    staggerFrom: z.enum(['start', 'end', 'center', 'random']).optional(),
+    /** Physik statt fester Bahn: fallen, abprallen, anstoßen. `from` setzt dabei die Startlage (x/y/rotate). */
+    physics: Physics.optional(),
+  })
+  .superRefine((m, ctx) => {
+    if (m.keys && (m.from || m.to)) ctx.addIssue({ code: 'custom', path: ['keys'], message: 'Entweder keys oder from/to' })
+    if (!m.keys && !m.from && !m.to && !m.path && !m.physics) ctx.addIssue({ code: 'custom', path: [], message: 'Bewegung braucht from, to, keys, path oder physics' })
+  })
+
+/** Szenen-Folie: läuft von selbst durch wie ein Film (Builds und Bewegungen nach Zeit), ein Klick geht zur nächsten Folie. */
+export const Scene = z.strictObject({
+  /** Mindestdauer in ms (sonst so lang wie die längste Bewegung). */
+  duration: z.number().int().min(0).max(600000).optional(),
+  /** Endlos wiederholen, bis weitergeklickt wird. */
+  loop: z.boolean().optional(),
+})
+
+/**
+ * Shader-Look (SVG-Filter auf Folie oder Element):
+ * `distort` = flüssige Verzerrung / Hitzeflimmern / Wasser (`scale` = Größe der Wellen, 0–1),
+ * `chromatic` = Farbversatz (RGB auseinander), `glitch` = digitale Störung in Schüben.
+ */
+export const Look = z.strictObject({
+  type: z.enum(['distort', 'chromatic', 'glitch']),
+  amount: unit,
+  /** Tempo 0–1 (Standard 0.3). */
+  speed: unit.optional(),
+  /** Nur distort: Größe der Wellen 0 = groß/ruhig … 1 = fein/flirrend. */
+  scale: unit.optional(),
+})
+
+/** Generative Muster (WebGL): fließende Linien, Rauschwolken, Gitter, Wellen, Ringe, Plasma. */
+export const GenerativePattern = z.enum(['flow', 'noise', 'grid', 'waves', 'rings', 'plasma'])
+
+const generativeFields = {
+  pattern: GenerativePattern,
+  /** Erste Farbe = Grund, weitere = Licht/Linien (Brand-Tokens). */
+  colors: z.array(Color).min(1).max(5).optional(),
+  /** Tempo 0–1 (Standard 0.3). */
+  speed: unit.optional(),
+  /** Musterweite 0 = groß … 1 = fein (Standard 0.5). */
+  scale: unit.optional(),
+  /** Stärke/Helligkeit des Musters 0–1 (Standard 0.6). */
+  intensity: unit.optional(),
+  /** Bewegt sich (Standard ja). */
+  animate: z.boolean().optional(),
+}
+
 const elementBase = {
   id,
   /** Gleicher `match` auf zwei aufeinanderfolgenden Folien → Magic Move. */
@@ -87,6 +242,10 @@ const elementBase = {
   /** Gruppe: Elemente mit gleichem `group` werden im Editor gemeinsam ausgewählt und bewegt. */
   group: id.optional(),
   build: Build.optional(),
+  /** Freie Bewegungen auf der Zeitleiste (zusätzlich zu `build`). */
+  motion: z.array(Motion).optional(),
+  /** Shader-Looks auf dem Element: Verzerrung, Farbversatz, Glitch. */
+  looks: z.array(Look).optional(),
 }
 
 export const TextStyle = z.enum(['display', 'title', 'heading', 'subtitle', 'body', 'caption', 'label'])
@@ -157,6 +316,72 @@ export const IconElement = z.strictObject({
   strokeWidth: z.number().positive().optional(),
 })
 
+/**
+ * Freie Vektorform/Linie. `d` ist ein SVG-Pfad im Koordinatensystem `viewBox` (Standard: "0 0 <Breite> <Höhe>" des
+ * Rahmens). Zeichnet sich mit Build `drawLine`, verwandelt sich per Bewegung (`to: { d }`) oder Magic Move in eine
+ * andere Form (gleiches viewBox verwenden). Mit `text` läuft Text auf dem Pfad entlang.
+ */
+export const PathElement = z.strictObject({
+  ...elementBase,
+  type: z.literal('path'),
+  d: z.string().min(3),
+  viewBox: z
+    .string()
+    .regex(/^-?[\d.]+\s+-?[\d.]+\s+[\d.]+\s+[\d.]+$/, 'viewBox: "x y breite höhe", z. B. "0 0 400 200"')
+    .optional(),
+  stroke: z.strictObject({ color: Color, width: z.number().positive() }).optional(),
+  fill: Color.optional(),
+  lineCap: z.enum(['round', 'butt', 'square']).optional(),
+  text: z
+    .strictObject({
+      content: z.string().min(1),
+      style: z.enum(['display', 'title', 'heading', 'subtitle', 'body', 'caption', 'label']).optional(),
+      fontSize: z.number().positive().optional(),
+      color: Color.optional(),
+      /** Startposition auf dem Pfad in Prozent. */
+      offset: z.number().min(-100).max(200).optional(),
+      /** Ausrichtung am Startpunkt. */
+      anchor: z.enum(['start', 'middle', 'end']).optional(),
+    })
+    .optional(),
+})
+
+/**
+ * Partikel (WebGL, laufen auf der Grafikkarte – auch am iPad flüssig).
+ * `preset`: dust (Staub), snow (Schnee), sparks (Funken), bokeh (Licht-Kreise), confetti, stars (funkeln),
+ * shape (setzen sich zu `shape.text` oder `shape.src` zusammen – mit Bewegung `form` 0→1 oder Build `assemble`).
+ */
+export const ParticlesElement = z.strictObject({
+  ...elementBase,
+  type: z.literal('particles'),
+  preset: z.enum(['dust', 'snow', 'sparks', 'bokeh', 'confetti', 'stars', 'shape']),
+  /** Anzahl (Standard je nach Art, max. 20000). */
+  count: z.number().int().min(1).max(20000).optional(),
+  colors: z.array(Color).min(1).max(5).optional(),
+  /** Größe in Pixeln (Standard je nach Art). */
+  size: z.number().positive().max(400).optional(),
+  /** Tempo-Faktor (Standard 1). */
+  speed: z.number().min(0).max(10).optional(),
+  opacity: unit.optional(),
+  shape: z
+    .strictObject({
+      text: z.string().min(1).optional(),
+      src: assetPath.optional(),
+      style: z.enum(['display', 'title', 'heading', 'subtitle', 'body', 'caption', 'label']).optional(),
+    })
+    .optional(),
+  /** Startzustand der Form 0–1 (Standard 1 = zusammengesetzt). */
+  form: unit.optional(),
+})
+
+/** Generatives Muster als Element (Hauptmotiv oder Fläche) – gleiche Muster wie der Hintergrund `generative`. */
+export const GenerativeElement = z.strictObject({
+  ...elementBase,
+  type: z.literal('generative'),
+  ...generativeFields,
+  radius: z.number().min(0).optional(),
+})
+
 export const ChartPoint = z.strictObject({
   label: z.string(),
   value: z.number(),
@@ -198,6 +423,9 @@ export const CustomElement = z.strictObject({
 })
 
 export const Element = z.discriminatedUnion('type', [
+  PathElement,
+  ParticlesElement,
+  GenerativeElement,
   TextElement,
   ImageElement,
   VideoElement,
@@ -209,6 +437,7 @@ export const Element = z.discriminatedUnion('type', [
 ])
 
 export const Background = z.discriminatedUnion('type', [
+  z.strictObject({ type: z.literal('generative'), ...generativeFields }),
   z.strictObject({ type: z.literal('color'), color: Color }),
   z.strictObject({
     type: z.literal('gradient'),
@@ -243,6 +472,10 @@ export const Effect = z.discriminatedUnion('type', [
     look: z.enum(['warm', 'cool', 'tealOrange', 'muted', 'mono']),
     amount: unit.optional(),
   }),
+  /** Shader-Looks auf der ganzen Folie (siehe Look). */
+  z.strictObject({ type: z.literal('distort'), amount: unit, speed: unit.optional(), scale: unit.optional() }),
+  z.strictObject({ type: z.literal('chromatic'), amount: unit, speed: unit.optional() }),
+  z.strictObject({ type: z.literal('glitch'), amount: unit, speed: unit.optional() }),
 ])
 
 export const TransitionType = z.enum([
@@ -256,6 +489,8 @@ export const TransitionType = z.enum([
   'maskReveal',
   'lightLeak',
   'whipPan',
+  /** Digitale Störung: Farbversatz und Bildstreifen zucken über den Schnitt. */
+  'glitch',
 ])
 
 export const Transition = z.strictObject({
@@ -285,6 +520,8 @@ export const Slide = z
     /** Übergang *zu* dieser Folie. */
     transition: Transition.optional(),
     world: World.optional(),
+    /** Folie als durchlaufende Szene statt Klick für Klick. */
+    scene: Scene.optional(),
     elements: z.array(Element),
     notes: z.string().optional(),
     /** In der Präsentation überspringen. */
@@ -364,6 +601,15 @@ export const Format = z
     }
   })
 
+/**
+ * Palette: Hex-Werte für Brand-Tokens (gleiche Namen wie in brand/brand.json), z. B. eine helle Variante.
+ * Gilt für Themes (`colors`) und Decks (`colors` – überschreibt Brand-Kit und Theme).
+ */
+export const PaletteColors = z.record(
+  z.string().regex(/^[a-zA-Z][a-zA-Z0-9]*$/),
+  z.string().regex(/^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/, 'Hex-Farbe, z. B. #f4f2ed'),
+)
+
 export const Deck = z
   .strictObject({
     $schema: z.string().optional(),
@@ -373,6 +619,8 @@ export const Deck = z
     description: z.string().optional(),
     format: Format,
     theme: z.string().optional(),
+    /** Eigene Palette des Decks (aus templates/palettes.json übernommen) – überschreibt Brand-Kit und Theme-Farben. */
+    colors: PaletteColors.optional(),
     /** Globale Effekt-Intensität: 0 = ruhig, 1 = filmisch. */
     intensity: unit.optional(),
     /** Eigene Werte für die Textstile – eine Änderung wirkt auf alle Texte dieses Stils. */
@@ -408,6 +656,9 @@ export const Deck = z
 
 export type Deck = z.infer<typeof Deck>
 export type Slide = z.infer<typeof Slide>
+export type Motion = z.infer<typeof Motion>
+export type MotionProps = z.infer<typeof MotionProps>
+export type Scene = z.infer<typeof Scene>
 export type Master = z.infer<typeof Master>
 export type DeckTextStyle = z.infer<typeof DeckTextStyle>
 export type Element = z.infer<typeof Element>
@@ -418,6 +669,11 @@ export type ShapeElement = z.infer<typeof ShapeElement>
 export type IconElement = z.infer<typeof IconElement>
 export type CustomElement = z.infer<typeof CustomElement>
 export type ChartElement = z.infer<typeof ChartElement>
+export type PathElement = z.infer<typeof PathElement>
+export type ParticlesElement = z.infer<typeof ParticlesElement>
+export type GenerativeElement = z.infer<typeof GenerativeElement>
+export type Look = z.infer<typeof Look>
+export type Physics = z.infer<typeof Physics>
 export type LottieElement = z.infer<typeof LottieElement>
 export type World = z.infer<typeof World>
 export type Background = z.infer<typeof Background>

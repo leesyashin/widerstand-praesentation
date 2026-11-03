@@ -30,6 +30,8 @@ type State = {
   /** Zuletzt gespeicherte Stände – verspätete Echos davon sind keine Änderungen von außen. */
   recentSaves: string[]
   externalUpdates: number
+  /** Fehlgeschlagene Speicherversuche in Folge (Server weg, Datei kurz gesperrt) – es wird erneut versucht. */
+  attempt: number
 }
 
 type Action =
@@ -37,7 +39,7 @@ type Action =
   | { type: 'edit'; recipe: (draft: Draft<Deck>) => void; merge?: string; at: number }
   | { type: 'undo' }
   | { type: 'redo' }
-  | { type: 'saved'; deck: Deck; issues: Issue[] }
+  | { type: 'saved'; deck: Deck; issues: Issue[]; retry?: boolean }
 
 const HISTORY = 200
 /** Unterwegs ist jedes Speichern ein Commit – dort erst nach einer kurzen Pause speichern. */
@@ -104,8 +106,11 @@ function reducer(state: State, action: Action): State {
       return { ...state, doc: next, past: [...state.past, state.doc], future: rest, pending: true, mergeKey: null }
     }
     case 'saved':
+      // Vorübergehender Fehler: Änderungen bleiben „ungespeichert“ und werden gleich noch einmal geschrieben.
+      if (action.retry) return { ...state, pending: true, saveIssues: action.issues, attempt: state.attempt + 1 }
       return {
         ...state,
+        attempt: 0,
         pending: state.doc !== action.deck,
         saveIssues: action.issues,
         recentSaves: action.issues.length ? state.recentSaves : [...state.recentSaves, canonical(action.deck)].slice(-20),
@@ -124,6 +129,7 @@ const initial: State = {
   seen: null,
   recentSaves: [],
   externalUpdates: 0,
+  attempt: 0,
 }
 
 export type Editor = {
@@ -155,11 +161,14 @@ export function useEditor(name: string): Editor {
   useEffect(() => {
     if (!state.pending || !state.doc) return
     const doc = state.doc
+    const delay = state.attempt ? Math.min(15000, 1000 * 2 ** state.attempt) : SAVE_DELAY
     const timer = setTimeout(() => {
-      void api.saveDeck(name, doc).then((r) => dispatch({ type: 'saved', deck: doc, issues: r.ok ? [] : r.issues }))
-    }, SAVE_DELAY)
+      void api.saveDeck(name, doc).then((r) =>
+        dispatch({ type: 'saved', deck: doc, issues: r.ok ? [] : r.issues, retry: !r.ok && (r.status === 0 || r.status >= 500) }),
+      )
+    }, delay)
     return () => clearTimeout(timer)
-  }, [state.pending, state.doc, name])
+  }, [state.pending, state.doc, state.attempt, name])
 
   // Beim Verlassen nichts verlieren.
   useEffect(() => {

@@ -1,6 +1,6 @@
-import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useId, useRef, type CSSProperties, type ReactNode } from 'react'
 import { assetUrl } from '../api/client'
-import type { Background, Effect, Element, Slide, VideoElement } from '../schema/deck'
+import type { Background, Effect, Element, Look, PathElement, Slide, VideoElement } from '../schema/deck'
 import { resolveColor, type TextStyles } from './brand'
 import { ChartBody } from './chart'
 import { useEffectScale, useTextStyles } from './context'
@@ -9,7 +9,11 @@ import { Grain, LightSweep, MeshBackground } from './effects'
 import { findIcon, LucideIcon } from './icons'
 import { BUILD_IN_EVENT } from './buildEvents'
 import { LottieView } from './lottie'
-import { renderInline } from './text'
+import { GenerativeView } from './generative'
+import { LookFilter } from './looks'
+import { hasMotion } from './motion'
+import { ParticlesView } from './particles'
+import { renderInline, type TextSplit } from './text'
 import './engine.css'
 
 /**
@@ -20,7 +24,7 @@ import './engine.css'
  */
 export type RenderMode = 'view' | 'thumb' | 'present' | 'render'
 
-type Ctx = { deckName: string; mode: RenderMode; width: number; height: number }
+type Ctx = { deckName: string; mode: RenderMode; width: number; height: number; uid: string }
 
 export function SlideView({
   slide,
@@ -35,9 +39,21 @@ export function SlideView({
   width: number
   height: number
 }) {
-  const ctx: Ctx = { deckName, mode, width, height }
+  // Eigene Kennung je Darstellung: dieselbe Folie hängt oft mehrfach im Dokument (Editor, Vorschau, Präsentation).
+  const uid = useId().replace(/[^a-zA-Z0-9_-]/g, '')
+  const ctx: Ctx = { deckName, mode, width, height, uid }
   const fx = useEffectScale()
   const look = slide.effects?.find((e) => e.type === 'colorLook')
+  const live = isLive(mode)
+  // Shader-Looks der Folie (distort/chromatic/glitch) und der Elemente als SVG-Filter.
+  const slideLooks: Look[] = (slide.effects ?? []).flatMap((e) =>
+    e.type === 'distort' || e.type === 'chromatic' || e.type === 'glitch' ? [{ ...e, amount: Math.min(1, e.amount * fx) }] : [],
+  )
+  const elementLooks = slide.elements.flatMap((el) => (el.hidden ? [] : (el.looks ?? []).map((l, i) => ({ id: lookId(uid, el.id, i), look: l }))))
+  const contentFilter = [
+    ...slideLooks.map((_, i) => `url(#${lookId(uid, '', i)})`),
+    ...(look ? [colorLookFilter(look.look, look.amount ?? 1)] : []),
+  ].join(' ')
   const float = slide.effects?.find((e) => e.type === 'float')
   const classes = ['slide', `slide--${mode}`, isLive(mode) && 'slide--live', float && 'slide--float'].filter(Boolean)
   return (
@@ -46,7 +62,17 @@ export function SlideView({
       data-slide-id={slide.id}
       style={float ? ({ '--float': float.amount * fx } as CSSProperties) : undefined}
     >
-      <div className="slide__content" style={{ filter: look ? colorLookFilter(look.look, look.amount ?? 1) : undefined }}>
+      {(slideLooks.length > 0 || elementLooks.length > 0) && (
+        <svg className="fx-defs" width="0" height="0" aria-hidden>
+          {slideLooks.map((l, i) => (
+            <LookFilter key={`s${i}`} id={lookId(uid, '', i)} look={l} live={live} />
+          ))}
+          {elementLooks.map((l) => (
+            <LookFilter key={l.id} id={l.id} look={l.look} live={live} />
+          ))}
+        </svg>
+      )}
+      <div className="slide__content" style={{ filter: contentFilter || undefined }}>
         <BackgroundView background={slide.background} ctx={ctx} />
         {slide.elements.map((el) => (el.hidden ? null : <ElementView key={el.id} element={el} ctx={ctx} />))}
       </div>
@@ -63,11 +89,15 @@ export function SlideView({
 
 const isLive = (mode: RenderMode) => mode === 'view' || mode === 'present'
 
+const lookId = (uid: string, el: string, i: number) => `look-${uid}-${el || 'folie'}-${i}`
+
 /* ---------- Hintergründe ---------- */
 
 function BackgroundView({ background, ctx }: { background: Background | undefined; ctx: Ctx }) {
   const bg = background ?? { type: 'color', color: 'brand.background' }
   switch (bg.type) {
+    case 'generative':
+      return <GenerativeView props={bg} mode={ctx.mode} className="slide__bg" />
     case 'color':
       return <div className="slide__bg" style={{ background: resolveColor(bg.color) }} />
     case 'gradient':
@@ -116,6 +146,59 @@ function BackgroundView({ background, ctx }: { background: Background | undefine
 
 /* ---------- Elemente ---------- */
 
+const CHAR_PRESETS = new Set(['charByChar', 'typewriter', 'scramble', 'assemble'])
+
+/** Wie ein Text für Animationen zerlegt wird – Buchstaben schließen Wörter ein (.c liegt in .w). */
+export function textSplitOf(el: Extract<Element, { type: 'text' }>): TextSplit {
+  const presets = [el.build?.in?.preset, el.build?.out?.preset]
+  const splits = el.motion?.map((m) => m.split) ?? []
+  if (presets.some((p) => p && CHAR_PRESETS.has(p)) || splits.includes('char')) return 'char'
+  if (presets.includes('wordByWord') || splits.includes('word')) return 'word'
+  if (presets.includes('lineByLine') || splits.includes('line')) return 'line'
+  return 'none'
+}
+
+/** Freie Vektorform, optional mit Text auf dem Pfad. */
+function PathBody({ el, styles }: { el: PathElement; styles: TextStyles }) {
+  const id = `pfad-${el.id}`
+  const t = el.text
+  const ts = styles[t?.style ?? 'body']
+  const visible = Boolean(el.stroke || el.fill)
+  return (
+    <svg className="el-path-svg" viewBox={el.viewBox ?? `0 0 ${el.frame.w} ${el.frame.h}`} overflow="visible">
+      <path
+        id={id}
+        className="el-path"
+        d={el.d}
+        style={{
+          fill: resolveColor(el.fill) ?? 'none',
+          stroke: el.stroke ? resolveColor(el.stroke.color) : visible ? 'none' : 'transparent',
+          strokeWidth: el.stroke?.width ?? 0,
+          strokeLinecap: el.lineCap ?? 'round',
+          strokeLinejoin: 'round',
+        }}
+      />
+      {t && (
+        <text
+          className="el-path-text"
+          style={{
+            fill: resolveColor(t.color ?? ts.color),
+            fontFamily: `var(--font-${ts.font})`,
+            fontSize: t.fontSize ?? ts.size,
+            fontWeight: ts.weight,
+            letterSpacing: `${ts.letterSpacing}em`,
+            textTransform: ts.uppercase ? 'uppercase' : undefined,
+          }}
+        >
+          <textPath href={`#${id}`} startOffset={`${t.offset ?? 0}%`} textAnchor={t.anchor ?? 'start'}>
+            {t.content}
+          </textPath>
+        </text>
+      )}
+    </svg>
+  )
+}
+
 function ElementView({ element, ctx }: { element: Element; ctx: Ctx }) {
   const { frame } = element
   const style: CSSProperties & Record<`--${string}`, number> = {
@@ -125,13 +208,16 @@ function ElementView({ element, ctx }: { element: Element; ctx: Ctx }) {
     height: frame.h,
     transform: frame.rotation ? `rotate(${frame.rotation}deg)` : undefined,
     opacity: element.opacity,
+    filter: element.looks?.length ? element.looks.map((_, i) => `url(#${lookId(ctx.uid, element.id, i)})`).join(' ') : undefined,
   }
   if (element.depth) {
     style['--depth'] = element.depth
     style['--depth-abs'] = Math.abs(element.depth)
   }
   const tilt = element.tilt
-  const body = <ElementBody element={element} ctx={ctx} />
+  const inner = <ElementBody element={element} ctx={ctx} />
+  // Freie Bewegungen (motion) laufen auf einer eigenen Hülle – getrennt von den Builds auf .el-anim.
+  const body = hasMotion(element) ? <div className="el-motion">{inner}</div> : inner
   return (
     <div
       className={`el el--${element.type} ${element.depth ? 'el--depth' : ''}`}
@@ -158,7 +244,7 @@ function ElementBody({ element: el, ctx }: { element: Element; ctx: Ctx }): Reac
     case 'text': {
       const justify = { top: 'flex-start', middle: 'center', bottom: 'flex-end' }[el.verticalAlign ?? 'top']
       const preset = el.build?.in?.preset
-      const split = preset === 'wordByWord' ? 'word' : preset === 'lineByLine' ? 'line' : 'none'
+      const split = textSplitOf(el)
       return (
         <div className="el-text" style={{ justifyContent: justify, ...textCss(el, styles) }}>
           <div>{renderInline(el.content, split, preset === 'countUp')}</div>
@@ -181,6 +267,12 @@ function ElementBody({ element: el, ctx }: { element: Element; ctx: Ctx }): Reac
       )
     case 'video':
       return <VideoBody el={el} ctx={ctx} />
+    case 'path':
+      return <PathBody el={el} styles={styles} />
+    case 'particles':
+      return <ParticlesView el={el} mode={ctx.mode} deckName={ctx.deckName} />
+    case 'generative':
+      return <GenerativeView props={el} mode={ctx.mode} className="el-generative" radius={el.radius} />
     case 'chart':
       return <ChartBody el={el} />
     case 'lottie':
@@ -276,7 +368,8 @@ function ShapeBody({ el }: { el: Extract<Element, { type: 'shape' }> }) {
         className={`el-shape ${glass > 0 ? 'el-shape--glass' : ''}`}
         style={
           {
-            background: glass > 0 ? `color-mix(in srgb, ${fill ?? 'white'} ${Math.round(12 + glass * 18)}%, transparent)` : fill,
+            // backgroundColor statt background: die Kurzform mit var() zerfällt, sobald eine Animation die Farbe setzt.
+            backgroundColor: glass > 0 ? `color-mix(in srgb, ${fill ?? 'white'} ${Math.round(12 + glass * 18)}%, transparent)` : fill,
             border: stroke ? `${stroke.width}px solid ${stroke.color}` : undefined,
             borderRadius: el.shape === 'ellipse' ? '50%' : el.radius,
             '--glass-blur': `${Math.round(8 + glass * 40)}px`,
@@ -337,7 +430,10 @@ function EffectView({ effect, ctx }: { effect: Effect; ctx: Ctx }) {
       )
     }
     case 'colorLook':
-      return null // wird als Filter auf den Inhalt angewendet
+    case 'distort':
+    case 'chromatic':
+    case 'glitch':
+      return null // wirken als Filter auf den Inhalt
   }
 }
 

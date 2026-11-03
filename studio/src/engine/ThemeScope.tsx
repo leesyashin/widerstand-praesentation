@@ -13,18 +13,24 @@ export function ThemeScope({
   theme,
   intensity,
   textStyles,
+  colors,
   children,
 }: {
   theme: string | undefined
   intensity?: number
   /** Textstile des Decks – überschreiben die des Themes. */
   textStyles?: Deck['textStyles']
+  /** Palette des Decks – überschreibt Brand-Kit und Theme-Farben. */
+  colors?: Deck['colors']
   children: ReactNode
 }) {
   const live = useTheme(theme)
   const brand = useContext(PaletteContext)
   const styles = useMemo(() => mergeTextStyles(live.value, textStyles), [live.value, textStyles])
-  const palette = useMemo(() => (live.value?.colors ? { ...brand, ...live.value.colors } : brand), [brand, live.value])
+  const palette = useMemo(
+    () => (live.value?.colors || colors ? { ...brand, ...live.value?.colors, ...colors } : brand),
+    [brand, live.value, colors],
+  )
   return (
     <TextStylesContext.Provider value={styles}>
       <IntensityContext.Provider value={intensity ?? 0.3}>

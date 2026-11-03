@@ -37,6 +37,12 @@ select {
   color: inherit;
 }
 
+/* Windows zeigt sonst breite, graue Bildlaufleisten – schmal und ruhig wie auf dem Mac. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--text) 22%, transparent) transparent;
+}
+
 :focus-visible {
   outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent);
   outline-offset: 1px;

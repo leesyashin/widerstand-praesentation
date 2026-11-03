@@ -1,0 +1,1218 @@
+{
+  "$schema": "../../src/schema/deck.schema.json",
+  "version": 1,
+  "title": "Motion-Demo",
+  "description": "Phase 8a–8c: Bewegung, Kurven, Pfade, Szenen, kinetische Typo, Formwandel, Daten, Partikel, Generativ, Shader-Looks, Physik.",
+  "format": {
+    "preset": "16:9",
+    "width": 1920,
+    "height": 1080
+  },
+  "theme": "silber",
+  "intensity": 0.3,
+  "slides": [
+    {
+      "id": "pfad",
+      "background": {
+        "type": "meshGradient",
+        "colors": [
+          "brand.background",
+          "brand.accent2",
+          "brand.surface"
+        ],
+        "animate": true
+      },
+      "elements": [
+        {
+          "id": "kicker",
+          "frame": {
+            "x": 160,
+            "y": 160,
+            "w": 1000,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          },
+          "type": "text",
+          "content": "Phase 8a · Pfad & Feder",
+          "style": "label"
+        },
+        {
+          "id": "titel",
+          "frame": {
+            "x": 160,
+            "y": 230,
+            "w": 1200,
+            "h": 340
+          },
+          "motion": [
+            {
+              "step": 0,
+              "duration": 1400,
+              "ease": "spring(0.35)",
+              "from": {
+                "y": 120,
+                "scale": 0.92,
+                "opacity": 0,
+                "blur": 30
+              }
+            }
+          ],
+          "type": "text",
+          "content": "Alles kann\n*sich bewegen.*",
+          "style": "display"
+        },
+        {
+          "id": "flieger",
+          "frame": {
+            "x": 1500,
+            "y": 640,
+            "w": 120,
+            "h": 120
+          },
+          "motion": [
+            {
+              "step": 1,
+              "duration": 2200,
+              "ease": "inOut",
+              "from": {
+                "scale": 0.4,
+                "opacity": 0
+              },
+              "to": {
+                "scale": 1,
+                "opacity": 1
+              },
+              "path": "M 120 980 C 520 380, 1000 1060, 1560 700",
+              "orient": true
+            },
+            {
+              "step": 1,
+              "at": 2300,
+              "duration": 2600,
+              "ease": "inOut",
+              "to": {
+                "y": -26,
+                "rotate": 6
+              },
+              "repeat": -1,
+              "yoyo": true
+            }
+          ],
+          "type": "icon",
+          "icon": "send",
+          "color": "brand.accent",
+          "strokeWidth": 1.5
+        },
+        {
+          "id": "hinweis",
+          "frame": {
+            "x": 160,
+            "y": 900,
+            "w": 1200,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          },
+          "type": "text",
+          "content": "Klick: das Icon fliegt auf einem Pfad herein und schwebt danach endlos.",
+          "style": "caption"
+        }
+      ]
+    },
+    {
+      "id": "schluessel",
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "titel",
+          "frame": {
+            "x": 160,
+            "y": 140,
+            "w": 1600,
+            "h": 130
+          },
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "afterPrevious"
+          },
+          "type": "text",
+          "content": "Schlüssel, Kurven, Farbe.",
+          "style": "title"
+        },
+        {
+          "id": "kreis",
+          "frame": {
+            "x": 260,
+            "y": 500,
+            "w": 200,
+            "h": 200
+          },
+          "motion": [
+            {
+              "step": 1,
+              "duration": 2400,
+              "ease": "inOut",
+              "keys": [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "scale": 1
+                },
+                {
+                  "x": 600,
+                  "y": -180,
+                  "scale": 0.6,
+                  "t": 0.35,
+                  "ease": "out"
+                },
+                {
+                  "x": 1100,
+                  "y": 60,
+                  "scale": 1.3,
+                  "fill": "brand.textMuted",
+                  "t": 0.7
+                },
+                {
+                  "x": 1200,
+                  "y": 0,
+                  "scale": 1
+                }
+              ]
+            }
+          ],
+          "type": "shape",
+          "shape": "ellipse",
+          "fill": "brand.accent"
+        },
+        {
+          "id": "glocke",
+          "frame": {
+            "x": 1600,
+            "y": 820,
+            "w": 100,
+            "h": 100
+          },
+          "motion": [
+            {
+              "step": 2,
+              "duration": 900,
+              "ease": "wiggle(7)",
+              "to": {
+                "rotate": 16
+              }
+            }
+          ],
+          "type": "icon",
+          "icon": "bell",
+          "color": "brand.text",
+          "strokeWidth": 1.5
+        },
+        {
+          "id": "wuerfel",
+          "frame": {
+            "x": 160,
+            "y": 800,
+            "w": 320,
+            "h": 160
+          },
+          "motion": [
+            {
+              "step": 2,
+              "duration": 1600,
+              "ease": "spring(0.5)",
+              "from": {
+                "z": -400,
+                "rotateY": -80,
+                "opacity": 0
+              }
+            }
+          ],
+          "type": "shape",
+          "shape": "rect",
+          "fill": "brand.surface",
+          "radius": 24
+        },
+        {
+          "id": "wuerfel-text",
+          "frame": {
+            "x": 160,
+            "y": 800,
+            "w": 320,
+            "h": 160
+          },
+          "motion": [
+            {
+              "step": 2,
+              "duration": 1600,
+              "ease": "spring(0.5)",
+              "from": {
+                "z": -400,
+                "rotateY": -80,
+                "opacity": 0
+              }
+            }
+          ],
+          "type": "text",
+          "content": "3D-Drehung mit Feder",
+          "style": "body",
+          "align": "center",
+          "verticalAlign": "middle"
+        }
+      ]
+    },
+    {
+      "id": "typo",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "notes": "Kinetische Typo: vier Presets plus eine Welle als Bewegung mit split.",
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Phase 8b · Kinetische Typo",
+          "frame": {
+            "x": 160,
+            "y": 120,
+            "w": 1200,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "typewriter",
+              "duration": 900
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "welle",
+          "type": "text",
+          "style": "display",
+          "content": "Buchstaben tanzen.",
+          "frame": {
+            "x": 160,
+            "y": 190,
+            "w": 1600,
+            "h": 200
+          },
+          "build": {
+            "in": {
+              "preset": "charByChar",
+              "duration": 1100
+            },
+            "trigger": "afterPrevious"
+          },
+          "motion": [
+            {
+              "step": 1,
+              "split": "char",
+              "stagger": 45,
+              "duration": 700,
+              "ease": "inOut",
+              "repeat": -1,
+              "yoyo": true,
+              "to": {
+                "y": -28
+              }
+            }
+          ]
+        },
+        {
+          "id": "scramble",
+          "type": "text",
+          "style": "heading",
+          "content": "Zeichen wirbeln zum Wort.",
+          "frame": {
+            "x": 160,
+            "y": 480,
+            "w": 1600,
+            "h": 90
+          },
+          "build": {
+            "in": {
+              "preset": "scramble",
+              "duration": 1400
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "assemble",
+          "type": "text",
+          "style": "heading",
+          "color": "brand.accent",
+          "content": "Aus Einzelteilen zusammengesetzt.",
+          "frame": {
+            "x": 160,
+            "y": 620,
+            "w": 1600,
+            "h": 90
+          },
+          "build": {
+            "in": {
+              "preset": "assemble",
+              "duration": 1800
+            },
+            "out": {
+              "preset": "assemble",
+              "duration": 1400
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "hinweis",
+          "type": "text",
+          "style": "caption",
+          "content": "Klick 1: Welle · Klick 2: Wirbel · Klick 3: Zusammensetzen · Klick 4: Zerfallen",
+          "frame": {
+            "x": 160,
+            "y": 900,
+            "w": 1600,
+            "h": 40
+          }
+        }
+      ]
+    },
+    {
+      "id": "formen",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "notes": "Pfad-Element: zeichnet sich, verwandelt sich Kreis → Stern → Pfeil, Text läuft den Bogen entlang.",
+      "elements": [
+        {
+          "id": "titel",
+          "type": "text",
+          "style": "title",
+          "content": "Formen verwandeln sich.",
+          "frame": {
+            "x": 160,
+            "y": 120,
+            "w": 1600,
+            "h": 130
+          },
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "form",
+          "type": "path",
+          "d": "M 200 40 C 288 40 360 112 360 200 C 360 288 288 360 200 360 C 112 360 40 288 40 200 C 40 112 112 40 200 40 Z",
+          "viewBox": "0 0 400 400",
+          "stroke": {
+            "color": "brand.accent",
+            "width": 6
+          },
+          "frame": {
+            "x": 260,
+            "y": 360,
+            "w": 400,
+            "h": 400
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine",
+              "duration": 1200
+            },
+            "trigger": "afterPrevious"
+          },
+          "motion": [
+            {
+              "step": 1,
+              "duration": 1100,
+              "ease": "spring(0.35)",
+              "to": {
+                "d": "M 200 30 L 245 150 L 370 150 L 270 225 L 310 350 L 200 275 L 90 350 L 130 225 L 30 150 L 155 150 Z",
+                "rotate": 18
+              }
+            },
+            {
+              "step": 2,
+              "duration": 1100,
+              "ease": "spring(0.25)",
+              "to": {
+                "d": "M 40 170 L 230 170 L 230 80 L 370 200 L 230 320 L 230 230 L 40 230 Z",
+                "rotate": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "bogen",
+          "type": "path",
+          "d": "M 20 300 C 300 20, 900 20, 1080 300",
+          "viewBox": "0 0 1100 320",
+          "stroke": {
+            "color": "brand.surface",
+            "width": 3
+          },
+          "text": {
+            "content": "Text läuft auf jedem Pfad entlang – auch in Bewegung.",
+            "style": "subtitle",
+            "color": "brand.text",
+            "offset": 0
+          },
+          "frame": {
+            "x": 760,
+            "y": 420,
+            "w": 1000,
+            "h": 290
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          },
+          "motion": [
+            {
+              "step": 0,
+              "at": 400,
+              "duration": 2600,
+              "ease": "out",
+              "from": {
+                "textOffset": 100
+              },
+              "to": {
+                "textOffset": 4
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "daten-1",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "notes": "Daten-Magic-Move: gleicher match auf beiden Folien.",
+      "elements": [
+        {
+          "id": "titel",
+          "type": "text",
+          "style": "title",
+          "match": "daten-titel",
+          "content": "2024",
+          "frame": {
+            "x": 160,
+            "y": 120,
+            "w": 1600,
+            "h": 130
+          }
+        },
+        {
+          "id": "chart",
+          "type": "chart",
+          "chart": "bar",
+          "match": "umsatz",
+          "unit": " T€",
+          "data": [
+            {
+              "label": "Q1",
+              "value": 32
+            },
+            {
+              "label": "Q2",
+              "value": 48
+            },
+            {
+              "label": "Q3",
+              "value": 41
+            },
+            {
+              "label": "Q4",
+              "value": 55
+            }
+          ],
+          "frame": {
+            "x": 160,
+            "y": 320,
+            "w": 1600,
+            "h": 620
+          },
+          "build": {
+            "in": {
+              "preset": "grow"
+            },
+            "trigger": "afterPrevious"
+          }
+        }
+      ]
+    },
+    {
+      "id": "daten-2",
+      "transition": {
+        "type": "magicMove",
+        "duration": 1400
+      },
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "elements": [
+        {
+          "id": "titel",
+          "type": "text",
+          "style": "title",
+          "match": "daten-titel",
+          "content": "2025",
+          "frame": {
+            "x": 160,
+            "y": 120,
+            "w": 1600,
+            "h": 130
+          }
+        },
+        {
+          "id": "chart",
+          "type": "chart",
+          "chart": "bar",
+          "match": "umsatz",
+          "unit": " T€",
+          "data": [
+            {
+              "label": "Q1",
+              "value": 61
+            },
+            {
+              "label": "Q2",
+              "value": 74
+            },
+            {
+              "label": "Q3",
+              "value": 88
+            },
+            {
+              "label": "Q4",
+              "value": 120,
+              "color": "brand.text"
+            }
+          ],
+          "frame": {
+            "x": 160,
+            "y": 320,
+            "w": 1600,
+            "h": 620
+          }
+        }
+      ]
+    },
+    {
+      "id": "partikel",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "background": {
+        "type": "generative",
+        "pattern": "noise",
+        "colors": [
+          "brand.background",
+          "brand.accent2",
+          "brand.surface"
+        ],
+        "speed": 0.2,
+        "intensity": 0.7
+      },
+      "notes": "Partikel: Staub im Raum, Funken unten, Schriftzug aus 3600 Teilchen – Klick 1 setzt ihn zusammen, Klick 2 zerfällt er.",
+      "elements": [
+        {
+          "id": "staub",
+          "type": "particles",
+          "preset": "dust",
+          "frame": {
+            "x": 0,
+            "y": 0,
+            "w": 1920,
+            "h": 1080
+          }
+        },
+        {
+          "id": "funken",
+          "type": "particles",
+          "preset": "sparks",
+          "count": 220,
+          "frame": {
+            "x": 360,
+            "y": 700,
+            "w": 1200,
+            "h": 380
+          }
+        },
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Phase 8c · Partikel",
+          "frame": {
+            "x": 160,
+            "y": 120,
+            "w": 1200,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "schriftzug",
+          "type": "particles",
+          "preset": "shape",
+          "shape": {
+            "text": "VINCENT",
+            "style": "display"
+          },
+          "colors": [
+            "brand.text",
+            "brand.accent"
+          ],
+          "frame": {
+            "x": 260,
+            "y": 330,
+            "w": 1400,
+            "h": 360
+          },
+          "build": {
+            "in": {
+              "preset": "assemble",
+              "duration": 2600
+            },
+            "out": {
+              "preset": "assemble",
+              "duration": 1800
+            },
+            "trigger": "click"
+          }
+        }
+      ]
+    },
+    {
+      "id": "generativ",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "background": {
+        "type": "generative",
+        "pattern": "noise",
+        "colors": [
+          "brand.background",
+          "brand.accent",
+          "brand.textMuted"
+        ],
+        "speed": 0.25,
+        "intensity": 0.6
+      },
+      "notes": "Generative Muster als Hintergrund (Strömung) und als Kacheln.",
+      "elements": [
+        {
+          "id": "titel",
+          "type": "text",
+          "style": "title",
+          "content": "Generativ.",
+          "frame": {
+            "x": 160,
+            "y": 120,
+            "w": 1600,
+            "h": 130
+          },
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "kachel-1",
+          "type": "generative",
+          "pattern": "waves",
+          "colors": [
+            "brand.surface",
+            "brand.accent"
+          ],
+          "radius": 28,
+          "frame": {
+            "x": 160,
+            "y": 360,
+            "w": 500,
+            "h": 500
+          },
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "kachel-2",
+          "type": "generative",
+          "pattern": "grid",
+          "colors": [
+            "brand.background",
+            "brand.accent",
+            "brand.text"
+          ],
+          "radius": 28,
+          "frame": {
+            "x": 710,
+            "y": 360,
+            "w": 500,
+            "h": 500
+          },
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 120
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "kachel-3",
+          "type": "generative",
+          "pattern": "rings",
+          "colors": [
+            "brand.surface",
+            "brand.textMuted",
+            "brand.accent"
+          ],
+          "radius": 28,
+          "frame": {
+            "x": 1260,
+            "y": 360,
+            "w": 500,
+            "h": 500
+          },
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 240
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ]
+    },
+    {
+      "id": "looks",
+      "transition": {
+        "type": "glitch"
+      },
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "notes": "Shader-Looks: Glitch-Übergang, Glitch und Farbversatz am Titel, flüssige Verzerrung auf der Karte.",
+      "elements": [
+        {
+          "id": "titel",
+          "type": "text",
+          "style": "display",
+          "content": "Signal.\nStörung.",
+          "frame": {
+            "x": 160,
+            "y": 160,
+            "w": 1100,
+            "h": 340
+          },
+          "looks": [
+            {
+              "type": "glitch",
+              "amount": 0.6,
+              "speed": 0.5
+            },
+            {
+              "type": "chromatic",
+              "amount": 0.35
+            }
+          ]
+        },
+        {
+          "id": "karte",
+          "type": "shape",
+          "shape": "rect",
+          "fill": "brand.accent",
+          "radius": 40,
+          "frame": {
+            "x": 1260,
+            "y": 200,
+            "w": 500,
+            "h": 640
+          },
+          "looks": [
+            {
+              "type": "distort",
+              "amount": 0.5,
+              "scale": 0.4,
+              "speed": 0.5
+            }
+          ]
+        },
+        {
+          "id": "karte-text",
+          "type": "text",
+          "style": "heading",
+          "color": "brand.ink",
+          "align": "center",
+          "verticalAlign": "middle",
+          "content": "Flüssig.",
+          "frame": {
+            "x": 1260,
+            "y": 200,
+            "w": 500,
+            "h": 640
+          },
+          "looks": [
+            {
+              "type": "distort",
+              "amount": 0.5,
+              "scale": 0.4,
+              "speed": 0.5
+            }
+          ]
+        },
+        {
+          "id": "hinweis",
+          "type": "text",
+          "style": "caption",
+          "content": "Übergang „Glitch“ · Looks: glitch, chromatic, distort",
+          "frame": {
+            "x": 160,
+            "y": 900,
+            "w": 1200,
+            "h": 40
+          }
+        }
+      ]
+    },
+    {
+      "id": "physik",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "notes": "Physik: Klick – alles fällt, prallt ab und stößt sich an.",
+      "elements": [
+        {
+          "id": "titel",
+          "type": "text",
+          "style": "title",
+          "content": "Schwerkraft.",
+          "frame": {
+            "x": 160,
+            "y": 120,
+            "w": 1600,
+            "h": 130
+          },
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "ball-1",
+          "type": "shape",
+          "shape": "ellipse",
+          "fill": "brand.accent",
+          "frame": {
+            "x": 700,
+            "y": 860,
+            "w": 180,
+            "h": 180
+          },
+          "motion": [
+            {
+              "step": 1,
+              "from": {
+                "y": -760,
+                "x": -300
+              },
+              "physics": {
+                "bounce": 0.6,
+                "velocity": {
+                  "x": 500
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "ball-2",
+          "type": "shape",
+          "shape": "ellipse",
+          "fill": "brand.textMuted",
+          "frame": {
+            "x": 1000,
+            "y": 900,
+            "w": 140,
+            "h": 140
+          },
+          "motion": [
+            {
+              "step": 1,
+              "at": 250,
+              "from": {
+                "y": -820,
+                "x": 200
+              },
+              "physics": {
+                "bounce": 0.7,
+                "velocity": {
+                  "x": -300
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "ball-3",
+          "type": "shape",
+          "shape": "ellipse",
+          "fill": "brand.text",
+          "frame": {
+            "x": 1300,
+            "y": 940,
+            "w": 100,
+            "h": 100
+          },
+          "motion": [
+            {
+              "step": 1,
+              "at": 500,
+              "from": {
+                "y": -860,
+                "x": 300
+              },
+              "physics": {
+                "bounce": 0.75,
+                "velocity": {
+                  "x": -700
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "kiste",
+          "type": "shape",
+          "shape": "rect",
+          "fill": "brand.surface",
+          "radius": 18,
+          "frame": {
+            "x": 300,
+            "y": 880,
+            "w": 200,
+            "h": 160
+          },
+          "motion": [
+            {
+              "step": 1,
+              "at": 150,
+              "from": {
+                "y": -700,
+                "rotate": -20
+              },
+              "physics": {
+                "bounce": 0.3,
+                "spin": 90,
+                "velocity": {
+                  "x": 200
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "hinweis",
+          "type": "text",
+          "style": "caption",
+          "content": "Klick: Schwerkraft, Abprallen, Zusammenstöße – vorab berechnet, darum jedes Mal gleich.",
+          "frame": {
+            "x": 160,
+            "y": 300,
+            "w": 1600,
+            "h": 40
+          }
+        }
+      ]
+    },
+    {
+      "id": "szene",
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "transition": {
+        "type": "dissolve"
+      },
+      "scene": {
+        "duration": 6000,
+        "loop": true
+      },
+      "elements": [
+        {
+          "id": "zeile",
+          "frame": {
+            "x": 160,
+            "y": 200,
+            "w": 1600,
+            "h": 90
+          },
+          "build": {
+            "in": {
+              "preset": "wordByWord"
+            }
+          },
+          "type": "text",
+          "content": "Eine Szene läuft wie ein Film.",
+          "style": "heading",
+          "align": "center"
+        },
+        {
+          "id": "punkt-1",
+          "frame": {
+            "x": 600,
+            "y": 560,
+            "w": 80,
+            "h": 80
+          },
+          "motion": [
+            {
+              "at": 600,
+              "duration": 1800,
+              "ease": "bounce",
+              "from": {
+                "y": -400,
+                "opacity": 0
+              }
+            }
+          ],
+          "type": "shape",
+          "shape": "ellipse",
+          "fill": "brand.accent"
+        },
+        {
+          "id": "punkt-2",
+          "frame": {
+            "x": 920,
+            "y": 560,
+            "w": 80,
+            "h": 80
+          },
+          "motion": [
+            {
+              "at": 900,
+              "duration": 1800,
+              "ease": "bounce",
+              "from": {
+                "y": -400,
+                "opacity": 0
+              }
+            }
+          ],
+          "type": "shape",
+          "shape": "ellipse",
+          "fill": "brand.textMuted"
+        },
+        {
+          "id": "punkt-3",
+          "frame": {
+            "x": 1240,
+            "y": 560,
+            "w": 80,
+            "h": 80
+          },
+          "motion": [
+            {
+              "at": 1200,
+              "duration": 1800,
+              "ease": "bounce",
+              "from": {
+                "y": -400,
+                "opacity": 0
+              }
+            },
+            {
+              "at": 3600,
+              "duration": 1200,
+              "ease": "elastic",
+              "to": {
+                "scale": 1.6
+              }
+            },
+            {
+              "at": 4900,
+              "duration": 800,
+              "ease": "inOut",
+              "to": {
+                "scale": 1,
+                "opacity": 0
+              }
+            }
+          ],
+          "type": "shape",
+          "shape": "ellipse",
+          "fill": "brand.text"
+        },
+        {
+          "id": "hinweis",
+          "frame": {
+            "x": 160,
+            "y": 900,
+            "w": 1600,
+            "h": 40
+          },
+          "type": "text",
+          "content": "Läuft in Schleife – ein Klick geht weiter.",
+          "style": "caption",
+          "align": "center"
+        }
+      ]
+    }
+  ]
+}

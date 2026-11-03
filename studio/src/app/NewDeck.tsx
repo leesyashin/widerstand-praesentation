@@ -142,7 +142,7 @@ export function NewDeckDialog({ existing, onClose }: { existing: string[]; onClo
               <button key={t.name} type="button" className={`new-deck__option ${on ? 'is-on' : ''}`} onClick={() => setChoice({ kind: 'vorlage', name: t.name })}>
                 <span className="new-deck__thumb">
                   {first && (
-                    <ThemeScope theme={t.deck.theme} intensity={t.deck.intensity} textStyles={t.deck.textStyles}>
+                    <ThemeScope theme={t.deck.theme} intensity={t.deck.intensity} textStyles={t.deck.textStyles} colors={t.deck.colors}>
                       <Stage format={t.deck.format}>
                         <SlideView slide={resolveSlide(t.deck, first)} deckName="_neu" mode="thumb" width={t.deck.format.width} height={t.deck.format.height} />
                       </Stage>

@@ -1,10 +1,15 @@
 import { gsap } from 'gsap'
+import { formatChartValue } from './chart'
+import { ensureTransitionFilter } from './looks'
 import type { Element, Slide, Transition, World } from '../schema/deck'
 import type { TextStyles } from './brand'
 import { resolveRgba } from './gl/color'
 import { createProgram } from './gl/program'
 import { LEAK } from './gl/shaders'
 import { ease } from './timeline'
+
+/** Unschärfe beim Blur-Überblenden. Auf Touch-Geräten (iPad) weniger – Vollbild-Blur kostet dort viel. */
+const BLUR = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches ? 10 : 24
 
 /** Standarddauer je Übergang in ms. */
 export const TRANSITION_DURATION: Record<Transition['type'], number> = {
@@ -18,6 +23,7 @@ export const TRANSITION_DURATION: Record<Transition['type'], number> = {
   maskReveal: 900,
   lightLeak: 1000,
   whipPan: 550,
+  glitch: 700,
 }
 
 /** Ersatz, falls ein Übergang auf diesem Gerät nicht möglich ist. */
@@ -78,8 +84,8 @@ export function runTransition(args: Args): TransitionRun {
       tl.fromTo(to, { opacity: 0 }, { opacity: 1, duration, ease: 'none' })
       break
     case 'blurDissolve':
-      tl.to(from, { opacity: 0, filter: 'blur(24px)', duration, ease: e }, 0)
-      tl.fromTo(to, { opacity: 0, filter: 'blur(24px)' }, { opacity: 1, filter: 'blur(0px)', duration, ease: e }, 0)
+      tl.to(from, { opacity: 0, filter: `blur(${BLUR}px)`, duration, ease: e }, 0)
+      tl.fromTo(to, { opacity: 0, filter: `blur(${BLUR}px)` }, { opacity: 1, filter: 'blur(0px)', duration, ease: e }, 0)
       break
     case 'push':
     case 'whipPan': {
@@ -87,7 +93,7 @@ export function runTransition(args: Args): TransitionRun {
       const axis = dir === 'left' || dir === 'right' ? 'x' : 'y'
       const size = axis === 'x' ? W : H
       const sign = dir === 'left' || dir === 'up' ? -1 : 1
-      const blur = type === 'whipPan' ? 'blur(28px)' : 'blur(0px)'
+      const blur = type === 'whipPan' ? `blur(${Math.round(BLUR * 1.15)}px)` : 'blur(0px)'
       tl.to(from, { [axis]: sign * size, duration, ease: e }, 0)
       tl.fromTo(to, { [axis]: -sign * size }, { [axis]: 0, duration, ease: e }, 0)
       if (type === 'whipPan') {
@@ -118,11 +124,34 @@ export function runTransition(args: Args): TransitionRun {
     case 'lightLeak':
       lightLeak(args, tl, duration)
       break
+    case 'glitch':
+      glitch(args, tl, duration)
+      break
   }
   // Ausgangsfolie am Ende sicher ausblenden; Eingangsfolie auf Normalzustand.
   tl.set(from, { opacity: 0 })
   tl.set(to, { clearProps: 'opacity,filter,clipPath,transform' })
   return { timeline: tl, matched }
+}
+
+/**
+ * Folie nach einem (abgebrochenen) Übergang wieder auf den Stand bringen, den React gerendert hat.
+ * Nötig, wenn eine gerade ausgeblendete Folie sofort wieder gezeigt wird (z. B. „zurück“ mitten im Übergang).
+ */
+export function resetSlideDom(root: HTMLElement, slide: Slide) {
+  gsap.set(root, { clearProps: 'opacity,filter,clipPath,transform' })
+  for (const el of slide.elements) {
+    const node = elOf(root, el.id)
+    if (!node) continue
+    gsap.set(node, { clearProps: 'transform,opacity,left,top,width,height,transformOrigin' })
+    const f = el.frame
+    node.style.left = `${f.x}px`
+    node.style.top = `${f.y}px`
+    node.style.width = `${f.w}px`
+    node.style.height = `${f.h}px`
+    node.style.transform = f.rotation ? `rotate(${f.rotation}deg)` : ''
+    node.style.opacity = el.opacity === undefined ? '' : String(el.opacity)
+  }
 }
 
 /* ---------- Kamerafahrt ---------- */
@@ -193,6 +222,34 @@ function cameraMove(args: Args, tl: gsap.core.Timeline, duration: number) {
 /* ---------- Light Leak ---------- */
 
 /** Organisches Licht flutet über den Schnitt (WebGL); darunter blendet die Folie über. */
+/**
+ * Glitch: beide Folien zucken in Streifen, mit Farbversatz – erst überwiegt die alte, dann die neue.
+ * Wiederholbarer Zufall, damit der Schnitt jedes Mal gleich aussieht.
+ */
+function glitch(args: Args, tl: gsap.core.Timeline, duration: number) {
+  const { from, to } = args
+  const filter = `url(#${ensureTransitionFilter()})`
+  const steps = 12
+  const rand = (i: number, k: number) => {
+    const x = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453
+    return x - Math.floor(x)
+  }
+  for (let i = 0; i < steps; i++) {
+    const t = (i / steps) * duration
+    const p = i / (steps - 1)
+    const showTo = rand(i, 1) < p * 1.1
+    const band = () => {
+      const top = Math.round(rand(i, 2) * 70)
+      const height = 8 + Math.round(rand(i, 3) * 40)
+      return `inset(${top}% 0 ${Math.max(0, 100 - top - height)}% 0)`
+    }
+    const jitter = (rand(i, 4) - 0.5) * 120
+    tl.set(to, { opacity: showTo ? 1 : rand(i, 5) > 0.6 ? 1 : 0, x: showTo ? jitter * 0.3 : jitter, clipPath: showTo ? 'none' : band(), filter }, t)
+    tl.set(from, { opacity: showTo ? (rand(i, 6) > 0.7 ? 1 : 0) : 1, x: -jitter * 0.5, clipPath: showTo ? band() : 'none', filter }, t)
+  }
+  tl.set(to, { opacity: 1, x: 0, clipPath: 'none', filter: 'none' }, duration)
+}
+
 function lightLeak(args: Args, tl: gsap.core.Timeline, duration: number) {
   const { to } = args
   tl.fromTo(to, { opacity: 0 }, { opacity: 1, duration: duration * 0.35, ease: 'none' }, duration * 0.3)
@@ -267,7 +324,9 @@ function flip(self: Element, other: Element, selfBox: Box, otherBox: Box, styles
 /** Gleichartige Formen, Icons und identische Bilder verwandeln sich direkt statt überzublenden. */
 function morphsGeometry(a: Element, b: Element): boolean {
   if (a.type !== b.type) return false
-  if (a.type === 'shape' || a.type === 'icon') return true
+  if (a.type === 'shape' || a.type === 'icon' || a.type === 'path') return true
+  // Daten-Magic-Move: gleiche Chart-Art baut sich um (Balken wachsen/schrumpfen, Linien verformen sich, Werte zählen).
+  if (a.type === 'chart' && b.type === 'chart') return a.chart === b.chart
   if ((a.type === 'image' || a.type === 'video') && (b.type === 'image' || b.type === 'video')) return a.src === b.src
   return false
 }
@@ -301,6 +360,96 @@ function morph(
     // Endwerte bleiben stehen (= berechnete Zielwerte); clearProps würde Reacts background-Kurzform zerstören.
     tl.fromTo(innerB, fromVars, { ...toVars, duration, ease: e }, 0)
   }
+  if (a.type === 'path') morphPath(tl, nodeA, nodeB, duration, e)
+  if (a.type === 'chart' && b.type === 'chart') morphChart(tl, nodeA, nodeB, b.unit, duration, e)
+}
+
+/** Pfad → Pfad: Form, Kontur und Füllung verwandeln sich. */
+function morphPath(tl: gsap.core.Timeline, nodeA: HTMLElement, nodeB: HTMLElement, duration: number, e: ReturnType<typeof ease>) {
+  const pa = nodeA.querySelector<SVGPathElement>('path.el-path')
+  const pb = nodeB.querySelector<SVGPathElement>('path.el-path')
+  if (!pa || !pb) return
+  const sa = getComputedStyle(pa)
+  const sb = getComputedStyle(pb)
+  tl.fromTo(
+    pb,
+    { morphSVG: pa.getAttribute('d') ?? '', stroke: sa.stroke, fill: sa.fill, strokeWidth: sa.strokeWidth },
+    { morphSVG: pb.getAttribute('d') ?? '', stroke: sb.stroke, fill: sb.fill, strokeWidth: sb.strokeWidth, duration, ease: e },
+    0,
+  )
+}
+
+/** Chart → Chart gleicher Art: Teile wandern von den alten zu den neuen Werten, Zahlen zählen mit. */
+function morphChart(tl: gsap.core.Timeline, nodeA: HTMLElement, nodeB: HTMLElement, unit: string | undefined, duration: number, e: ReturnType<typeof ease>) {
+  const all = (node: HTMLElement, sel: string) => [...node.querySelectorAll<SVGElement>(sel)]
+  const num = (el: globalThis.Element | undefined, attr: string) => Number(el?.getAttribute(attr) ?? 0)
+  const attrs = (el: SVGElement, names: string[]) => Object.fromEntries(names.map((n) => [n, num(el, n)]))
+
+  // Balken: Position und Höhe; neue Balken wachsen aus der Grundlinie.
+  const barsA = all(nodeA, '.chart-bar')
+  all(nodeB, '.chart-bar').forEach((bar, i) => {
+    const prev = barsA[i]
+    const goal = attrs(bar, ['x', 'y', 'width', 'height'])
+    const start = prev ? attrs(prev, ['x', 'y', 'width', 'height']) : { ...goal, y: goal.y! + goal.height!, height: 0 }
+    const fill = prev ? getComputedStyle(prev).fill : getComputedStyle(bar).fill
+    tl.fromTo(bar, { attr: start, fill }, { attr: goal, fill: getComputedStyle(bar).fill, duration, ease: e }, 0)
+  })
+
+  // Linie und Fläche verformen sich, Punkte wandern mit.
+  const lineA = nodeA.querySelector('.chart-line')
+  const lineB = nodeB.querySelector('.chart-line')
+  if (lineA && lineB) tl.fromTo(lineB, { morphSVG: lineA.getAttribute('d') ?? '' }, { morphSVG: lineB.getAttribute('d') ?? '', duration, ease: e }, 0)
+  const areaA = nodeA.querySelector('.chart-area')
+  const areaB = nodeB.querySelector('.chart-area')
+  if (areaA && areaB) tl.fromTo(areaB, { morphSVG: areaA.getAttribute('d') ?? '' }, { morphSVG: areaB.getAttribute('d') ?? '', duration, ease: e }, 0)
+  const dotsA = all(nodeA, '.chart-dot')
+  all(nodeB, '.chart-dot').forEach((dot, i) => {
+    const prev = dotsA[i]
+    if (prev) tl.fromTo(dot, { attr: attrs(prev, ['cx', 'cy']) }, { attr: attrs(dot, ['cx', 'cy']), duration, ease: e }, 0)
+  })
+
+  // Ring: Segmente verschieben und verlängern sich.
+  const segsA = all(nodeA, '.chart-seg')
+  all(nodeB, '.chart-seg').forEach((seg, i) => {
+    const prev = segsA[i]
+    const circ = Number(seg.dataset.circ ?? 0)
+    const from = prev ? { strokeDasharray: prev.getAttribute('stroke-dasharray') ?? `0 ${circ}`, strokeDashoffset: num(prev, 'stroke-dashoffset') } : { strokeDasharray: `0 ${circ}` }
+    tl.fromTo(seg, from, { strokeDasharray: seg.getAttribute('stroke-dasharray') ?? '', strokeDashoffset: num(seg, 'stroke-dashoffset'), duration, ease: e }, 0)
+  })
+
+  // Werte: wandern an ihren neuen Platz und zählen von alt nach neu.
+  const valuesA = all(nodeA, '.chart-value')
+  all(nodeB, '.chart-value').forEach((text, i) => {
+    const prev = valuesA[i]
+    const to = Number(text.dataset.value ?? 0)
+    const from = prev ? Number(prev.dataset.value ?? 0) : 0
+    if (prev) tl.fromTo(text, { attr: attrs(prev, ['x', 'y']) }, { attr: attrs(text, ['x', 'y']), duration, ease: e }, 0)
+    const proxy = { v: from }
+    const final = text.textContent
+    tl.fromTo(
+      proxy,
+      { v: from },
+      {
+        v: to,
+        duration,
+        ease: e,
+        onUpdate: () => {
+          text.textContent = formatChartValue(Number.isInteger(to) && Number.isInteger(from) ? Math.round(proxy.v) : proxy.v, unit)
+        },
+        onComplete: () => {
+          text.textContent = final
+        },
+      },
+      0,
+    )
+  })
+  // Beschriftungen wandern mit (Text bleibt der neue).
+  const labelsA = all(nodeA, '.chart-label')
+  all(nodeB, '.chart-label').forEach((label, i) => {
+    const prev = labelsA[i]
+    if (prev) tl.fromTo(label, { attr: attrs(prev, ['x', 'y']) }, { attr: attrs(label, ['x', 'y']), duration, ease: e }, 0)
+    else tl.fromTo(label, { opacity: 0 }, { opacity: 1, duration, ease: 'none' }, 0)
+  })
 }
 
 function magicMove(args: Args, tl: gsap.core.Timeline, duration: number, e: ReturnType<typeof ease>, matched: Set<string>) {

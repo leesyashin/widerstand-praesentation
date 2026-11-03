@@ -472,6 +472,155 @@ Der Code ist fertig (PR #6), es fehlt die Einrichtung und der Test im echten Leb
 - [ ] Testen am echten Gerät: Deck öffnen, Text ändern, Foto hochladen, präsentieren; danach am Rechner `git pull`
       und prüfen, dass die Änderung als Commit angekommen ist. Was hakt, hier notieren.
 
+### Feinschliff nach dem ersten Windows-Test ✅ erledigt
+- **Text direkt auf der Folie** sieht beim Bearbeiten genauso aus wie auf der Folie: fett/kursiv sichtbar statt
+  `**Markup**`, vertikale Ausrichtung bleibt, Text darf über den Rahmen wachsen. Doppelklick setzt den Cursor an die
+  Klickstelle und markiert das Wort (wie Keynote), Enter = neue Zeile, Strg/⌘ + B/I = fett/kursiv, eigenes
+  Rückgängig im Text, Einfügen nur als reiner Text. Kleine Leiste über dem Text: **B**, *I*, Fertig (für iPad/Handy).
+- Markup kann jetzt auch `***fett und kursiv***` (eine Quelle: `src/engine/markup.ts`, auch für PowerPoint).
+- Windows: Tastenkürzel heißen dort „Strg+…“ statt „⌘“, Strg-Klick wählt wie ⌘-Klick, Segoe UI als App-Schrift,
+  schmale Bildlaufleisten, Zahlenfelder schneiden vierstellige Werte nicht mehr ab.
+- Inspector ruhiger: **Anordnung** zuerst (X/Y/B/H, an der Folie ausrichten, Ebene nach vorne/hinten, Deckkraft).
+  Drehung, Tiefe, Kippen, Wenden und Name/Magic Move/Sperren liegen eingeklappt darunter (klappen von selbst auf, wenn
+  ein Wert gesetzt ist). Das doppelte Textfeld im Inspector ist weg – Text bearbeitest du auf der Folie.
+- Präsentation: „zurück“ mitten im Übergang zeigt nicht mehr Schwarz; am iPad zählt der Tipp nach dem Wischen,
+  Doppeltippen zoomt nicht mehr; die Clicker-Taste F5 lädt nicht neu, und ein Neuladen macht bei der aktuellen Folie
+  weiter. Auf Touch-Geräten rendern Verlauf und Korn mit halber Pixeldichte/30 fps, Blur-Übergänge sind leichter.
+- Editor: jedes Ziehen ist ein eigener Rückgängig-Schritt (auch ⌥/Alt-Kopie), kopierte Gruppen verschmelzen nicht mehr
+  mit dem Original, Pfeiltasten nach einer Auswahlliste bewegen wieder das Element, Ebenen-Kürzel funktionieren mit
+  deutscher Tastatur (Strg+AltGr+8/9), keine Tastenkürzel hinter offenen Fenstern oder in Übersicht/Raum, Farbfeld der
+  Mini-Toolbar schließt von selbst.
+- Speichern unter Windows: kurz gesperrte Dateien (Virenscanner, OneDrive) werden erneut versucht, gleichzeitige
+  Speichervorgänge stören sich nicht, und der Editor versucht es bei Server-Fehlern selbst noch einmal. JSON-Dateien
+  mit BOM (Notepad) werden gelesen.
+- **Paletten** unabhängig vom Theme: `deck.colors` überschreibt Brand-Kit und Theme-Farben, Auswahl im Editor unter
+  Folie → Deck → Palette. Bibliothek: `templates/palettes.json` – 11 Paletten: die 4 bisherigen (Silbergelatine,
+  Kino, Sachlich, Papier) plus deine Auswahl Nachtblau, Tiefsee, Moos, Bordeaux, Graphit & Gold, Leinen, Salbei. **Regel:** Neue Paletten werden Vincent immer zuerst
+  als gerenderte Beispiel-Folien gezeigt; in die Bibliothek kommen nur die, die er auswählt.
+
+### Phase 8: das Animations-Paradies ⏳ 8a–8c fertig, 8d–8e geplant
+
+> Ziel: Studio kann jede Art von Bewegung – 1D, 2D, 2.5D, 3D, Partikel, Physik, Shader, generative Kunst – und bleibt
+> trotzdem ein ruhiger Editor. Claude baut die Animationen im Dateiformat, du feilst im Editor an Timing und Reihenfolge.
+
+#### 8.0 Deine Entscheidungen (10 Fragen, 3. November 2026)
+
+| Frage | Entscheidung |
+|---|---|
+| Wer animiert? | **Claude baut, du feilst** – alles steht im `deck.json`, der Editor zeigt es live und lässt Timing/Reihenfolge ändern. |
+| Motion-Charakter | **Alles erlaubt** – subtil, laut, verspielt, experimentell. STYLE.md wird zur Stil-Auswahl pro Deck statt Verbot. |
+| 3D | Alles: **echte 3D-Modelle** (GLB), **3D-Text & -Formen**, **Ebenen im Raum (2.5D)**, **prozedurale 3D-Szenen**. |
+| 2D | Alles: **freie Keyframes**, **Bewegung auf Pfaden**, **Form-Morphing**, **kinetische Typo**. |
+| „1D“ | **Linien & Striche**, **Zahlen & Daten**, **eigene Timing-Kurven** (Federn, Nachschwingen). Kein Ton. |
+| Effekte | **Partikel**, **Shader-Looks**, **Physik**, **generative Kunst**. |
+| Zeitmodell | **Beides**: Klick-Folien mit freier Zeitleiste pro Schritt *und* durchlaufende Szenen (Loop oder einmal). |
+| Interaktion | Optional **Zeiger** und **Scroll im Web-Link**; Standard bleibt: einfach abspielen. |
+| Ausgabe | **Live präsentieren reicht** – kein Video-/GIF-Export, keine Hochformate. |
+| Ausbau | **Hauptsache mächtig.** Aber: in Schule/Uni muss es auf dem **iPad am Beamer flüssig** laufen; Vorladen bis 5 min ist ok. Sagst du „für Schule“, berücksichtigt Claude das. |
+
+#### 8.1 Grundidee: eine Zeitleiste für alles
+
+Heute kennt die Engine nur Presets (`blurRise`, `rise` …) pro Element. Künftig ist jede Bewegung eine **Spur** auf einer
+Zeitleiste – Presets bleiben als Abkürzung und werden intern zu Spuren:
+
+```jsonc
+{
+  "id": "logo",
+  "type": "icon",
+  "motion": [
+    // Schritt 1 (Klick): fliegt auf einem Pfad herein, federt nach, wird scharf
+    { "step": 1, "at": 0, "duration": 1400, "ease": { "spring": { "bounce": 0.35 } },
+      "path": "M -200 900 C 400 200, 1200 1200, 960 540", "orient": true,
+      "from": { "scale": 0.4, "blur": 24, "opacity": 0 }, "to": { "scale": 1, "blur": 0, "opacity": 1 } },
+    // Schritt 2: verwandelt sich in einen Pfeil
+    { "step": 2, "duration": 900, "morph": "assets/pfeil.svg", "ease": "cubic-bezier(.2,.8,.2,1)" }
+  ]
+}
+```
+
+- **Eigenschaften**: Position, Größe, Drehung (auch 3D: `rotateX/Y/Z`, `z`), Deckkraft, Unschärfe, Farbe, Rundung,
+  Konturlänge, Zahlenwert, Shader-Parameter – alles, was eine Zahl oder Farbe ist.
+- **Timing-Kurven**: benannte Kurven, `cubic-bezier(...)`, Federn (`spring` mit Bounce/Dauer), Nachschwingen
+  (`wiggle`), Stufen (`steps(n)`). Im Editor als kleine Kurven-Vorschau.
+- **Szenen**: `slide.scene = { duration, loop, autoplay }` macht eine Folie zu einem durchlaufenden Film; Klicks springen
+  zu Marken (`markers`) oder weiter. Klick-Folien und Szenen sind frei mischbar.
+- **Technik**: GSAP ist schon drin, alle Plugins sind kostenlos – MotionPath, MorphSVG, SplitText, DrawSVG, Physics2D,
+  CustomEase/CustomBounce/CustomWiggle. Die Zeitleiste bleibt spulbar (Referentenansicht, Vorschaubilder, Screenshots).
+
+#### 8.2 Neue Welten (Elementtypen)
+
+| Typ | Was | Technik |
+|---|---|---|
+| `path` | Freie Vektorform/Linie, zeichnet sich, morpht, verzweigt | SVG + MorphSVG/DrawSVG |
+| kinetische Typo | Presets für Text: Welle, Scramble, Schreibmaschine, Zerfallen/Zusammensetzen, Text auf Pfad, Buchstaben einzeln | SplitText |
+| Zahlen & Daten | Zähler/Ticker, Charts, die zwischen Folien umbauen (Magic Move für Daten), Werte, die weiterlaufen | GSAP + SVG |
+| `particles` | Staub, Funken, Schnee, Bokeh, Konfetti, Text/Logo zerfällt zu Partikeln | WebGL2 (Instancing) |
+| `shader` | Looks als Ebene oder Filter: Verzerrung, Flüssig, Chromatische Aberration, Glitch, Wasser, Hitzeflimmern | WebGL2, eigene Shader |
+| `generative` | Noise-Felder, Flow-Fields, Muster, Gitter – als Hintergrund oder Hauptmotiv | WebGL2 / Canvas |
+| `physics` | Elemente fallen, prallen, schwingen an Federn | Physics2D / kleine 2D-Physik |
+| `scene3d` | GLB-Modelle, 3D-Text, Grundformen, Licht & Schatten, Kamerapfade, prozedurale Szenen | three.js, nur bei Bedarf geladen |
+| 2.5D | Folien-Elemente mit echtem `z`, Kamera fährt *innerhalb* einer Folie durch die Ebenen | CSS 3D (vorhandenes `depth` ausgebaut) |
+
+Eigene Komponenten (`custom/`) bleiben der Notausgang für alles, was das Schema (noch) nicht kann.
+
+#### 8.3 Flüssig auf dem iPad am Beamer
+
+- **Nur laden, was gebraucht wird**: three.js, Partikel, Physik und Shader kommen per `import()` erst, wenn eine Folie
+  sie nutzt. Der Editor bleibt schlank.
+- **Vorladen vor dem Vortrag**: Startbildschirm lädt alle Medien, Modelle, Schriften und kompiliert Shader vor
+  (Fortschrittsbalken, bis ca. 5 min ok). Erst dann geht es los – ruckelfrei, auch ohne WLAN.
+- **Leistungs-Stufe pro Deck**: `performance: "max" | "ausgewogen" | "schule"`. „schule“ begrenzt Partikelzahl und
+  Auflösung, schaltet sehr teure Shader auf eine einfache Variante und rendert 3D mit fester Bildrate. Claude setzt
+  „schule“, wenn du sagst, dass es für Schule/Uni ist.
+- **Geräte-Probe**: In der Referentenansicht ein „Probelauf“, der jede Folie auf dem echten Gerät abspielt, die
+  Bildrate misst und Folien markiert, die ruckeln.
+
+#### 8.4 Editor: feilen statt bauen
+
+- **Zeitleiste** unter der Folie (einklappbar): Spuren pro Element und Schritt, Balken ziehen = Start/Dauer ändern,
+  Kurve wählen, Vorschau ab hier. Mehr nicht – das Bauen macht Claude.
+- Inspector-Tab „Animation“ zeigt die Bewegungen eines Elements als Liste (Dauer, Verzögerung, Kurve).
+- 3D-, Partikel- und Shader-Elemente: nur die wichtigsten Regler (Stärke, Tempo, Farbe), Rest im JSON.
+
+#### 8.5 Phasen
+
+| Phase | Inhalt | Fertig, wenn |
+|---|---|---|
+| **8a Motion-Kern** ✅ | Spuren/Keyframes, Timing-Kurven inkl. Federn, Pfade, Szenen-Folien, Zeitleiste im Editor | Ein Deck mit Pfad-Flug, Feder und durchlaufender Szene läuft im Editor, in der Präsentation und im Web-Link |
+| **8b Typo, Linien, Zahlen** ✅ | kinetische Typo-Presets, `path` mit Zeichnen/Verzweigen/Morphen, Daten-Magic-Move | Morph Kreis → Logo → Pfeil und ein Chart, das zwischen zwei Folien umbaut |
+| **8c 2D-Welten** ✅ | Partikel, Shader-Looks, generative Hintergründe, Physik | Logo zerfällt zu Partikeln; Glitch-Übergang; Flow-Field-Hintergrund läuft mit 60 fps auf dem iPad |
+| **8d 3D** | three.js-Ebene: GLB, 3D-Text, Licht/Schatten, Kamerapfade, prozedurale Szenen; 2.5D in der Folie | Ein Produktmodell dreht sich, die Kamera fährt drumherum, Text bleibt scharf darüber |
+| **8e Bühne & Interaktion** | Vorladen, Leistungs-Stufen, Geräte-Probe, Zeiger-Reaktion, Scroll-Story im Web-Link | Ganzes Demo-Deck läuft auf dem iPad am Beamer flüssig; Web-Link funktioniert als Scroll-Story |
+
+**Stand 8a (umgesetzt):** `motion` an jedem Element (from/to, Schlüssel, SVG-Pfad mit Mitdrehen, 3D-Drehung, Blur,
+Farbe/Füllung), Kurven inkl. Feder mit Nachschwingen, `cubic-bezier`, `wiggle`, `steps`, Wiederholung/Schleife/
+Hin-und-zurück, Szenen-Folien mit Schleife. Editor: Zeitleiste unter der Folie (ziehen = Start/Dauer), Bewegungen im
+Animation-Tab, Szene im Folien-Tab, Motion-Stufen in STYLE.md, Beispiel `decks/motion-demo`.
+Bewusst anders als geplant: Presets laufen weiter über ihren eigenen Code statt intern als Spuren – alte Decks
+bleiben dadurch exakt gleich; die Zeitleiste zeigt Builds und Bewegungen trotzdem gemeinsam. Marken in Szenen
+(Klick springt zu einer Stelle in der Szene) sind noch offen – ein Klick geht dort zur nächsten Folie.
+
+**Stand 8b (umgesetzt):** Text-Builds `charByChar`, `typewriter`, `scramble`, `assemble` (auch als Ausblendung =
+Zerfallen); Bewegungen mit `split` (Buchstaben/Wörter/Zeilen) und `stagger` für Wellen u. Ä.; Element `path` mit
+Zeichnen, Formwandel (`to: { d }`, MorphSVG) und Text auf dem Pfad (`textOffset` lässt ihn wandern); `draw` für
+Konturen; Magic Move verwandelt Pfade und baut Charts gleicher Art um (Werte zählen mit). Demo-Folien in
+`decks/motion-demo` (typo, formen, daten-1/-2). Verzweigende Linien entstehen aus mehreren `path`-Elementen mit
+versetztem `drawLine` (oder einem Pfad mit mehreren Teilstücken); ein eigener „Verzweigen“-Baustein ist offen.
+
+**Stand 8c (umgesetzt):** Element `particles` (WebGL-Punkte, Bahnen im Vertex-Shader, 7 Arten inkl. Form aus Text/Bild,
+Zusammensetzen/Zerfallen über `--form`), generative Muster als Hintergrund und Element (6 Shader), Shader-Looks als
+SVG-Filter auf Folie und Element (Verzerrung, Farbversatz, Glitch) plus Übergang `glitch`, vorab berechnete 2D-Physik
+(Schwerkraft, Abprallen, Reibung, Zusammenstöße). Inspector: Partikel-, Generativ-Bereich, Hintergrund „Generativ“,
+Shader-Looks eingeklappt unter Effekte. Demo-Folien: partikel, generativ, looks, physik.
+Bewusst offen: Federn als Physik (Pendel/Seil) – Nachschwingen gibt es über `spring(…)`; Physik für einzelne
+Buchstaben.
+
+Zu jeder Phase: Schema (rückwärtskompatibel, alte Decks laufen unverändert), Validierung, Screenshots, Doku in
+`CLAUDE.md`/`EXTENDING.md`/`STYLE.md` und ein Beispiel-Deck `decks/motion-demo`.
+
+**Bewusst nicht:** Video-/GIF-Export, Hochformate, Ton/Musik-Sync (laut deinen Antworten) – die spulbare Zeitleiste
+hält Video-Export aber weiter offen.
+
 ---
 
 ## 10. Später möglich (Architektur ist vorbereitet)

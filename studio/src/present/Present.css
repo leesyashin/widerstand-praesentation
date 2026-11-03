@@ -3,6 +3,11 @@
   inset: 0;
   background: #000;
   cursor: default;
+  /* iPad: schnelles Doppeltippen soll weiterschalten, nicht zoomen; langes Drücken kein Menü. */
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .present.is-idle {

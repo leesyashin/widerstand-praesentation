@@ -16,7 +16,7 @@ import {
   alignElements,
   arrange,
   distributeElements,
-  duplicateElement,
+  duplicateElements,
   duplicateSlide,
   elementsFromBlock,
   groupElements,
@@ -36,6 +36,8 @@ import {
 } from '../editor/model'
 import { Overview, SLIDE_MIME, slideTitle } from '../editor/Overview'
 import { SpaceView } from '../editor/SpaceView'
+import type { TextEditorStart } from '../editor/TextEditor'
+import { Timeline } from '../editor/Timeline'
 import { useEditor, type Editor } from '../editor/useEditor'
 import { usePalette } from '../engine/context'
 import { masterAsSlide, resolveDeck, resolveSlide } from '../engine/masters'
@@ -50,6 +52,7 @@ import type { Issue } from '../schema/issues'
 import type { Layout } from '../schema/layout'
 import { Icon, type IconName } from '../ui/Icon'
 import { IssueList } from '../ui/IssueList'
+import { shortcut } from '../ui/keys'
 import { Toast } from '../ui/Toast'
 import { ShareMenu } from './ShareMenu'
 import { href, navigate } from './route'
@@ -71,7 +74,7 @@ export function DeckView({ name, slideId, brandIssues }: { name: string; slideId
     )
   }
   return (
-    <ThemeScope theme={doc?.theme} intensity={doc?.intensity} textStyles={doc?.textStyles}>
+    <ThemeScope theme={doc?.theme} intensity={doc?.intensity} textStyles={doc?.textStyles} colors={doc?.colors}>
       <EditorShell name={name} slideId={slideId} editor={editor} brandIssues={brandIssues} />
     </ThemeScope>
   )
@@ -106,7 +109,12 @@ function EditorShell({
   const themes = useThemes()
   const theme = useTheme(deck?.theme)
   const [selection, setSelection] = useState<{ key: string; ids: string[] }>({ key: '', ids: [] })
-  const [editing, setEditing] = useState<string | null>(null)
+  const [editing, setEditingState] = useState<string | null>(null)
+  const [editStart, setEditStart] = useState<TextEditorStart | undefined>(undefined)
+  const setEditing = useCallback((id: string | null, start?: TextEditorStart) => {
+    setEditStart(start)
+    setEditingState(id)
+  }, [])
   const [tab, setTab] = useState<InspectorTab>('folie')
   const [picker, setPicker] = useState(false)
   const [mode, setMode] = useState<Mode>('edit')
@@ -308,18 +316,7 @@ function EditorShell({
 
   const duplicateSelection = () => {
     if (!page || !selectedEls.length) return
-    const working = { ...page, elements: [...page.elements] }
-    const copies = selectedEls.map((el) => {
-      const c = duplicateElement(el, working as Deck['slides'][number])
-      working.elements.push(c)
-      return c
-    })
-    const groups = new Map<string, string>()
-    for (const c of copies) {
-      if (!c.group) continue
-      if (!groups.has(c.group)) groups.set(c.group, uniqueId(c.group, page.elements.flatMap((e) => (e.group ? [e.group] : []))))
-      c.group = groups.get(c.group)
-    }
+    const copies = duplicateElements(selectedEls, page)
     editPage((p) => void p.elements.push(...copies))
     select(copies.map((c) => c.id))
   }
@@ -370,9 +367,13 @@ function EditorShell({
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement
       if (target.closest('input, textarea, select, [contenteditable]') || editing) return
+      // Offene Fenster (Medien, Layouts, Bausteine, Schriften) haben eigene Tasten – nichts dahinter löschen.
+      if (media || picker || blockPicker || fonts) return
       const mod = e.metaKey || e.ctrlKey
       const key = e.key.toLowerCase()
-      const has = selectedEls.length > 0
+      // Übersicht/Raum: Elemente sind dort nicht zu sehen – nur Blättern, Rückgängig/Wiederholen und Esc.
+      const has = mode === 'edit' && selectedEls.length > 0
+      if (mode !== 'edit' && mod && key !== 'z' && key !== 'y') return
 
       if (mod && key === 'z') {
         if (e.shiftKey) editor.redo()
@@ -388,19 +389,16 @@ function EditorShell({
         clipboard.current = structuredClone(selectedEls)
         if (key === 'x') deleteSelection()
       } else if (mod && key === 'v' && clipboard.current.length) {
-        const working = { ...page, elements: [...page.elements] }
-        const copies = clipboard.current.map((el) => {
-          const c = duplicateElement(el, working as Deck['slides'][number])
-          working.elements.push(c)
-          return c
-        })
+        const copies = duplicateElements(clipboard.current, page)
         editPage((p) => void p.elements.push(...structuredClone(copies)))
         select(copies.map((c) => c.id))
-      } else if (mod && (e.code === 'BracketRight' || e.code === 'BracketLeft') && has) {
-        const front = e.code === 'BracketRight'
-        editPage((p) => arrange(p, selectedIds, e.shiftKey ? (front ? 'front' : 'back') : front ? 'forward' : 'backward'))
+      } else if (mod && ['[', ']', '{', '}'].includes(e.key) && has) {
+        // Nach Zeichen statt Taste: auf deutscher Tastatur kommen [ ] über AltGr (= Strg+Alt) – so klappt es überall.
+        const front = e.key === ']' || e.key === '}'
+        const all = e.shiftKey || e.key === '{' || e.key === '}'
+        editPage((p) => arrange(p, selectedIds, all ? (front ? 'front' : 'back') : front ? 'forward' : 'backward'))
       } else if ((e.key === 'Backspace' || e.key === 'Delete') && has) deleteSelection()
-      else if (e.key === 'Enter' && selectedEls.length === 1 && selectedEls[0]?.type === 'text') setEditing(selectedEls[0].id)
+      else if (e.key === 'Enter' && has && selectedEls.length === 1 && selectedEls[0]?.type === 'text') setEditing(selectedEls[0].id)
       else if (e.key === 'Escape') {
         if (mode !== 'edit') setMode('edit')
         else if (has) select([])
@@ -457,10 +455,10 @@ function EditorShell({
           <a className="btn btn--plain" href={href({ page: 'decks' })}>
             <Icon name="chevronLeft" /> Decks
           </a>
-          <button className="btn btn--plain btn--icon" title="Rückgängig (⌘Z)" disabled={!editor.canUndo} onClick={editor.undo}>
+          <button className="btn btn--plain btn--icon" title={`Rückgängig (${shortcut('⌘Z')})`} disabled={!editor.canUndo} onClick={editor.undo}>
             <Icon name="undo" />
           </button>
-          <button className="btn btn--plain btn--icon" title="Wiederholen (⇧⌘Z)" disabled={!editor.canRedo} onClick={editor.redo}>
+          <button className="btn btn--plain btn--icon" title={`Wiederholen (${shortcut('⇧⌘Z')})`} disabled={!editor.canRedo} onClick={editor.redo}>
             <Icon name="redo" />
           </button>
         </div>
@@ -535,7 +533,7 @@ function EditorShell({
           <button className="btn presenter-btn" onClick={() => openPresenter(name, slide?.id)} disabled={!slide} title="Referentenansicht in neuem Fenster: Notizen, Timer, Probe-Modus, Handy-Fernbedienung">
             Referentenansicht
           </button>
-          <button className="btn btn--primary" onClick={play} disabled={!slide} title="Abspielen (⌥⌘P)">
+          <button className="btn btn--primary" onClick={play} disabled={!slide} title={`Abspielen (${shortcut('⌥⌘P')})`}>
             <Icon name="play" size={12} /> Abspielen
           </button>
         </div>
@@ -750,6 +748,7 @@ function EditorShell({
               onSelect={select}
               editing={editing}
               onEditText={setEditing}
+              editStart={editStart}
               editPage={editPage}
               onDrop={(data, point) => void onDrop(data, point)}
               toolbar={
@@ -773,6 +772,9 @@ function EditorShell({
               }
             />
           </div>
+        )}
+        {deck && slide && !master && mode === 'edit' && (
+          <Timeline slide={slide} selected={selectedIds} onSelect={select} editPage={editPage} onPreview={preview} />
         )}
         {blockPicker && deck && (
           <BlockPicker deck={deck} deckName={name} blocks={blocks.value ?? []} theme={theme.value} onPick={insertBlock} onClose={() => setBlockPicker(false)} />

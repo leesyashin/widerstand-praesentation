@@ -48,6 +48,11 @@ Farben **immer als Brand-Token** setzen, nie als Hex.
 6. **Motion nach STYLE.md:** Headlines `blurRise`, Karten/Listen `rise`, Zitate `maskReveal`; Zusammengehöriges mit
    `withPrevious`; ≤ 4 Klicks pro Folie. Standard-Übergang `blurDissolve`, `magicMove` bei gleichem `match`
    (z. B. `headline`), `lightLeak`/`camera` nur an Kapitelwechseln.
+   Motion-Stufe aus dem Briefing ableiten (STYLE.md: Ruhig/Ausdrucksstark/Spektakel; ohne Angabe Ruhig). Für mehr als
+   Presets: freie Bewegungen `motion` (Pfade, Schlüssel, Federn, 3D, Schleifen), Szenen-Folien (`scene`), kinetische
+   Typo (`charByChar`, `typewriter`, `scramble`, `assemble`, `split`), Pfad-Elemente mit Formwandel und Text auf Pfad,
+   Charts mit Daten-Magic-Move, Partikel, generative Muster, Shader-Looks, Physik – Felder in CLAUDE.md, Beispiel
+   `decks/motion-demo`. „Für Schule/Uni“ → leichtgewichtig (iPad am Beamer).
 7. Sprechernotizen (`notes`) für jede Inhaltsfolie: ein, zwei Sätze, was gesagt werden soll.
 8. Eigene Medien nach `decks/<name>/assets/` (Videos < 100 MB, optimierte Web-Versionen).
 

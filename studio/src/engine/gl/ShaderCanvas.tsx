@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { createProgram, type Uniforms } from './program'
 
+/** Touch-Gerät ohne Maus (iPad, Handy): Effekte sparsamer rendern. */
+const LIGHT = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches
+
 /**
  * Canvas mit einem Fragment-Shader. `uniforms` wird pro Frame neu gelesen (Funktion → live).
  * `animate`: läuft mit requestAnimationFrame, sonst ein einzelnes Bild bei `time`.
@@ -45,10 +48,18 @@ export function ShaderCanvas({
       return
     }
     let frame = 0
+    let last = 0
     const start = performance.now()
     const draw = () => {
+      // Tablets/Handys (iPad am Beamer): halbe Pixeldichte und ~30 Bilder/s – Verläufe und Korn sehen gleich aus,
+      // die Grafik hat aber Luft für Übergänge.
+      if (animate && LIGHT && performance.now() - last < 32) {
+        frame = requestAnimationFrame(draw)
+        return
+      }
+      last = performance.now()
       const rect = el.getBoundingClientRect()
-      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      const dpr = Math.min(window.devicePixelRatio || 1, LIGHT ? 1 : 2)
       const w = Math.max(2, Math.min(2560, Math.round(rect.width * dpr * quality)))
       const h = Math.max(2, Math.min(1600, Math.round(rect.height * dpr * quality)))
       const t = animate ? time + (performance.now() - start) / 1000 : time

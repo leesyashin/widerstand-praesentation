@@ -170,6 +170,33 @@
   display: inline-block;
 }
 
+.el-text .c {
+  display: inline-block;
+}
+
+.el-particles,
+.el-generative {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.fx-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.el-path-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
 .el-text .ln {
   display: block;
 }
@@ -203,6 +230,12 @@
 }
 
 /* 3D-Neigung */
+.el-motion {
+  position: absolute;
+  inset: 0;
+  transform-origin: center;
+}
+
 .el-3d {
   position: absolute;
   inset: 0;

@@ -439,3 +439,10 @@
     inset: -150%;
   }
 }
+
+/* Handy: keine Zeitleiste – dafür ist der Platz zu knapp, Feilen geht am Rechner. */
+@media (max-width: 760px), (max-height: 500px) and (pointer: coarse) {
+  .deck .timeline {
+    display: none;
+  }
+}

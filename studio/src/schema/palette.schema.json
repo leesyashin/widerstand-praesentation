@@ -1,0 +1,58 @@
+{
+  "title": "Studio Paletten",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "palettes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string"
+          },
+          "tone": {
+            "type": "string",
+            "enum": [
+              "dark",
+              "light"
+            ]
+          },
+          "colors": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string",
+              "pattern": "^[a-zA-Z][a-zA-Z0-9]*$"
+            },
+            "additionalProperties": {
+              "type": "string",
+              "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "label",
+          "tone",
+          "colors"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "palettes"
+  ],
+  "additionalProperties": false
+}

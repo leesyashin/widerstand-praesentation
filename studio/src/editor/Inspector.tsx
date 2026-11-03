@@ -2,17 +2,20 @@ import type { Draft } from 'immer'
 import { useState, type DragEvent as ReactDragEvent } from 'react'
 import { useTextStyles } from '../engine/context'
 import { findMaster } from '../engine/masters'
+import { findPalette, PALETTES } from '../engine/palettes'
+import { particleDefaults } from '../engine/particles'
 import { computeSteps, PRESET_DURATION } from '../engine/timeline'
 import { TRANSITION_DURATION } from '../engine/transitions'
 import type { Animation, Build, Deck, DeckTextStyle, Effect, Element, Master, Slide, TextStyle, Transition } from '../schema/deck'
 import type { Issue } from '../schema/issues'
 import type { Layout } from '../schema/layout'
 import type { Surface, Theme } from '../schema/theme'
-import { Icon } from '../ui/Icon'
+import { Icon, type IconName } from '../ui/Icon'
+import { shortcut } from '../ui/keys'
 import { IssueList } from '../ui/IssueList'
-import { ColorField, Group, NumberField, Row, Segmented, Select, Slider, TextField, Toggle } from './fields'
+import { ColorField, Disclosure, Group, NumberField, Row, Segmented, Select, Slider, TextField, Toggle } from './fields'
 import { layerName } from './Layers'
-import { TEXT_OVERRIDES, type AlignKind, type Page } from './model'
+import { arrange, TEXT_OVERRIDES, type AlignKind, type Page } from './model'
 
 export type InspectorTab = 'stil' | 'animation' | 'folie'
 
@@ -67,6 +70,10 @@ export const PRESETS: { value: Animation['preset']; label: string }[] = [
   { value: 'countUp', label: 'Hochzählen' },
   { value: 'kenBurns', label: 'Ken Burns' },
   { value: 'grow', label: 'Aufbauen (Charts)' },
+  { value: 'charByChar', label: 'Buchstabe für Buchstabe' },
+  { value: 'typewriter', label: 'Schreibmaschine' },
+  { value: 'scramble', label: 'Zeichen-Wirbel' },
+  { value: 'assemble', label: 'Zusammensetzen' },
 ]
 
 const EASINGS: { value: NonNullable<Animation['easing']>; label: string }[] = [
@@ -102,6 +109,7 @@ export const TRANSITIONS: { value: Transition['type']; label: string }[] = [
   { value: 'whipPan', label: 'Whip-Pan' },
   { value: 'camera', label: 'Kamerafahrt' },
   { value: 'lightLeak', label: 'Light Leak' },
+  { value: 'glitch', label: 'Glitch' },
 ]
 
 export function Inspector(props: Props) {
@@ -138,7 +146,7 @@ export function Inspector(props: Props) {
 function Hint() {
   return (
     <p className="inspector__hint muted">
-      Wähle ein Element auf der Folie aus – mit ⇧ mehrere, oder ziehe einen Rahmen. Doppelklick auf Text bearbeitet ihn
+      Wähle ein Element auf der Folie aus – mit Umschalt mehrere, oder ziehe einen Rahmen. Doppelklick auf Text bearbeitet ihn
       direkt.
     </p>
   )
@@ -155,6 +163,22 @@ function useElementEdit({ element, editPage }: Pick<ElementProps, 'element' | 'e
 
 /* ---------- Stil ---------- */
 
+const SLIDE_ALIGN: { kind: AlignKind; icon: IconName; title: string }[] = [
+  { kind: 'left', icon: 'alignLeft', title: 'Links an die Folie' },
+  { kind: 'hcenter', icon: 'alignHCenter', title: 'Horizontal auf der Folie zentrieren' },
+  { kind: 'right', icon: 'alignRight', title: 'Rechts an die Folie' },
+  { kind: 'top', icon: 'alignTop', title: 'Oben an die Folie' },
+  { kind: 'vcenter', icon: 'alignVCenter', title: 'Vertikal auf der Folie zentrieren' },
+  { kind: 'bottom', icon: 'alignBottom', title: 'Unten an die Folie' },
+]
+
+const LAYER_ORDER: { where: 'back' | 'backward' | 'forward' | 'front'; icon: IconName; title: string }[] = [
+  { where: 'back', icon: 'toBack', title: `Ganz nach hinten (${shortcut('⇧⌘[')})` },
+  { where: 'backward', icon: 'backward', title: `Eine Ebene nach hinten (${shortcut('⌘[')})` },
+  { where: 'forward', icon: 'forward', title: `Eine Ebene nach vorne (${shortcut('⌘]')})` },
+  { where: 'front', icon: 'toFront', title: `Ganz nach vorne (${shortcut('⇧⌘]')})` },
+]
+
 function setTilt(e: Draft<Element>, axis: 'x' | 'y', v: number | undefined) {
   const tilt = { ...e.tilt, [axis]: v || undefined }
   if (!tilt.x && !tilt.y) delete e.tilt
@@ -168,65 +192,33 @@ function ElementStyle(props: ElementProps) {
   return (
     <>
       <Group title="Anordnung">
-        <div className="grid2">
-          <Row label="X">
-            <NumberField value={f.x} onChange={(v) => set((e) => void (e.frame.x = v ?? 0), 'x')} />
-          </Row>
-          <Row label="Y">
-            <NumberField value={f.y} onChange={(v) => set((e) => void (e.frame.y = v ?? 0), 'y')} />
-          </Row>
-          <Row label="Breite">
-            <NumberField value={f.w} min={1} onChange={(v) => set((e) => void (e.frame.w = v ?? 1), 'w')} />
-          </Row>
-          <Row label="Höhe">
-            <NumberField value={f.h} min={1} onChange={(v) => set((e) => void (e.frame.h = v ?? 1), 'h')} />
-          </Row>
-          <Row label="Drehung">
-            <NumberField
-              value={f.rotation ?? 0}
-              suffix="°"
-              min={-360}
-              max={360}
-              onChange={(v) =>
-                set((e) => {
-                  if (v) e.frame.rotation = v
-                  else delete e.frame.rotation
-                }, 'rot')
-              }
-            />
-          </Row>
+        <div className="frame-grid">
+          <NumberField label="X" value={f.x} onChange={(v) => set((e) => void (e.frame.x = v ?? 0), 'x')} />
+          <NumberField label="Y" value={f.y} onChange={(v) => set((e) => void (e.frame.y = v ?? 0), 'y')} />
+          <NumberField label="B" title="Breite" value={f.w} min={1} onChange={(v) => set((e) => void (e.frame.w = v ?? 1), 'w')} />
+          <NumberField label="H" title="Höhe" value={f.h} min={1} onChange={(v) => set((e) => void (e.frame.h = v ?? 1), 'h')} />
         </div>
-        <div className="grid2">
-          <Row label="Tiefe">
-            <NumberField
-              value={el.depth}
-              placeholder="0"
-              step={0.5}
-              min={-10}
-              max={10}
-              onChange={(v) => set((e) => void (e.depth = v || undefined), 'depth')}
-            />
-          </Row>
-          <Row label="Kippen">
-            <NumberField
-              value={el.tilt?.x}
-              placeholder="0"
-              suffix="°"
-              min={-60}
-              max={60}
-              onChange={(v) => set((e) => setTilt(e, 'x', v), 'tiltx')}
-            />
-          </Row>
-          <Row label="Wenden">
-            <NumberField
-              value={el.tilt?.y}
-              placeholder="0"
-              suffix="°"
-              min={-60}
-              max={60}
-              onChange={(v) => set((e) => setTilt(e, 'y', v), 'tilty')}
-            />
-          </Row>
+        <div className="arrange-bar">
+          <span className="arrange-bar__set" aria-label="Auf der Folie ausrichten">
+            {SLIDE_ALIGN.map((a) => (
+              <button key={a.kind} type="button" className="btn btn--icon btn--plain" title={a.title} onClick={() => props.onAlign(a.kind)}>
+                <Icon name={a.icon} />
+              </button>
+            ))}
+          </span>
+          <span className="arrange-bar__set" aria-label="Ebene">
+            {LAYER_ORDER.map((a) => (
+              <button
+                key={a.where}
+                type="button"
+                className="btn btn--icon btn--plain"
+                title={a.title}
+                onClick={() => props.editPage((p) => arrange(p, [el.id], a.where))}
+              >
+                <Icon name={a.icon} />
+              </button>
+            ))}
+          </span>
         </div>
         <Row label="Deckkraft">
           <Slider
@@ -239,16 +231,45 @@ function ElementStyle(props: ElementProps) {
             }
           />
         </Row>
+        <Disclosure key={`raum-${el.id}`} title="Drehung & Raum" open={Boolean(f.rotation || el.depth || el.tilt)}>
+          <div className="grid2">
+            <Row label="Drehung">
+              <NumberField
+                value={f.rotation ?? 0}
+                suffix="°"
+                min={-360}
+                max={360}
+                onChange={(v) =>
+                  set((e) => {
+                    if (v) e.frame.rotation = v
+                    else delete e.frame.rotation
+                  }, 'rot')
+                }
+              />
+            </Row>
+            <Row label="Tiefe">
+              <NumberField
+                value={el.depth}
+                placeholder="0"
+                step={0.5}
+                min={-10}
+                max={10}
+                onChange={(v) => set((e) => void (e.depth = v || undefined), 'depth')}
+              />
+            </Row>
+            <Row label="Kippen">
+              <NumberField value={el.tilt?.x} placeholder="0" suffix="°" min={-60} max={60} onChange={(v) => set((e) => setTilt(e, 'x', v), 'tiltx')} />
+            </Row>
+            <Row label="Wenden">
+              <NumberField value={el.tilt?.y} placeholder="0" suffix="°" min={-60} max={60} onChange={(v) => set((e) => setTilt(e, 'y', v), 'tilty')} />
+            </Row>
+          </div>
+        </Disclosure>
       </Group>
 
       {el.type === 'text' && (
         <Group title="Text">
-          <textarea
-            className="field"
-            rows={3}
-            value={el.content}
-            onChange={(e) => set((x) => void (x.type === 'text' && (x.content = e.target.value)), 'content')}
-          />
+          <p className="field-hint muted">Doppelklick auf den Text bearbeitet ihn direkt auf der Folie.</p>
           <Row label="Stil">
             <Select value={el.style ?? 'body'} onChange={(v) => set((x) => void (x.type === 'text' && (x.style = v)))} options={TEXT_STYLE_OPTIONS} />
           </Row>
@@ -420,6 +441,93 @@ function ElementStyle(props: ElementProps) {
         </Group>
       )}
 
+      {el.type === 'path' && (
+        <Group title="Pfad">
+          <Row label="Kontur">
+            <ColorField
+              brand={brand}
+              allowNone
+              value={el.stroke?.color}
+              onChange={(v) =>
+                set((x) => {
+                  if (x.type !== 'path') return
+                  if (v === undefined) delete x.stroke
+                  else x.stroke = { color: v, width: x.stroke?.width ?? 4 }
+                }, 'stroke')
+              }
+            />
+          </Row>
+          {el.stroke && (
+            <Row label="Stärke">
+              <NumberField value={el.stroke.width} min={0.5} step={0.5} onChange={(v) => set((x) => void (x.type === 'path' && x.stroke && (x.stroke.width = v ?? 1)), 'strokeW')} />
+            </Row>
+          )}
+          <Row label="Füllung">
+            <ColorField
+              brand={brand}
+              allowNone
+              value={el.fill}
+              onChange={(v) =>
+                set((x) => {
+                  if (x.type !== 'path') return
+                  if (v === undefined) delete x.fill
+                  else x.fill = v
+                }, 'fill')
+              }
+            />
+          </Row>
+          {el.text && (
+            <Row label="Text">
+              <TextField value={el.text.content} onChange={(v) => set((x) => void (x.type === 'path' && x.text && v && (x.text.content = v)), 'ptext')} />
+            </Row>
+          )}
+          <p className="field-hint muted">Die Form selbst (SVG-Pfad) und Verwandlungen baut Claude im deck.json.</p>
+        </Group>
+      )}
+
+      {el.type === 'particles' && (
+        <Group title="Partikel">
+          <Row label="Art">
+            <Select
+              value={el.preset}
+              options={[
+                { value: 'dust', label: 'Staub' },
+                { value: 'snow', label: 'Schnee' },
+                { value: 'sparks', label: 'Funken' },
+                { value: 'bokeh', label: 'Licht-Kreise' },
+                { value: 'confetti', label: 'Konfetti' },
+                { value: 'stars', label: 'Sterne' },
+                { value: 'shape', label: 'Form (Text/Bild)' },
+              ]}
+              onChange={(v) => set((x) => void (x.type === 'particles' && (x.preset = v)))}
+            />
+          </Row>
+          <div className="grid2">
+            <Row label="Anzahl">
+              <NumberField value={el.count} placeholder={String(particleDefaults(el).count)} min={1} max={20000} step={50} onChange={(v) => set((x) => void (x.type === 'particles' && (v ? (x.count = Math.round(v)) : delete x.count)), 'pcount')} />
+            </Row>
+            <Row label="Größe">
+              <NumberField value={el.size} placeholder={String(particleDefaults(el).size)} min={0.5} step={0.5} onChange={(v) => set((x) => void (x.type === 'particles' && (v ? (x.size = v) : delete x.size)), 'psize')} />
+            </Row>
+          </div>
+          <Row label="Tempo">
+            <Slider value={Math.min(1, (el.speed ?? 1) / 3)} onChange={(v) => set((x) => void (x.type === 'particles' && (x.speed = Math.round(v * 300) / 100)), 'pspeed')} />
+          </Row>
+          {el.preset === 'shape' && (
+            <Row label="Text">
+              <TextField value={el.shape?.text ?? ''} placeholder="z. B. VINCENT" onChange={(v) => set((x) => void (x.type === 'particles' && (x.shape = { ...x.shape, text: v || undefined })), 'ptext')} />
+            </Row>
+          )}
+          <p className="field-hint muted">Mit dem Effekt „Zusammensetzen“ (Animation) fügen sich Form-Partikel zusammen, als Ausblendung zerfallen sie.</p>
+        </Group>
+      )}
+
+      {el.type === 'generative' && (
+        <Group title="Generativ">
+          <GenerativeFields value={el} onChange={(patch, merge) => set((x) => void (x.type === 'generative' && Object.assign(x, patch)), merge)} />
+        </Group>
+      )}
+
       {el.type === 'chart' && <ChartFields {...props} element={el} />}
 
       {el.type === 'lottie' && (
@@ -441,7 +549,8 @@ function ElementStyle(props: ElementProps) {
         </Group>
       )}
 
-      <Group title="Element">
+      <Group>
+        <Disclosure key={`mehr-${el.id}`} title="Mehr: Name, Magic Move, Sperren" open={Boolean(el.match || el.locked || el.hidden)}>
         <Row label="Name">
           <TextField value={el.name ?? ''} placeholder={el.id} onChange={(v) => set((x) => void (x.name = v || undefined), 'name')} />
         </Row>
@@ -464,6 +573,7 @@ function ElementStyle(props: ElementProps) {
             </button>
           </div>
         )}
+        </Disclosure>
       </Group>
     </>
   )
@@ -679,8 +789,8 @@ function AnimationTab(props: Props) {
       <Group>
         <div className="anim-summary">
           <span className="muted">
-            {clicks === 0 ? 'Keine Klicks' : clicks === 1 ? '1 Klick' : `${clicks} Klicks`}
-            {steps[0]?.items.length ? ' · Automatik beim Betreten' : ''}
+            {slide.scene ? 'Szene – läuft von selbst' : clicks === 0 ? 'Keine Klicks' : clicks === 1 ? '1 Klick' : `${clicks} Klicks`}
+            {!slide.scene && (steps[0]?.items.length || steps[0]?.motions.length) ? ' · Automatik beim Betreten' : ''}
           </span>
           <button type="button" className="btn" onClick={() => onPreview()}>
             ▶ Vorschau
@@ -724,7 +834,121 @@ function ElementAnimation(props: ElementProps) {
       <Group title="Ausblenden">
         <AnimFields kind="out" anim={build?.out} setAnim={setAnim} set={set} />
       </Group>
+      {el.motion?.length ? <MotionFields {...props} /> : null}
     </>
+  )
+}
+
+const MOTION_EASES = [
+  { value: 'smooth', label: 'Weich' },
+  { value: 'spring', label: 'Feder' },
+  { value: 'spring(0.6)', label: 'Feder, kräftig' },
+  { value: 'bounce', label: 'Aufprallen' },
+  { value: 'elastic', label: 'Elastisch' },
+  { value: 'back', label: 'Überschwingen' },
+  { value: 'out', label: 'Auslaufend' },
+  { value: 'inOut', label: 'Ein & aus' },
+  { value: 'in', label: 'Anlaufend' },
+  { value: 'linear', label: 'Linear' },
+  { value: 'wiggle(6)', label: 'Zittern' },
+  { value: 'steps(8)', label: 'Ruckweise' },
+]
+
+/** Freie Bewegungen eines Elements: Zeiten, Kurve, Wiederholung feilen – gebaut werden sie von Claude im JSON. */
+function MotionFields(props: ElementProps) {
+  const { element: el, page } = props
+  const set = useElementEdit(props)
+  const scene = Boolean((page as Slide).scene)
+  const patch = (i: number, recipe: (m: Draft<NonNullable<Element['motion']>[number]>) => void, merge?: string) =>
+    set((x) => {
+      const m = x.motion?.[i]
+      if (m) recipe(m)
+    }, merge ? `${merge}-${i}` : undefined)
+  const describe = (m: NonNullable<Element['motion']>[number]) =>
+    m.path
+      ? 'Pfad'
+      : m.keys
+        ? `${m.keys.length} Schlüssel`
+        : m.to?.d || m.from?.d
+          ? 'Formwandel'
+          : m.split
+            ? { char: 'Buchstaben', word: 'Wörter', line: 'Zeilen' }[m.split]
+            : m.from && !m.to
+              ? 'Herein'
+              : m.to && !m.from
+                ? 'Zum Ziel'
+                : 'Von → zu'
+  return (
+    <Group title="Bewegung">
+      {el.motion!.map((m, i) => {
+        const ease = m.ease ?? 'smooth'
+        const options = MOTION_EASES.some((o) => o.value === ease) ? MOTION_EASES : [{ value: ease, label: ease }, ...MOTION_EASES]
+        const repeat = m.repeat ?? 0
+        return (
+          <div key={i} className="motion-card">
+            <div className="motion-card__head">
+              <span>
+                {describe(m)}
+                <span className="muted"> · {scene ? 'Szene' : (m.step ?? 0) === 0 ? 'Automatisch' : `Klick ${m.step}`}</span>
+              </span>
+              <button
+                type="button"
+                className="btn btn--plain btn--icon"
+                title="Bewegung entfernen"
+                onClick={() =>
+                  set((x) => {
+                    x.motion?.splice(i, 1)
+                    if (!x.motion?.length) delete x.motion
+                  })
+                }
+              >
+                <Icon name="trash" size={14} />
+              </button>
+            </div>
+            <div className="grid2">
+              {!scene && (
+                <Row label="Klick">
+                  <NumberField value={m.step ?? 0} min={0} max={99} onChange={(v) => patch(i, (x) => void (v ? (x.step = Math.round(v)) : delete x.step), 'step')} />
+                </Row>
+              )}
+              <Row label="Start">
+                <NumberField value={m.at} placeholder="0" suffix="ms" step={50} min={0} onChange={(v) => patch(i, (x) => void (v ? (x.at = Math.round(v)) : delete x.at), 'at')} />
+              </Row>
+              <Row label="Dauer">
+                <NumberField value={m.duration} placeholder="800" suffix="ms" step={50} min={1} onChange={(v) => patch(i, (x) => void (v ? (x.duration = Math.round(v)) : delete x.duration), 'dur')} />
+              </Row>
+            </div>
+            <Row label="Kurve">
+              <Select value={ease} options={options} onChange={(v) => patch(i, (x) => void (v === 'smooth' ? delete x.ease : (x.ease = v)))} />
+            </Row>
+            <Row label="Wiederh.">
+              <Select
+                value={repeat === -1 ? 'loop' : String(Math.min(repeat, 3))}
+                options={[
+                  { value: '0', label: 'Einmal' },
+                  { value: '1', label: '2 ×' },
+                  { value: '2', label: '3 ×' },
+                  { value: '3', label: '4 ×' },
+                  { value: 'loop', label: 'Endlos' },
+                ]}
+                onChange={(v) =>
+                  patch(i, (x) => {
+                    const n = v === 'loop' ? -1 : Number(v)
+                    if (n) x.repeat = n
+                    else {
+                      delete x.repeat
+                      delete x.yoyo
+                    }
+                  })
+                }
+              />
+            </Row>
+            {repeat !== 0 && <Toggle label="Hin und zurück" value={Boolean(m.yoyo)} onChange={(v) => patch(i, (x) => void (v ? (x.yoyo = true) : delete x.yoyo))} />}
+          </div>
+        )
+      })}
+      <p className="field-hint muted">Bewegungen baut Claude im deck.json (Pfade, Schlüssel, 3D). Hier feilst du Zeiten, Kurve und Wiederholung – oder ziehst die Balken in der Zeitleiste.</p>
+    </Group>
   )
 }
 
@@ -998,31 +1222,56 @@ function SlideTab(props: Props) {
         )}
       </Group>
 
+      <Group title="Ablauf">
+        <Toggle
+          label="Als Szene abspielen (läuft von selbst, Klick = nächste Folie)"
+          value={Boolean(slide.scene)}
+          onChange={(v) => setSlide((s) => void (v ? (s.scene = {}) : delete s.scene))}
+        />
+        {slide.scene && (
+          <>
+            <Toggle label="In Schleife" value={Boolean(slide.scene.loop)} onChange={(v) => setSlide((s) => void (s.scene && (v ? (s.scene.loop = true) : delete s.scene.loop)))} />
+            <Row label="Mindestens">
+              <NumberField
+                value={slide.scene.duration}
+                placeholder="automatisch"
+                suffix="ms"
+                step={500}
+                min={0}
+                onChange={(v) => setSlide((s) => void (s.scene && (v ? (s.scene.duration = Math.round(v)) : delete s.scene.duration)), 'scene-dur')}
+              />
+            </Row>
+          </>
+        )}
+      </Group>
+
       <BackgroundGroup {...props} set={(r, m) => editPage(r, m ? `${m}-${slide.id}` : undefined)} inherited={master && !slide.background ? master.background : undefined} />
       <EffectsGroup {...props} set={(r, m) => editPage(r, m ? `${m}-${slide.id}` : undefined)} />
 
-      <Group title="Raum (Kamerafahrt)">
-        <div className="grid2">
-          {(['x', 'y', 'z', 'rotate', 'scale'] as const).map((k) => (
-            <Row key={k} label={{ x: 'X', y: 'Y', z: 'Tiefe', rotate: 'Drehung', scale: 'Maßstab' }[k]}>
-              <NumberField
-                value={slide.world?.[k]}
-                placeholder={k === 'scale' ? '1' : k === 'x' ? String(Math.round(si * deck.format.width * 1.25)) : '0'}
-                step={k === 'scale' ? 0.1 : 10}
-                min={k === 'scale' ? 0.1 : undefined}
-                onChange={(v) =>
-                  setSlide((s) => {
-                    const w = { x: si * deck.format.width * 1.25, y: 0, ...s.world }
-                    if (v === undefined && k !== 'x' && k !== 'y') delete w[k]
-                    else w[k] = v ?? 0
-                    s.world = w
-                  }, `world-${k}`)
-                }
-              />
-            </Row>
-          ))}
-        </div>
-        <p className="field-hint muted">Wirkt mit dem Übergang „Kamerafahrt“. Anordnen geht am einfachsten in der Raum-Ansicht.</p>
+      <Group>
+        <Disclosure key={`welt-${slide.id}`} title="Raum (Kamerafahrt)" open={Boolean(slide.world) || slide.transition?.type === 'camera'}>
+          <div className="grid2">
+            {(['x', 'y', 'z', 'rotate', 'scale'] as const).map((k) => (
+              <Row key={k} label={{ x: 'X', y: 'Y', z: 'Tiefe', rotate: 'Drehung', scale: 'Maßstab' }[k]}>
+                <NumberField
+                  value={slide.world?.[k]}
+                  placeholder={k === 'scale' ? '1' : k === 'x' ? String(Math.round(si * deck.format.width * 1.25)) : '0'}
+                  step={k === 'scale' ? 0.1 : 10}
+                  min={k === 'scale' ? 0.1 : undefined}
+                  onChange={(v) =>
+                    setSlide((s) => {
+                      const w = { x: si * deck.format.width * 1.25, y: 0, ...s.world }
+                      if (v === undefined && k !== 'x' && k !== 'y') delete w[k]
+                      else w[k] = v ?? 0
+                      s.world = w
+                    }, `world-${k}`)
+                  }
+                />
+              </Row>
+            ))}
+          </div>
+          <p className="field-hint muted">Wirkt mit dem Übergang „Kamerafahrt“. Anordnen geht am einfachsten in der Raum-Ansicht.</p>
+        </Disclosure>
       </Group>
 
       <DeckGroup {...props} edit={edit} />
@@ -1075,6 +1324,7 @@ function BackgroundGroup({ page, brand, set, inherited }: Props & { set: PageSet
             { value: 'color', label: 'Farbe' },
             { value: 'gradient', label: 'Verlauf' },
             { value: 'meshGradient', label: 'Licht-Verlauf' },
+            { value: 'generative', label: 'Generativ' },
             { value: 'image', label: 'Bild' },
             { value: 'video', label: 'Video' },
           ]}
@@ -1090,6 +1340,7 @@ function BackgroundGroup({ page, brand, set, inherited }: Props & { set: PageSet
                   animate: true,
                 }
               }
+              if (v === 'generative') s.background = { type: 'generative', pattern: 'flow', colors: ['brand.background', 'brand.accent', 'brand.textMuted'] }
               if (v === 'image') s.background = { type: 'image', src: 'brand/platzhalter.svg' }
               if (v === 'video') s.background = { type: 'video', src: 'assets/video.mp4' }
             })
@@ -1120,6 +1371,12 @@ function BackgroundGroup({ page, brand, set, inherited }: Props & { set: PageSet
           />
         </Row>
       )}
+      {bg?.type === 'generative' && (
+        <GenerativeFields
+          value={bg}
+          onChange={(patch, merge) => set((s) => void (s.background?.type === 'generative' && Object.assign(s.background, patch)), merge && `bg-${merge}`)}
+        />
+      )}
       {bg?.type === 'meshGradient' && (
         <Toggle
           label="Langsam fließen"
@@ -1131,9 +1388,44 @@ function BackgroundGroup({ page, brand, set, inherited }: Props & { set: PageSet
   )
 }
 
+const PATTERNS = [
+  { value: 'flow', label: 'Strömung' },
+  { value: 'noise', label: 'Wolken' },
+  { value: 'waves', label: 'Höhenlinien' },
+  { value: 'grid', label: 'Gitter' },
+  { value: 'rings', label: 'Ringe' },
+  { value: 'plasma', label: 'Plasma' },
+] as const
+
+/** Muster, Tempo, Weite, Stärke – für generative Hintergründe und Elemente. */
+function GenerativeFields({
+  value,
+  onChange,
+}: {
+  value: { pattern: (typeof PATTERNS)[number]['value']; speed?: number; scale?: number; intensity?: number }
+  onChange: (patch: Partial<{ pattern: (typeof PATTERNS)[number]['value']; speed: number; scale: number; intensity: number }>, merge?: string) => void
+}) {
+  return (
+    <>
+      <Row label="Muster">
+        <Select value={value.pattern} options={[...PATTERNS]} onChange={(v) => onChange({ pattern: v })} />
+      </Row>
+      <Row label="Tempo">
+        <Slider value={value.speed ?? 0.3} onChange={(v) => onChange({ speed: v }, 'gspeed')} />
+      </Row>
+      <Row label="Weite">
+        <Slider value={value.scale ?? 0.5} onChange={(v) => onChange({ scale: v }, 'gscale')} />
+      </Row>
+      <Row label="Stärke">
+        <Slider value={value.intensity ?? 0.6} onChange={(v) => onChange({ intensity: v }, 'gint')} />
+      </Row>
+    </>
+  )
+}
+
 function EffectsGroup({ page, set }: Props & { set: PageSetter }) {
   const effect = <T extends Effect['type']>(type: T) => page.effects?.find((e) => e.type === type) as Extract<Effect, { type: T }> | undefined
-  const setEffect = (type: 'grain' | 'vignette' | 'letterbox' | 'lightSweep' | 'float', amount: number) =>
+  const setEffect = (type: 'grain' | 'vignette' | 'letterbox' | 'lightSweep' | 'float' | 'distort' | 'chromatic' | 'glitch', amount: number) =>
     set((s) => {
       const list: Effect[] = (s.effects ?? []).filter((e) => e.type !== type)
       if (amount > 0) list.push({ type, amount })
@@ -1159,6 +1451,22 @@ function EffectsGroup({ page, set }: Props & { set: PageSetter }) {
         <Slider value={effect('float')?.amount ?? 0} onChange={(v) => setEffect('float', v)} />
       </Row>
       <p className="field-hint muted">Schweben bewegt Elemente mit „Tiefe“ (Stil-Tab) sanft gegeneinander.</p>
+      <Disclosure
+        key={`looks-${page.id}`}
+        title="Shader-Looks"
+        open={Boolean(effect('distort') || effect('chromatic') || effect('glitch'))}
+      >
+        <Row label="Verzerrung">
+          <Slider value={effect('distort')?.amount ?? 0} onChange={(v) => setEffect('distort', v)} />
+        </Row>
+        <Row label="Farbversatz">
+          <Slider value={effect('chromatic')?.amount ?? 0} onChange={(v) => setEffect('chromatic', v)} />
+        </Row>
+        <Row label="Glitch">
+          <Slider value={effect('glitch')?.amount ?? 0} onChange={(v) => setEffect('glitch', v)} />
+        </Row>
+        <p className="field-hint muted">Wirken auf die ganze Folie. Sparsam – auf dem iPad kosten sie Leistung.</p>
+      </Disclosure>
       <Row label="Farblook">
         <Select
           value={look?.look ?? 'none'}
@@ -1209,6 +1517,63 @@ function applyTheme(d: Draft<Deck>, theme: Theme, layouts: Layout[], previous: T
   }
 }
 
+/** Palette des Decks: eine fertige Palette übernehmen oder die Farben des Themes nutzen. */
+function PalettePicker({ deck, edit, themes }: Pick<Props, 'deck' | 'edit' | 'themes'>) {
+  const current = findPalette(deck.colors)
+  // „Vom Theme“ zeigt Brand-Kit (Variablen auf :root) plus Theme-Farben – ohne die Palette des Decks.
+  const root = getComputedStyle(document.documentElement)
+  const themeColors = themes.find((t) => t.name === deck.theme)?.colors
+  const fromTheme = Object.fromEntries(
+    (['background', 'surface', 'text', 'accent', 'accent2'] as const).map((t) => [t, themeColors?.[t] ?? root.getPropertyValue(`--brand-${t}`).trim()]),
+  )
+  const own = deck.colors && !current
+  const chip = (colors: Record<string, string> | undefined) => (
+    <span className="palette-chip__dots" aria-hidden>
+      {(['background', 'surface', 'text', 'accent', 'accent2'] as const).map((t) => (
+        <span key={t} style={{ background: colors?.[t] ?? `var(--brand-${t})` }} />
+      ))}
+    </span>
+  )
+  return (
+    <div className="palette-picker" role="radiogroup" aria-label="Palette">
+      <span className="row__label">Palette</span>
+      <div className="palette-picker__list">
+        <button
+          type="button"
+          role="radio"
+          aria-checked={!deck.colors}
+          className={`palette-chip ${!deck.colors ? 'is-on' : ''}`}
+          title="Farben aus Theme und Brand-Kit"
+          onClick={() => edit((d) => void delete d.colors)}
+        >
+          {chip(fromTheme)}
+          <span>Vom Theme</span>
+        </button>
+        {PALETTES.map((p) => (
+          <button
+            key={p.name}
+            type="button"
+            role="radio"
+            aria-checked={current?.name === p.name}
+            className={`palette-chip ${current?.name === p.name ? 'is-on' : ''}`}
+            title={p.description ?? p.label}
+            onClick={() => edit((d) => void (d.colors = { ...p.colors }))}
+          >
+            {chip(p.colors)}
+            <span>{p.label}</span>
+          </button>
+        ))}
+        {own && (
+          <span className="palette-chip is-on" title="Eigene Farben im Deck (von Claude gesetzt)">
+            {chip(deck.colors)}
+            <span>Eigene</span>
+          </span>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function DeckGroup({ deck, edit, brand, onOpenFonts, themes, layouts }: Props) {
   const styles = useTextStyles()
   const [style, setStyle] = useState<TextStyle>('title')
@@ -1239,6 +1604,7 @@ function DeckGroup({ deck, edit, brand, onOpenFonts, themes, layouts }: Props) {
           />
         </Row>
         <p className="field-hint muted">{themes.find((t) => t.name === deck.theme)?.description ?? 'Farben, Typografie und Hintergründe für das ganze Deck.'}</p>
+        <PalettePicker deck={deck} edit={edit} themes={themes} />
         <Row label="Intensität">
           <Slider value={deck.intensity ?? 0.3} onChange={(v) => edit((d) => void (d.intensity = Math.round(v * 100) / 100), 'intensity')} />
         </Row>
