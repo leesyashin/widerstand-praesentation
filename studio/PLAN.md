@@ -462,6 +462,16 @@ Jede Phase endet mit etwas, das du **wirklich benutzen** kannst.
   Bewusst offen: Handy-Fernbedienung über das Internet, PowerPoint/Web-Player ohne Mac, Uploads über 3 MB (z. B. Videos),
   echtes Zusammenführen bei gleichzeitigen Änderungen (zuletzt gespeichert gewinnt, Konflikte werden gemeldet).
 
+### Als Nächstes: Studio aufs Handy bringen ⏳ offen
+Der Code ist fertig (PR #6), es fehlt die Einrichtung und der Test im echten Leben:
+- [ ] PR #6 mergen (Entwurf → bereit → mergen).
+- [ ] GitHub: Fine-grained Token anlegen – nur dieses Repo, „Contents: Read and write“, Ablauf z. B. 1 Jahr.
+- [ ] Vercel: Repo importieren, Root Directory `studio`, Environment Variables `GITHUB_TOKEN` und
+      `STUDIO_PASSWORD` setzen, Deploy.
+- [ ] iPhone: Vercel-Adresse öffnen, Passwort eingeben, „Zum Home-Bildschirm“.
+- [ ] Testen am echten Gerät: Deck öffnen, Text ändern, Foto hochladen, präsentieren; danach am Rechner `git pull`
+      und prüfen, dass die Änderung als Commit angekommen ist. Was hakt, hier notieren.
+
 ---
 
 ## 10. Später möglich (Architektur ist vorbereitet)

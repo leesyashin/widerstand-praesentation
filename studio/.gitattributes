@@ -1,0 +1,2 @@
+# Windows: Zeilenenden im Repo immer LF – sonst wirkt jede gespeicherte deck.json wie komplett geändert.
+* text=auto eol=lf

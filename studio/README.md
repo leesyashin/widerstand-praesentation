@@ -2,7 +2,7 @@
 
 Deine Präsentations-App für Motion & Grafik. Plan: [PLAN.md](PLAN.md) · Stil: [STYLE.md](STYLE.md)
 
-## Starten (auf deinem Mac)
+## Starten (Mac oder Windows)
 
 Einmalig: [Node.js](https://nodejs.org) (Version 22 oder neuer) installieren.
 
@@ -11,6 +11,9 @@ cd studio
 npm install      # nur beim ersten Mal und nach Updates
 npm run dev      # öffnet http://localhost:5173
 ```
+
+Unter Windows dasselbe in PowerShell oder im Terminal von VS Code. Tastenkürzel: überall, wo ⌘ steht, **Strg**
+(⌥ = Alt). Für Screenshots und PowerPoint-Export einmalig `npx playwright install chromium`.
 
 Lass `npm run dev` laufen, während du mit Claude arbeitest: Jede Änderung an einer `deck.json`
 erscheint sofort im Browser – egal ob Claude sie macht oder du.
