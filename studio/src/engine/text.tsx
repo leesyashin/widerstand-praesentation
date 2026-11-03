@@ -1,7 +1,8 @@
 import { Fragment, type ReactElement, type ReactNode } from 'react'
+import { parseLine } from './markup'
 
 /**
- * Minimales Inline-Markup für Text-Elemente: **fett**, *kursiv*, \n für Zeilenumbruch.
+ * Minimales Inline-Markup für Text-Elemente: **fett**, *kursiv*, ***beides***, \n für Zeilenumbruch (siehe markup.ts).
  * `split` zerlegt den Text für Builds in Wörter (.w) oder Zeilen (.ln).
  * `count` markiert die erste Zahl als .count – Ziel für den Hochzähl-Build.
  */
@@ -34,16 +35,14 @@ export function renderInline(content: string, split: TextSplit = 'none', count =
 
 function renderLine(line: string, split: TextSplit): ReactNode[] {
   const out: ReactNode[] = []
-  const re = /\*\*(.+?)\*\*|\*(.+?)\*/g
-  let last = 0
-  const push = (text: string, wrap?: 'strong' | 'em') => {
-    const pieces = split === 'word' ? text.split(/(\s+)/) : [text]
+  for (const span of parseLine(line)) {
+    const pieces = split === 'word' ? span.text.split(/(\s+)/) : [span.text]
     pieces.forEach((piece) => {
       if (!piece) return
       const key = out.length
       let node: ReactNode = piece
-      if (wrap === 'strong') node = <strong key={key}>{piece}</strong>
-      if (wrap === 'em') node = <em key={key}>{piece}</em>
+      if (span.italic) node = <em key={key}>{node}</em>
+      if (span.bold) node = <strong key={key}>{node}</strong>
       if (split === 'word' && piece.trim()) {
         node = (
           <span key={key} className="w">
@@ -54,12 +53,6 @@ function renderLine(line: string, split: TextSplit): ReactNode[] {
       out.push(typeof node === 'string' ? <Fragment key={key}>{node}</Fragment> : node)
     })
   }
-  for (const m of line.matchAll(re)) {
-    if (m.index > last) push(line.slice(last, m.index))
-    push(m[1] ?? m[2] ?? '', m[1] !== undefined ? 'strong' : 'em')
-    last = m.index + m[0].length
-  }
-  if (last < line.length) push(line.slice(last))
   return out
 }
 

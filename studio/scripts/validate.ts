@@ -1,8 +1,11 @@
 // Prüft Brand-Kit und Decks: Schema, Dateien, Brand-Tokens, eigene Komponenten.
 // Aufruf: npm run validate            → alle Decks
 //         npm run validate -- <name>  → nur ein Deck
-import { listDeckNames, listThemeNames, readBrand, readDeck, readLayouts, readTheme } from '../server/decks'
+import { readFile } from 'node:fs/promises'
+import path from 'node:path'
+import { listDeckNames, listThemeNames, readBrand, readDeck, readLayouts, readTheme, STUDIO_ROOT } from '../server/decks'
 import { readBlocks, readDeckTemplates } from '../server/templates'
+import { PaletteLibrary } from '../src/schema/palette'
 
 const only = process.argv.slice(2).filter((a) => !a.startsWith('-'))
 let failed = false
@@ -22,6 +25,20 @@ for (const name of await listThemeNames()) {
     failed = true
     console.error(`✗ templates/themes/${name}.json`)
     for (const i of theme.issues) console.error(`    ${i.path || '(Datei)'}: ${i.message}`)
+  }
+}
+
+{
+  const parsed = PaletteLibrary.safeParse(JSON.parse(await readFile(path.join(STUDIO_ROOT, 'templates/palettes.json'), 'utf8')))
+  const missing = parsed.success
+    ? parsed.data.palettes.flatMap((p) => Object.keys(brand.ok ? brand.brand.colors : {}).filter((t) => !p.colors[t]).map((t) => `${p.name}: Token „${t}“ fehlt`))
+    : []
+  if (parsed.success && !missing.length) console.log(`✓ templates/palettes.json  ·  ${parsed.data.palettes.length} Paletten`)
+  else {
+    failed = true
+    console.error('✗ templates/palettes.json')
+    if (!parsed.success) for (const i of parsed.error.issues) console.error(`    ${i.path.join('.')}: ${i.message}`)
+    for (const m of missing) console.error(`    ${m}`)
   }
 }
 

@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { resolveColor } from '../engine/brand'
 import type { Animation, Element, TextStyle } from '../schema/deck'
 import { Icon } from '../ui/Icon'
+import { shortcut } from '../ui/keys'
 import { PRESETS, TEXT_STYLE_OPTIONS } from './Inspector'
 import type { AlignKind } from './model'
 
@@ -160,16 +161,16 @@ export function MiniToolbar({ elements, brand, editEach, onAlign, onGroup, onUng
       <span className="mini-sep" />
 
       {multi && !sameGroup && (
-        <button type="button" className="mini-btn" title="Gruppieren (⌥⌘G)" onClick={onGroup}>
+        <button type="button" className="mini-btn" title={`Gruppieren (${shortcut('⌥⌘G')})`} onClick={onGroup}>
           <Icon name="group" size={14} />
         </button>
       )}
       {grouped && (
-        <button type="button" className="mini-btn" title="Gruppe auflösen (⇧⌥⌘G)" onClick={onUngroup}>
+        <button type="button" className="mini-btn" title={`Gruppe auflösen (${shortcut('⇧⌥⌘G')})`} onClick={onUngroup}>
           <Icon name="ungroup" size={14} />
         </button>
       )}
-      <button type="button" className="mini-btn" title="Duplizieren (⌘D)" onClick={onDuplicate}>
+      <button type="button" className="mini-btn" title={`Duplizieren (${shortcut('⌘D')})`} onClick={onDuplicate}>
         <Icon name="copy" size={14} />
       </button>
       <button type="button" className="mini-btn" title="Löschen (⌫)" onClick={onDelete}>

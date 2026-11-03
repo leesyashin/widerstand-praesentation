@@ -10,11 +10,11 @@ import {
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from 'react'
-import { useTextStyles } from '../engine/context'
-import { SlideView, textCss } from '../engine/SlideView'
+import { SlideView } from '../engine/SlideView'
 import { Stage, StageScaleContext } from '../engine/Stage'
 import type { Deck, Element, Frame, Slide } from '../schema/deck'
 import { duplicateElement, expandGroups, roundFrame, unionFrame, type Page } from './model'
+import { TextEditor, type TextEditorStart } from './TextEditor'
 
 type Handle = 'nw' | 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w'
 const HANDLES: Handle[] = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w']
@@ -32,7 +32,10 @@ export type CanvasProps = {
   selected: string[]
   onSelect: (ids: string[]) => void
   editing: string | null
-  onEditText: (id: string | null) => void
+  /** Text bearbeiten starten (mit Klickpunkt: Cursor/Wort dort) oder beenden. */
+  onEditText: (id: string | null, start?: TextEditorStart) => void
+  /** Wie die Bearbeitung beginnt – Klickpunkt oder alles markiert. */
+  editStart?: TextEditorStart
   editPage: (recipe: (page: Draft<Page>) => void, merge?: string) => void
   /** Schwebende Mini-Toolbar über der Auswahl. */
   toolbar?: ReactNode
@@ -60,7 +63,7 @@ type Drag =
 type Guides = { x: number[]; y: number[] }
 type Badge = { x: number; y: number; text: string }
 
-function SelectionLayer({ deck, view, page, selected, onSelect, editing, onEditText, editPage, toolbar, onDrop }: CanvasProps) {
+function SelectionLayer({ deck, view, page, selected, onSelect, editing, onEditText, editStart, editPage, toolbar, onDrop }: CanvasProps) {
   const scale = useContext(StageScaleContext)
   const layer = useRef<HTMLDivElement>(null)
   const [hover, setHover] = useState<string | null>(null)
@@ -181,7 +184,7 @@ function SelectionLayer({ deck, view, page, selected, onSelect, editing, onEditT
     }
     if (!hit) {
       const p = toLocal(e.clientX, e.clientY)
-      const base = e.shiftKey || e.metaKey ? selected : []
+      const base = e.shiftKey || e.metaKey || e.ctrlKey ? selected : []
       if (!base.length) onSelect([])
       layer.current?.setPointerCapture(e.pointerId)
       setDrag({ kind: 'marquee', pointer: e.pointerId, x0: p.x, y0: p.y, x1: p.x, y1: p.y, base })
@@ -342,11 +345,12 @@ function SelectionLayer({ deck, view, page, selected, onSelect, editing, onEditT
   })
 
   const onDoubleClick = (e: ReactMouseEvent) => {
+    if (editing) return
     const id = hitTest(e.clientX, e.clientY)
     const el = own(id)
     if (el?.type === 'text') {
       onSelect([el.id])
-      onEditText(el.id)
+      onEditText(el.id, { mode: 'point', x: e.clientX, y: e.clientY })
     } else if (el?.group) onSelect([el.id]) // Doppelklick in eine Gruppe: einzelnes Element
   }
 
@@ -407,7 +411,7 @@ function SelectionLayer({ deck, view, page, selected, onSelect, editing, onEditT
               <div className="sel-rotate-stem" style={{ width: line, height: 22 / scale, top: -22 / scale }} />
               <div
                 className="sel-rotate"
-                title="Drehen (⇧ = 15°-Schritte)"
+                title="Drehen (Umschalt/⇧ = 15°-Schritte)"
                 style={{ width: 12 / scale, height: 12 / scale, top: -28 / scale, borderWidth: line }}
                 onPointerDown={startRotate}
               />
@@ -456,6 +460,7 @@ function SelectionLayer({ deck, view, page, selected, onSelect, editing, onEditT
         <TextEditor
           key={editingEl.id}
           element={editingEl}
+          start={editStart ?? { mode: 'all' }}
           onChange={(content) =>
             editPage((pg) => {
               const t = pg.elements.find((x) => x.id === editingEl.id)
@@ -514,41 +519,4 @@ function resize(f: Frame, handle: Handle, dx: number, dy: number, keepRatio: boo
     if (handle === 'e' || handle === 'w') y = f.y + (f.h - h) / 2
   }
   return { ...f, x, y, w, h }
-}
-
-/** Text direkt auf der Folie bearbeiten. Markup (**fett**, *kursiv*) bleibt sichtbar. */
-function TextEditor({
-  element,
-  onChange,
-  onDone,
-}: {
-  element: Extract<Element, { type: 'text' }>
-  onChange: (content: string) => void
-  onDone: (content: string) => void
-}) {
-  const styles = useTextStyles()
-  const [value, setValue] = useState(element.content)
-  return (
-    <textarea
-      className="text-editor"
-      autoFocus
-      spellCheck
-      value={value}
-      style={{ ...frameStyle(element.frame), ...textCss(element, styles) }}
-      onFocus={(e) => e.currentTarget.select()}
-      onChange={(e) => {
-        setValue(e.target.value)
-        onChange(e.target.value)
-      }}
-      onKeyDown={(e) => {
-        e.stopPropagation()
-        if (e.key === 'Escape' || (e.key === 'Enter' && (e.metaKey || e.ctrlKey))) {
-          e.preventDefault()
-          onDone(value)
-        }
-      }}
-      onBlur={() => onDone(value)}
-      onPointerDown={(e) => e.stopPropagation()}
-    />
-  )
 }

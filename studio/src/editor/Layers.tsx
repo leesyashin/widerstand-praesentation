@@ -1,5 +1,6 @@
 import type { Draft } from 'immer'
 import { useState, type DragEvent as ReactDragEvent } from 'react'
+import { plainText } from '../engine/markup'
 import type { Element } from '../schema/deck'
 import { Icon, type IconName } from '../ui/Icon'
 import type { Page } from './model'
@@ -26,7 +27,7 @@ const TYPE_ICON: Record<Element['type'], IconName> = {
 
 export function layerName(el: Element): string {
   if (el.name) return el.name
-  if (el.type === 'text') return el.content.replace(/\*+/g, '').split('\n')[0]!.slice(0, 40) || el.id
+  if (el.type === 'text') return plainText(el.content).split('\n')[0]!.slice(0, 40) || el.id
   return el.id
 }
 

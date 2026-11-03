@@ -29,8 +29,13 @@ export function NumberField({
   min,
   max,
   suffix,
+  label,
+  title,
 }: {
   value: number | undefined
+  /** Kurzes Kürzel im Feld (z. B. „X“) – spart die Zeilenbeschriftung. */
+  label?: string
+  title?: string
   onChange: (v: number | undefined) => void
   placeholder?: string
   step?: number
@@ -49,7 +54,8 @@ export function NumberField({
     onChange(Math.min(max ?? Infinity, Math.max(min ?? -Infinity, n)))
   }
   return (
-    <span className="num">
+    <span className={`num ${suffix ? 'has-suffix' : ''} ${label ? 'has-label' : ''}`} title={title}>
+      {label && <span className="num__label">{label}</span>}
       <input
         className="field field--sm"
         inputMode="decimal"
@@ -208,6 +214,22 @@ export function ColorField({
         onChange={(e) => onChange(e.target.value.trim() || undefined)}
       />
     </span>
+  )
+}
+
+/** Eingeklappter Bereich für Seltenes – hält den Inspector ruhig. */
+export function Disclosure({ title, open, children }: { title: string; open?: boolean; children: ReactNode }) {
+  const [isOpen, setOpen] = useState(Boolean(open))
+  return (
+    <div className={`disclosure ${isOpen ? 'is-open' : ''}`}>
+      <button type="button" className="disclosure__head" aria-expanded={isOpen} onClick={() => setOpen((o) => !o)}>
+        <span className="disclosure__chevron" aria-hidden>
+          ›
+        </span>
+        {title}
+      </button>
+      {isOpen && <div className="disclosure__body">{children}</div>}
+    </div>
   )
 }
 

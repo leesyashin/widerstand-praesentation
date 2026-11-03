@@ -20,7 +20,7 @@ export function Presenter({ name, slideId }: { name: string; slideId?: string })
   const deck = useMemo(() => live.value && resolveDeck(live.value), [live.value])
   if (!deck) return <div className="presenter presenter--loading">Lade Präsentation …</div>
   return (
-    <ThemeScope theme={deck.theme} intensity={deck.intensity} textStyles={deck.textStyles}>
+    <ThemeScope theme={deck.theme} intensity={deck.intensity} textStyles={deck.textStyles} colors={deck.colors}>
       <PresenterView deck={deck} name={name} startId={slideId} />
     </ThemeScope>
   )

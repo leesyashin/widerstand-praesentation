@@ -25,7 +25,7 @@ Gesamtplan und Phasen: `PLAN.md`. Gestaltungsregeln: `STYLE.md` – **vor jedem 
 - Farben **immer als Brand-Token** (`"brand.accent"`, `"brand.text"` …) aus `brand/brand.json`.
   Feste Hex-Werte nur, wenn es bewusst eine Ausnahme ist.
 - Text: `style` aus der Typo-Skala (`display`, `title`, `heading`, `subtitle`, `body`, `caption`, `label`).
-  `fontSize` usw. nur überschreiben, wenn nötig. Inline: `**fett**`, `*kursiv*`, `\n`.
+  `fontSize` usw. nur überschreiben, wenn nötig. Inline: `**fett**`, `*kursiv*`, `***beides***`, `\n`.
 - IDs (Folien, Elemente) in kebab-case, sprechend (`headline`, `karte-1-text`), pro Ebene eindeutig.
 - Magic Move: gleicher `match`-Wert auf zwei aufeinanderfolgenden Folien. Reihenfolge der `elements` = Ebenen
   (erstes Element ganz hinten).
@@ -48,7 +48,9 @@ ansehen – auf Überlappungen, Lesbarkeit, Abstände und Ränder achten. Bei An
   Build-Reihenfolge per Drag & Drop, Bausteine einfügen, Theme wechseln.
 - Bibliothek (Phase 5): 4 Themes (`silber`, `kino`, `sachlich`, `papier`), 16 Layouts, 6 animierte Bausteine,
   4 Deck-Vorlagen (`portfolio`, `angebot`, `pitch`, `vortrag`); neue Decks über die Startseite („Neues Deck“).
-- Noch nicht: Web-Link und PowerPoint-Export (Phase 6).
+- Nächste große Erweiterung: **Phase 8 „Animations-Paradies“** (Plan und Vincents Entscheidungen in `PLAN.md`).
+  Bis sie umgesetzt ist, gelten die Presets oben. Motion-Charakter laut Vincent: *alles erlaubt* – für Schule/Uni
+  (iPad am Beamer) aber leichtgewichtig bauen.
 
 ## Master-Folien, Textstile, Gruppen
 
@@ -80,7 +82,11 @@ Kurz:
 - Ein Theme kann mit `colors` Brand-Tokens für seine Decks umstellen (z. B. `papier`: helles `background`, dunkles
   `text`; `light`/`ink` sind dort die dunkle Kontrastfläche). Deshalb Farben in Decks und Vorlagen **immer als Token**
   und Logos als Icon `brand/logo-mono.svg` mit `"color": "brand.text"` – dann passt alles in jedem Theme.
-- `*kursiv*`/`**fett**` gelten nur innerhalb einer Zeile: über `\n` hinweg jede Zeile einzeln markieren.
+- Paletten unabhängig vom Theme: `deck.colors` (Hex je Token) überschreibt Brand-Kit und Theme; fertige Sätze in
+  `templates/palettes.json`. **Neue Paletten Vincent immer erst als gerenderte Beispiele zeigen** – aufgenommen wird nur,
+  was er auswählt (siehe `EXTENDING.md`).
+- `*kursiv*`/`**fett**`/`***beides***` gelten nur innerhalb einer Zeile: über `\n` hinweg jede Zeile einzeln markieren.
+  Parser: `src/engine/markup.ts` (Folie, Editor und PowerPoint nutzen denselben).
 - Wie man Themes, Layouts, Bausteine, Vorlagen, Komponenten und Engine-Features ergänzt: `EXTENDING.md`.
 
 ## Builds und Übergänge (wie die Engine sie liest)
@@ -131,7 +137,8 @@ optional `schema` (Zod für `props` – wird geprüft, Fehler erscheinen als Pla
   (GET/POST/DELETE), `/api/brand` (GET/PUT), `/api/brand/fonts` (POST), Live-Events.
 - `src/engine/masters.ts` – Master-Folien auflösen (`resolveSlide`/`resolveDeck`) für Editor, Präsentation, Screenshots.
 - `src/engine/` – Rendering (`SlideView`), Builds (`timeline.ts`), Übergänge (`transitions.ts`).
-- `src/editor/` – Editor (Zustand/Verlauf in `useEditor.ts`, Arbeitsfläche `Canvas.tsx`, Inspector, Ebenen,
+- `src/editor/` – Editor (Zustand/Verlauf in `useEditor.ts`, Arbeitsfläche `Canvas.tsx`, Text auf der Folie
+  `TextEditor.tsx`, Inspector, Ebenen,
   Mini-Toolbar, Übersicht, Medien, Schriften; Bearbeitungslogik in `model.ts`). `src/present/` – Präsentation.
 - `src/app/` – Ansichten und Routing. `src/ui/` – App-Designsystem (Tokens in `tokens.css`).
 - `templates/themes/`, `templates/layouts/`, `templates/blocks/`, `templates/decks/` – Themes, Layouts, Bausteine,

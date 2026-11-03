@@ -22,7 +22,7 @@ export function Present({ name, slideId, player = false }: { name: string; slide
   const deck = useMemo(() => live.value && resolveDeck(live.value), [live.value])
   if (!deck) return <div className="present" />
   return (
-    <ThemeScope theme={deck.theme} intensity={deck.intensity} textStyles={deck.textStyles}>
+    <ThemeScope theme={deck.theme} intensity={deck.intensity} textStyles={deck.textStyles} colors={deck.colors}>
       <Show deck={deck} name={name} startId={slideId} player={player} />
     </ThemeScope>
   )

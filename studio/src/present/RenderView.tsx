@@ -17,7 +17,7 @@ export function RenderView({ name, slideId, step }: { name: string; slideId?: st
   const deck = useMemo(() => live.value && resolveDeck(live.value), [live.value])
   if (!deck) return null
   return (
-    <ThemeScope theme={deck.theme} intensity={deck.intensity} textStyles={deck.textStyles}>
+    <ThemeScope theme={deck.theme} intensity={deck.intensity} textStyles={deck.textStyles} colors={deck.colors}>
       <RenderSlide deck={deck} name={name} slideId={slideId} step={step} />
     </ThemeScope>
   )

@@ -7,6 +7,7 @@ Diese Seite beschreibt alle Erweiterungspunkte – vom einfachsten zum aufwendig
 | Was | Wo | Format | Code nötig? |
 |---|---|---|---|
 | Theme | `templates/themes/<name>.json` | `src/schema/theme.ts` | nein |
+| Palette | `templates/palettes.json` (Liste) | `src/schema/palette.ts` | nein |
 | Folien-Layout | `templates/layouts/<name>.json` | `src/schema/layout.ts` | nein |
 | Animierter Baustein | `templates/blocks/<name>.json` | `src/schema/block.ts` | nein |
 | Deck-Vorlage | `templates/decks/<name>.json` | `src/schema/deck.ts` | nein |
@@ -44,6 +45,19 @@ optional eine eigene Palette.
   `textStyles` noch einmal überschreiben.
 - Theme-Wechsel im Editor (Folie-Tab → Deck → Theme) setzt Hintergrund/Effekte aller Folien neu, die aus einem
   Layout stammen oder noch den Hintergrund einer Fläche des alten Themes haben.
+
+## Palette
+
+Paletten sind fertige Farbsätze, die ein Deck unabhängig vom Theme übernehmen kann (Editor: Folie → Deck → Palette).
+Das Deck bekommt dann eine Kopie der Werte in `deck.colors` – sie überschreiben Brand-Kit und Theme-Farben.
+
+- **Regel:** Neue Paletten nie direkt aufnehmen. Erst Vorschläge als echte Folien rendern (Beispiel-Deck je Palette mit
+  `colors`, Titel mit Licht-Verlauf, Inhalt, Chart) und Vincent zeigen – in `templates/palettes.json` kommen nur die,
+  die er auswählt.
+- Jede Palette braucht **alle** Tokens aus `brand/brand.json` (`npm run validate` prüft das), dazu `name`, `label`,
+  `tone` (`dark`/`light`) und eine kurze `description`.
+- `accent2` ist die zweite Farbe des Licht-Verlaufs, `light`/`ink` die Kontrastfläche und ihre Schrift (in hellen
+  Paletten also dunkel).
 
 ## Folien-Layout
 

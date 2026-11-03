@@ -7,6 +7,7 @@ import { Block } from '../src/schema/block'
 import { Brand } from '../src/schema/brand'
 import { Deck } from '../src/schema/deck'
 import { Layout } from '../src/schema/layout'
+import { PaletteLibrary } from '../src/schema/palette'
 import { Theme } from '../src/schema/theme'
 
 const targets = [
@@ -15,6 +16,7 @@ const targets = [
   { file: 'src/schema/theme.schema.json', schema: Theme, title: 'Studio Theme' },
   { file: 'src/schema/layout.schema.json', schema: Layout, title: 'Studio Layout' },
   { file: 'src/schema/block.schema.json', schema: Block, title: 'Studio Baustein' },
+  { file: 'src/schema/palette.schema.json', schema: PaletteLibrary, title: 'Studio Paletten' },
 ]
 
 const check = process.argv.includes('--check')

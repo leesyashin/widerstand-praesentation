@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { Background, Color, Effect, TextStyle } from './deck'
+import { Background, Color, Effect, PaletteColors, TextStyle } from './deck'
 
 /**
  * Theme – Typografie-Skala, Standard-Hintergründe und Effekte.
@@ -30,7 +30,7 @@ export const Theme = z.strictObject({
    * Palette des Themes: überschreibt Brand-Farben (gleiche Token-Namen) für alle Decks mit diesem Theme,
    * z. B. eine helle Variante. Ohne Angabe gelten die Farben aus brand/brand.json.
    */
-  colors: z.record(z.string().regex(/^[a-zA-Z][a-zA-Z0-9]*$/), z.string().regex(/^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/, 'Hex-Farbe, z. B. #f4f2ed')).optional(),
+  colors: PaletteColors.optional(),
   textStyles: z.partialRecord(TextStyle, TextStyleDef.partial()),
   backgrounds: z.partialRecord(Surface, Background),
   effects: z.partialRecord(Surface, z.array(Effect)).optional(),

@@ -36,6 +36,7 @@ import {
 } from '../editor/model'
 import { Overview, SLIDE_MIME, slideTitle } from '../editor/Overview'
 import { SpaceView } from '../editor/SpaceView'
+import type { TextEditorStart } from '../editor/TextEditor'
 import { useEditor, type Editor } from '../editor/useEditor'
 import { usePalette } from '../engine/context'
 import { masterAsSlide, resolveDeck, resolveSlide } from '../engine/masters'
@@ -50,6 +51,7 @@ import type { Issue } from '../schema/issues'
 import type { Layout } from '../schema/layout'
 import { Icon, type IconName } from '../ui/Icon'
 import { IssueList } from '../ui/IssueList'
+import { shortcut } from '../ui/keys'
 import { Toast } from '../ui/Toast'
 import { ShareMenu } from './ShareMenu'
 import { href, navigate } from './route'
@@ -71,7 +73,7 @@ export function DeckView({ name, slideId, brandIssues }: { name: string; slideId
     )
   }
   return (
-    <ThemeScope theme={doc?.theme} intensity={doc?.intensity} textStyles={doc?.textStyles}>
+    <ThemeScope theme={doc?.theme} intensity={doc?.intensity} textStyles={doc?.textStyles} colors={doc?.colors}>
       <EditorShell name={name} slideId={slideId} editor={editor} brandIssues={brandIssues} />
     </ThemeScope>
   )
@@ -106,7 +108,12 @@ function EditorShell({
   const themes = useThemes()
   const theme = useTheme(deck?.theme)
   const [selection, setSelection] = useState<{ key: string; ids: string[] }>({ key: '', ids: [] })
-  const [editing, setEditing] = useState<string | null>(null)
+  const [editing, setEditingState] = useState<string | null>(null)
+  const [editStart, setEditStart] = useState<TextEditorStart | undefined>(undefined)
+  const setEditing = useCallback((id: string | null, start?: TextEditorStart) => {
+    setEditStart(start)
+    setEditingState(id)
+  }, [])
   const [tab, setTab] = useState<InspectorTab>('folie')
   const [picker, setPicker] = useState(false)
   const [mode, setMode] = useState<Mode>('edit')
@@ -457,10 +464,10 @@ function EditorShell({
           <a className="btn btn--plain" href={href({ page: 'decks' })}>
             <Icon name="chevronLeft" /> Decks
           </a>
-          <button className="btn btn--plain btn--icon" title="Rückgängig (⌘Z)" disabled={!editor.canUndo} onClick={editor.undo}>
+          <button className="btn btn--plain btn--icon" title={`Rückgängig (${shortcut('⌘Z')})`} disabled={!editor.canUndo} onClick={editor.undo}>
             <Icon name="undo" />
           </button>
-          <button className="btn btn--plain btn--icon" title="Wiederholen (⇧⌘Z)" disabled={!editor.canRedo} onClick={editor.redo}>
+          <button className="btn btn--plain btn--icon" title={`Wiederholen (${shortcut('⇧⌘Z')})`} disabled={!editor.canRedo} onClick={editor.redo}>
             <Icon name="redo" />
           </button>
         </div>
@@ -535,7 +542,7 @@ function EditorShell({
           <button className="btn presenter-btn" onClick={() => openPresenter(name, slide?.id)} disabled={!slide} title="Referentenansicht in neuem Fenster: Notizen, Timer, Probe-Modus, Handy-Fernbedienung">
             Referentenansicht
           </button>
-          <button className="btn btn--primary" onClick={play} disabled={!slide} title="Abspielen (⌥⌘P)">
+          <button className="btn btn--primary" onClick={play} disabled={!slide} title={`Abspielen (${shortcut('⌥⌘P')})`}>
             <Icon name="play" size={12} /> Abspielen
           </button>
         </div>
@@ -750,6 +757,7 @@ function EditorShell({
               onSelect={select}
               editing={editing}
               onEditText={setEditing}
+              editStart={editStart}
               editPage={editPage}
               onDrop={(data, point) => void onDrop(data, point)}
               toolbar={

@@ -49,6 +49,17 @@
     "theme": {
       "type": "string"
     },
+    "colors": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[a-zA-Z][a-zA-Z0-9]*$"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$"
+      }
+    },
     "intensity": {
       "type": "number",
       "minimum": 0,

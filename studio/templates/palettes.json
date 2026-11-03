@@ -1,0 +1,69 @@
+{
+  "$schema": "../src/schema/palette.schema.json",
+  "palettes": [
+    {
+      "name": "silbergelatine",
+      "label": "Silbergelatine",
+      "description": "Das Brand-Kit: tiefes Schwarz, warmes Silber.",
+      "tone": "dark",
+      "colors": {
+        "background": "#0b0b0c",
+        "surface": "#1a1a1c",
+        "text": "#f2f1ee",
+        "textMuted": "#9a9894",
+        "accent": "#e4ddcc",
+        "accent2": "#4a4844",
+        "light": "#f4f2ed",
+        "ink": "#121212"
+      }
+    },
+    {
+      "name": "kino",
+      "label": "Kino",
+      "description": "Reines Schwarz, gebrochenes Weiß – wie der Saal, bevor der Film beginnt.",
+      "tone": "dark",
+      "colors": {
+        "background": "#000000",
+        "surface": "#141414",
+        "text": "#f5f4f0",
+        "textMuted": "#8f8d88",
+        "accent": "#e4ddcc",
+        "accent2": "#2b2a27",
+        "light": "#f4f2ed",
+        "ink": "#121212"
+      }
+    },
+    {
+      "name": "sachlich",
+      "label": "Sachlich",
+      "description": "Kühles Anthrazit, ruhig und klar.",
+      "tone": "dark",
+      "colors": {
+        "background": "#17181b",
+        "surface": "#24262b",
+        "text": "#f2f2f0",
+        "textMuted": "#a4a5a8",
+        "accent": "#d9d3c4",
+        "accent2": "#3a3c42",
+        "light": "#f4f2ed",
+        "ink": "#121212"
+      }
+    },
+    {
+      "name": "papier",
+      "label": "Papier",
+      "description": "Warmes Papierweiß, tiefschwarze Schrift.",
+      "tone": "light",
+      "colors": {
+        "background": "#f4f2ed",
+        "surface": "#e9e5dc",
+        "text": "#141414",
+        "textMuted": "#6b6862",
+        "accent": "#3d3a34",
+        "accent2": "#d6cfbf",
+        "light": "#141414",
+        "ink": "#f4f2ed"
+      }
+    }
+  ]
+}

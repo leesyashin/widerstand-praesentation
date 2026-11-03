@@ -2,17 +2,19 @@ import type { Draft } from 'immer'
 import { useState, type DragEvent as ReactDragEvent } from 'react'
 import { useTextStyles } from '../engine/context'
 import { findMaster } from '../engine/masters'
+import { findPalette, PALETTES } from '../engine/palettes'
 import { computeSteps, PRESET_DURATION } from '../engine/timeline'
 import { TRANSITION_DURATION } from '../engine/transitions'
 import type { Animation, Build, Deck, DeckTextStyle, Effect, Element, Master, Slide, TextStyle, Transition } from '../schema/deck'
 import type { Issue } from '../schema/issues'
 import type { Layout } from '../schema/layout'
 import type { Surface, Theme } from '../schema/theme'
-import { Icon } from '../ui/Icon'
+import { Icon, type IconName } from '../ui/Icon'
+import { shortcut } from '../ui/keys'
 import { IssueList } from '../ui/IssueList'
-import { ColorField, Group, NumberField, Row, Segmented, Select, Slider, TextField, Toggle } from './fields'
+import { ColorField, Disclosure, Group, NumberField, Row, Segmented, Select, Slider, TextField, Toggle } from './fields'
 import { layerName } from './Layers'
-import { TEXT_OVERRIDES, type AlignKind, type Page } from './model'
+import { arrange, TEXT_OVERRIDES, type AlignKind, type Page } from './model'
 
 export type InspectorTab = 'stil' | 'animation' | 'folie'
 
@@ -138,7 +140,7 @@ export function Inspector(props: Props) {
 function Hint() {
   return (
     <p className="inspector__hint muted">
-      Wähle ein Element auf der Folie aus – mit ⇧ mehrere, oder ziehe einen Rahmen. Doppelklick auf Text bearbeitet ihn
+      Wähle ein Element auf der Folie aus – mit Umschalt mehrere, oder ziehe einen Rahmen. Doppelklick auf Text bearbeitet ihn
       direkt.
     </p>
   )
@@ -155,6 +157,22 @@ function useElementEdit({ element, editPage }: Pick<ElementProps, 'element' | 'e
 
 /* ---------- Stil ---------- */
 
+const SLIDE_ALIGN: { kind: AlignKind; icon: IconName; title: string }[] = [
+  { kind: 'left', icon: 'alignLeft', title: 'Links an die Folie' },
+  { kind: 'hcenter', icon: 'alignHCenter', title: 'Horizontal auf der Folie zentrieren' },
+  { kind: 'right', icon: 'alignRight', title: 'Rechts an die Folie' },
+  { kind: 'top', icon: 'alignTop', title: 'Oben an die Folie' },
+  { kind: 'vcenter', icon: 'alignVCenter', title: 'Vertikal auf der Folie zentrieren' },
+  { kind: 'bottom', icon: 'alignBottom', title: 'Unten an die Folie' },
+]
+
+const LAYER_ORDER: { where: 'back' | 'backward' | 'forward' | 'front'; icon: IconName; title: string }[] = [
+  { where: 'back', icon: 'toBack', title: `Ganz nach hinten (${shortcut('⇧⌘[')})` },
+  { where: 'backward', icon: 'backward', title: `Eine Ebene nach hinten (${shortcut('⌘[')})` },
+  { where: 'forward', icon: 'forward', title: `Eine Ebene nach vorne (${shortcut('⌘]')})` },
+  { where: 'front', icon: 'toFront', title: `Ganz nach vorne (${shortcut('⇧⌘]')})` },
+]
+
 function setTilt(e: Draft<Element>, axis: 'x' | 'y', v: number | undefined) {
   const tilt = { ...e.tilt, [axis]: v || undefined }
   if (!tilt.x && !tilt.y) delete e.tilt
@@ -168,65 +186,33 @@ function ElementStyle(props: ElementProps) {
   return (
     <>
       <Group title="Anordnung">
-        <div className="grid2">
-          <Row label="X">
-            <NumberField value={f.x} onChange={(v) => set((e) => void (e.frame.x = v ?? 0), 'x')} />
-          </Row>
-          <Row label="Y">
-            <NumberField value={f.y} onChange={(v) => set((e) => void (e.frame.y = v ?? 0), 'y')} />
-          </Row>
-          <Row label="Breite">
-            <NumberField value={f.w} min={1} onChange={(v) => set((e) => void (e.frame.w = v ?? 1), 'w')} />
-          </Row>
-          <Row label="Höhe">
-            <NumberField value={f.h} min={1} onChange={(v) => set((e) => void (e.frame.h = v ?? 1), 'h')} />
-          </Row>
-          <Row label="Drehung">
-            <NumberField
-              value={f.rotation ?? 0}
-              suffix="°"
-              min={-360}
-              max={360}
-              onChange={(v) =>
-                set((e) => {
-                  if (v) e.frame.rotation = v
-                  else delete e.frame.rotation
-                }, 'rot')
-              }
-            />
-          </Row>
+        <div className="frame-grid">
+          <NumberField label="X" value={f.x} onChange={(v) => set((e) => void (e.frame.x = v ?? 0), 'x')} />
+          <NumberField label="Y" value={f.y} onChange={(v) => set((e) => void (e.frame.y = v ?? 0), 'y')} />
+          <NumberField label="B" title="Breite" value={f.w} min={1} onChange={(v) => set((e) => void (e.frame.w = v ?? 1), 'w')} />
+          <NumberField label="H" title="Höhe" value={f.h} min={1} onChange={(v) => set((e) => void (e.frame.h = v ?? 1), 'h')} />
         </div>
-        <div className="grid2">
-          <Row label="Tiefe">
-            <NumberField
-              value={el.depth}
-              placeholder="0"
-              step={0.5}
-              min={-10}
-              max={10}
-              onChange={(v) => set((e) => void (e.depth = v || undefined), 'depth')}
-            />
-          </Row>
-          <Row label="Kippen">
-            <NumberField
-              value={el.tilt?.x}
-              placeholder="0"
-              suffix="°"
-              min={-60}
-              max={60}
-              onChange={(v) => set((e) => setTilt(e, 'x', v), 'tiltx')}
-            />
-          </Row>
-          <Row label="Wenden">
-            <NumberField
-              value={el.tilt?.y}
-              placeholder="0"
-              suffix="°"
-              min={-60}
-              max={60}
-              onChange={(v) => set((e) => setTilt(e, 'y', v), 'tilty')}
-            />
-          </Row>
+        <div className="arrange-bar">
+          <span className="arrange-bar__set" aria-label="Auf der Folie ausrichten">
+            {SLIDE_ALIGN.map((a) => (
+              <button key={a.kind} type="button" className="btn btn--icon btn--plain" title={a.title} onClick={() => props.onAlign(a.kind)}>
+                <Icon name={a.icon} />
+              </button>
+            ))}
+          </span>
+          <span className="arrange-bar__set" aria-label="Ebene">
+            {LAYER_ORDER.map((a) => (
+              <button
+                key={a.where}
+                type="button"
+                className="btn btn--icon btn--plain"
+                title={a.title}
+                onClick={() => props.editPage((p) => arrange(p, [el.id], a.where))}
+              >
+                <Icon name={a.icon} />
+              </button>
+            ))}
+          </span>
         </div>
         <Row label="Deckkraft">
           <Slider
@@ -239,16 +225,45 @@ function ElementStyle(props: ElementProps) {
             }
           />
         </Row>
+        <Disclosure key={`raum-${el.id}`} title="Drehung & Raum" open={Boolean(f.rotation || el.depth || el.tilt)}>
+          <div className="grid2">
+            <Row label="Drehung">
+              <NumberField
+                value={f.rotation ?? 0}
+                suffix="°"
+                min={-360}
+                max={360}
+                onChange={(v) =>
+                  set((e) => {
+                    if (v) e.frame.rotation = v
+                    else delete e.frame.rotation
+                  }, 'rot')
+                }
+              />
+            </Row>
+            <Row label="Tiefe">
+              <NumberField
+                value={el.depth}
+                placeholder="0"
+                step={0.5}
+                min={-10}
+                max={10}
+                onChange={(v) => set((e) => void (e.depth = v || undefined), 'depth')}
+              />
+            </Row>
+            <Row label="Kippen">
+              <NumberField value={el.tilt?.x} placeholder="0" suffix="°" min={-60} max={60} onChange={(v) => set((e) => setTilt(e, 'x', v), 'tiltx')} />
+            </Row>
+            <Row label="Wenden">
+              <NumberField value={el.tilt?.y} placeholder="0" suffix="°" min={-60} max={60} onChange={(v) => set((e) => setTilt(e, 'y', v), 'tilty')} />
+            </Row>
+          </div>
+        </Disclosure>
       </Group>
 
       {el.type === 'text' && (
         <Group title="Text">
-          <textarea
-            className="field"
-            rows={3}
-            value={el.content}
-            onChange={(e) => set((x) => void (x.type === 'text' && (x.content = e.target.value)), 'content')}
-          />
+          <p className="field-hint muted">Doppelklick auf den Text bearbeitet ihn direkt auf der Folie.</p>
           <Row label="Stil">
             <Select value={el.style ?? 'body'} onChange={(v) => set((x) => void (x.type === 'text' && (x.style = v)))} options={TEXT_STYLE_OPTIONS} />
           </Row>
@@ -441,7 +456,8 @@ function ElementStyle(props: ElementProps) {
         </Group>
       )}
 
-      <Group title="Element">
+      <Group>
+        <Disclosure key={`mehr-${el.id}`} title="Mehr: Name, Magic Move, Sperren" open={Boolean(el.match || el.locked || el.hidden)}>
         <Row label="Name">
           <TextField value={el.name ?? ''} placeholder={el.id} onChange={(v) => set((x) => void (x.name = v || undefined), 'name')} />
         </Row>
@@ -464,6 +480,7 @@ function ElementStyle(props: ElementProps) {
             </button>
           </div>
         )}
+        </Disclosure>
       </Group>
     </>
   )
@@ -1001,28 +1018,30 @@ function SlideTab(props: Props) {
       <BackgroundGroup {...props} set={(r, m) => editPage(r, m ? `${m}-${slide.id}` : undefined)} inherited={master && !slide.background ? master.background : undefined} />
       <EffectsGroup {...props} set={(r, m) => editPage(r, m ? `${m}-${slide.id}` : undefined)} />
 
-      <Group title="Raum (Kamerafahrt)">
-        <div className="grid2">
-          {(['x', 'y', 'z', 'rotate', 'scale'] as const).map((k) => (
-            <Row key={k} label={{ x: 'X', y: 'Y', z: 'Tiefe', rotate: 'Drehung', scale: 'Maßstab' }[k]}>
-              <NumberField
-                value={slide.world?.[k]}
-                placeholder={k === 'scale' ? '1' : k === 'x' ? String(Math.round(si * deck.format.width * 1.25)) : '0'}
-                step={k === 'scale' ? 0.1 : 10}
-                min={k === 'scale' ? 0.1 : undefined}
-                onChange={(v) =>
-                  setSlide((s) => {
-                    const w = { x: si * deck.format.width * 1.25, y: 0, ...s.world }
-                    if (v === undefined && k !== 'x' && k !== 'y') delete w[k]
-                    else w[k] = v ?? 0
-                    s.world = w
-                  }, `world-${k}`)
-                }
-              />
-            </Row>
-          ))}
-        </div>
-        <p className="field-hint muted">Wirkt mit dem Übergang „Kamerafahrt“. Anordnen geht am einfachsten in der Raum-Ansicht.</p>
+      <Group>
+        <Disclosure key={`welt-${slide.id}`} title="Raum (Kamerafahrt)" open={Boolean(slide.world) || slide.transition?.type === 'camera'}>
+          <div className="grid2">
+            {(['x', 'y', 'z', 'rotate', 'scale'] as const).map((k) => (
+              <Row key={k} label={{ x: 'X', y: 'Y', z: 'Tiefe', rotate: 'Drehung', scale: 'Maßstab' }[k]}>
+                <NumberField
+                  value={slide.world?.[k]}
+                  placeholder={k === 'scale' ? '1' : k === 'x' ? String(Math.round(si * deck.format.width * 1.25)) : '0'}
+                  step={k === 'scale' ? 0.1 : 10}
+                  min={k === 'scale' ? 0.1 : undefined}
+                  onChange={(v) =>
+                    setSlide((s) => {
+                      const w = { x: si * deck.format.width * 1.25, y: 0, ...s.world }
+                      if (v === undefined && k !== 'x' && k !== 'y') delete w[k]
+                      else w[k] = v ?? 0
+                      s.world = w
+                    }, `world-${k}`)
+                  }
+                />
+              </Row>
+            ))}
+          </div>
+          <p className="field-hint muted">Wirkt mit dem Übergang „Kamerafahrt“. Anordnen geht am einfachsten in der Raum-Ansicht.</p>
+        </Disclosure>
       </Group>
 
       <DeckGroup {...props} edit={edit} />
@@ -1209,6 +1228,63 @@ function applyTheme(d: Draft<Deck>, theme: Theme, layouts: Layout[], previous: T
   }
 }
 
+/** Palette des Decks: eine fertige Palette übernehmen oder die Farben des Themes nutzen. */
+function PalettePicker({ deck, edit, themes }: Pick<Props, 'deck' | 'edit' | 'themes'>) {
+  const current = findPalette(deck.colors)
+  // „Vom Theme“ zeigt Brand-Kit (Variablen auf :root) plus Theme-Farben – ohne die Palette des Decks.
+  const root = getComputedStyle(document.documentElement)
+  const themeColors = themes.find((t) => t.name === deck.theme)?.colors
+  const fromTheme = Object.fromEntries(
+    (['background', 'surface', 'text', 'accent', 'accent2'] as const).map((t) => [t, themeColors?.[t] ?? root.getPropertyValue(`--brand-${t}`).trim()]),
+  )
+  const own = deck.colors && !current
+  const chip = (colors: Record<string, string> | undefined) => (
+    <span className="palette-chip__dots" aria-hidden>
+      {(['background', 'surface', 'text', 'accent', 'accent2'] as const).map((t) => (
+        <span key={t} style={{ background: colors?.[t] ?? `var(--brand-${t})` }} />
+      ))}
+    </span>
+  )
+  return (
+    <div className="palette-picker" role="radiogroup" aria-label="Palette">
+      <span className="row__label">Palette</span>
+      <div className="palette-picker__list">
+        <button
+          type="button"
+          role="radio"
+          aria-checked={!deck.colors}
+          className={`palette-chip ${!deck.colors ? 'is-on' : ''}`}
+          title="Farben aus Theme und Brand-Kit"
+          onClick={() => edit((d) => void delete d.colors)}
+        >
+          {chip(fromTheme)}
+          <span>Vom Theme</span>
+        </button>
+        {PALETTES.map((p) => (
+          <button
+            key={p.name}
+            type="button"
+            role="radio"
+            aria-checked={current?.name === p.name}
+            className={`palette-chip ${current?.name === p.name ? 'is-on' : ''}`}
+            title={p.description ?? p.label}
+            onClick={() => edit((d) => void (d.colors = { ...p.colors }))}
+          >
+            {chip(p.colors)}
+            <span>{p.label}</span>
+          </button>
+        ))}
+        {own && (
+          <span className="palette-chip is-on" title="Eigene Farben im Deck (von Claude gesetzt)">
+            {chip(deck.colors)}
+            <span>Eigene</span>
+          </span>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function DeckGroup({ deck, edit, brand, onOpenFonts, themes, layouts }: Props) {
   const styles = useTextStyles()
   const [style, setStyle] = useState<TextStyle>('title')
@@ -1239,6 +1315,7 @@ function DeckGroup({ deck, edit, brand, onOpenFonts, themes, layouts }: Props) {
           />
         </Row>
         <p className="field-hint muted">{themes.find((t) => t.name === deck.theme)?.description ?? 'Farben, Typografie und Hintergründe für das ganze Deck.'}</p>
+        <PalettePicker deck={deck} edit={edit} themes={themes} />
         <Row label="Intensität">
           <Slider value={deck.intensity ?? 0.3} onChange={(v) => edit((d) => void (d.intensity = Math.round(v * 100) / 100), 'intensity')} />
         </Row>

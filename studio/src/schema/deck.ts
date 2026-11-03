@@ -364,6 +364,15 @@ export const Format = z
     }
   })
 
+/**
+ * Palette: Hex-Werte für Brand-Tokens (gleiche Namen wie in brand/brand.json), z. B. eine helle Variante.
+ * Gilt für Themes (`colors`) und Decks (`colors` – überschreibt Brand-Kit und Theme).
+ */
+export const PaletteColors = z.record(
+  z.string().regex(/^[a-zA-Z][a-zA-Z0-9]*$/),
+  z.string().regex(/^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$/, 'Hex-Farbe, z. B. #f4f2ed'),
+)
+
 export const Deck = z
   .strictObject({
     $schema: z.string().optional(),
@@ -373,6 +382,8 @@ export const Deck = z
     description: z.string().optional(),
     format: Format,
     theme: z.string().optional(),
+    /** Eigene Palette des Decks (aus templates/palettes.json übernommen) – überschreibt Brand-Kit und Theme-Farben. */
+    colors: PaletteColors.optional(),
     /** Globale Effekt-Intensität: 0 = ruhig, 1 = filmisch. */
     intensity: unit.optional(),
     /** Eigene Werte für die Textstile – eine Änderung wirkt auf alle Texte dieses Stils. */

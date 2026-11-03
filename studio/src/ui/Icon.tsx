@@ -40,6 +40,8 @@ const paths = {
   chevronRight: 'M6 4l4 4-4 4',
   forward: 'M5.5 2.5h8v8M2.5 5.5h8v8h-8z',
   backward: 'M2.5 2.5h8v8h-8zM5.5 10.5v3h8v-8h-3',
+  toFront: 'M5.5 2.5h8v8h-8zM2.5 5.5v8h8',
+  toBack: 'M2.5 2.5h8v8h-8zM13.5 5.5v8h-8',
   rotate: 'M13 8a5 5 0 1 1-1.5-3.6M13 2.5v2.5h-2.5',
   x: 'M4 4l8 8M12 4l-8 8',
   sliders: 'M2.5 4.5h7M12.5 4.5h1M2.5 11.5h1M6.5 11.5h7M11 3v3M5 10v3',
