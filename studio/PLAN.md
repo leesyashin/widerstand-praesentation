@@ -483,6 +483,16 @@ Der Code ist fertig (PR #6), es fehlt die Einrichtung und der Test im echten Leb
 - Inspector ruhiger: **Anordnung** zuerst (X/Y/B/H, an der Folie ausrichten, Ebene nach vorne/hinten, Deckkraft).
   Drehung, Tiefe, Kippen, Wenden und Name/Magic Move/Sperren liegen eingeklappt darunter (klappen von selbst auf, wenn
   ein Wert gesetzt ist). Das doppelte Textfeld im Inspector ist weg – Text bearbeitest du auf der Folie.
+- Präsentation: „zurück“ mitten im Übergang zeigt nicht mehr Schwarz; am iPad zählt der Tipp nach dem Wischen,
+  Doppeltippen zoomt nicht mehr; die Clicker-Taste F5 lädt nicht neu, und ein Neuladen macht bei der aktuellen Folie
+  weiter. Auf Touch-Geräten rendern Verlauf und Korn mit halber Pixeldichte/30 fps, Blur-Übergänge sind leichter.
+- Editor: jedes Ziehen ist ein eigener Rückgängig-Schritt (auch ⌥/Alt-Kopie), kopierte Gruppen verschmelzen nicht mehr
+  mit dem Original, Pfeiltasten nach einer Auswahlliste bewegen wieder das Element, Ebenen-Kürzel funktionieren mit
+  deutscher Tastatur (Strg+AltGr+8/9), keine Tastenkürzel hinter offenen Fenstern oder in Übersicht/Raum, Farbfeld der
+  Mini-Toolbar schließt von selbst.
+- Speichern unter Windows: kurz gesperrte Dateien (Virenscanner, OneDrive) werden erneut versucht, gleichzeitige
+  Speichervorgänge stören sich nicht, und der Editor versucht es bei Server-Fehlern selbst noch einmal. JSON-Dateien
+  mit BOM (Notepad) werden gelesen.
 - **Paletten** unabhängig vom Theme: `deck.colors` überschreibt Brand-Kit und Theme-Farben, Auswahl im Editor unter
   Folie → Deck → Palette. Bibliothek: `templates/palettes.json`. **Regel:** Neue Paletten werden Vincent immer zuerst
   als gerenderte Beispiel-Folien gezeigt; in die Bibliothek kommen nur die, die er auswählt.

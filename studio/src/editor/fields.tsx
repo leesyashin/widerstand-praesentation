@@ -91,7 +91,14 @@ export function Select<T extends string>({
   onChange: (v: T) => void
 }) {
   return (
-    <select className="field field--sm" value={value} onChange={(e) => onChange(e.target.value as T)}>
+    <select
+      className="field field--sm"
+      value={value}
+      onChange={(e) => {
+        onChange(e.target.value as T)
+        e.currentTarget.blur()
+      }}
+    >
       {options.map((o) => (
         <option key={o.value} value={o.value}>
           {o.label}

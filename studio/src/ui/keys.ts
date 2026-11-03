@@ -27,6 +27,7 @@ export function shortcut(mac: string): string {
       rest = rest.replace(sym, '')
     }
   }
+  rest = rest.replace('⌫', 'Entf')
   // Reihenfolge wie unter Windows üblich: Strg, Alt, Umschalt.
   return [...mods, rest].join('+')
 }

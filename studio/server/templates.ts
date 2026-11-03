@@ -6,6 +6,7 @@ import { Deck } from '../src/schema/deck'
 import { formatPath, fromZod, type Issue } from '../src/schema/issues'
 import { checkDeck, deckFile, isDeckName, listThemeNames, readTheme, serializeDeck, STUDIO_ROOT, TEMPLATES_DIR, walkStrings } from './decks'
 import type { Theme } from '../src/schema/theme'
+import { parseJsonText } from './fsSafe'
 
 /** Vorlagen und Bausteine dürfen nur Dateien aus dem Brand-Kit nutzen – sie werden in neue Decks kopiert. */
 function brandOnly(value: unknown): Issue[] {
@@ -26,7 +27,7 @@ async function jsonFiles(dir: string): Promise<string[]> {
 
 async function readJson(file: string): Promise<{ ok: true; value: unknown } | { ok: false; issues: Issue[] }> {
   try {
-    return { ok: true, value: JSON.parse(await readFile(file, 'utf8')) }
+    return { ok: true, value: parseJsonText(await readFile(file, 'utf8')) }
   } catch (err) {
     return { ok: false, issues: [{ path: '', message: `Kein gültiges JSON: ${(err as Error).message}` }] }
   }

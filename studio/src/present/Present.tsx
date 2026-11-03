@@ -7,7 +7,7 @@ import { Stage } from '../engine/Stage'
 import { resolveDeck } from '../engine/masters'
 import { ThemeScope } from '../engine/ThemeScope'
 import { createSlideTimeline, type SlideTimeline } from '../engine/timeline'
-import { matchPairs, runTransition } from '../engine/transitions'
+import { matchPairs, resetSlideDom, runTransition } from '../engine/transitions'
 import { worldOf } from '../engine/world'
 import type { Deck } from '../schema/deck'
 import { onShow, sendShow } from './sync'
@@ -99,6 +99,8 @@ function Show({ deck, name, startId, player }: { deck: Deck; name: string; start
       }
     }
     timelines.current.get(index)?.kill()
+    // War die Folie eben noch die ausgeblendete eines Übergangs, trägt sie dessen Endzustand (z. B. unsichtbar).
+    resetSlideDom(root, slide)
 
     const magic = nav.direction === 'forward' && fromSlide && slide.transition?.type === 'magicMove'
     const skipIn = magic ? new Set(matchPairs(fromSlide, slide).map(([, b]) => b.id)) : undefined
@@ -184,6 +186,11 @@ function Show({ deck, name, startId, player }: { deck: Deck; name: string; start
   // Tastatur und Presenter-Clicker (senden meist Bild↑/Bild↓).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      // Clicker-Taste „Start“ sendet F5: nicht neu laden, die Show läuft schon.
+      if (e.key === 'F5') {
+        e.preventDefault()
+        return
+      }
       if (e.metaKey || e.ctrlKey || e.altKey) return
       switch (e.key) {
         case 'ArrowRight':
@@ -232,14 +239,18 @@ function Show({ deck, name, startId, player }: { deck: Deck; name: string; start
   }, [next, prev, go, exit, order.length, name, current, player])
 
   // Web-Player: aktuelle Folie in der Adresse (#folie) – Links auf eine bestimmte Folie funktionieren so.
+  // Präsentation: ebenso, damit ein Neuladen bei der aktuellen Folie weitermacht.
   useEffect(() => {
     const id = deck.slides[current]?.id
-    if (player && id) history.replaceState(null, '', `#${encodeURIComponent(id)}`)
-  }, [player, deck, current])
+    if (!id) return
+    if (player) history.replaceState(null, '', `#${encodeURIComponent(id)}`)
+    else history.replaceState(null, '', href({ page: 'present', name, slideId: id }))
+  }, [player, deck, current, name])
 
   // Handy und Tablet: nach links wischen = weiter, nach rechts = zurück.
   const touch = useRef<{ x: number; y: number } | null>(null)
-  const swiped = useRef(false)
+  /** Zeitpunkt des letzten Wischens – der Klick, den manche Browser danach melden, zählt nicht. */
+  const swipedAt = useRef(0)
 
   // Schwarzbild und Ende melden
   useEffect(() => {
@@ -317,15 +328,12 @@ function Show({ deck, name, startId, player }: { deck: Deck; name: string; start
         if (!start || !t) return
         const dx = t.clientX - start.x
         if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(t.clientY - start.y)) return
-        swiped.current = true
+        swipedAt.current = performance.now()
         if (dx < 0) next()
         else prev()
       }}
       onClick={() => {
-        if (swiped.current) {
-          swiped.current = false
-          return
-        }
+        if (performance.now() - swipedAt.current < 500) return
         if (needsFullscreen) {
           setNeedsFullscreen(false)
           void document.documentElement.requestFullscreen?.().catch(() => {})

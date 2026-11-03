@@ -12,8 +12,8 @@ import {
 } from 'react'
 import { SlideView } from '../engine/SlideView'
 import { Stage, StageScaleContext } from '../engine/Stage'
-import type { Deck, Element, Frame, Slide } from '../schema/deck'
-import { duplicateElement, expandGroups, roundFrame, unionFrame, type Page } from './model'
+import type { Deck, Frame, Slide } from '../schema/deck'
+import { duplicateElements, expandGroups, roundFrame, unionFrame, type Page } from './model'
 import { TextEditor, type TextEditorStart } from './TextEditor'
 
 type Handle = 'nw' | 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w'
@@ -55,9 +55,9 @@ export function Canvas(props: CanvasProps) {
 }
 
 type Drag =
-  | { kind: 'move'; pointer: number; x: number; y: number; start: Map<string, Frame>; box: Frame; moved: boolean }
-  | { kind: 'resize'; pointer: number; x: number; y: number; start: Map<string, Frame>; box: Frame; handle: Handle; single: boolean }
-  | { kind: 'rotate'; pointer: number; id: string; cx: number; cy: number }
+  | { kind: 'move'; pointer: number; token: string; x: number; y: number; start: Map<string, Frame>; box: Frame; moved: boolean }
+  | { kind: 'resize'; pointer: number; token: string; x: number; y: number; start: Map<string, Frame>; box: Frame; handle: Handle; single: boolean }
+  | { kind: 'rotate'; pointer: number; token: string; id: string; cx: number; cy: number }
   | { kind: 'marquee'; pointer: number; x0: number; y0: number; x1: number; y1: number; base: string[] }
 
 type Guides = { x: number[]; y: number[] }
@@ -72,6 +72,7 @@ function SelectionLayer({ deck, view, page, selected, onSelect, editing, onEditT
   const [badge, setBadge] = useState<Badge | null>(null)
   const [dropping, setDropping] = useState(false)
   const dragRef = useRef<Drag | null>(null)
+  const dragCount = useRef(0)
   const W = deck.format.width
   const H = deck.format.height
 
@@ -130,22 +131,17 @@ function SelectionLayer({ deck, view, page, selected, onSelect, editing, onEditT
     let targets = page.elements.filter((x) => ids.includes(x.id) && !x.locked)
     if (!targets.length) return
     // ⌥ beim Ziehen: Kopie ziehen, Original bleibt liegen.
+    // Eigener Schlüssel pro Ziehen: ein Ziehen = ein Rückgängig-Schritt (auch mit ⌥-Kopie).
+    const token = `drag-${++dragCount.current}`
     if (e.altKey) {
-      const copies: Element[] = []
-      const working = { ...page, elements: [...page.elements] } as Page
-      for (const t of targets) {
-        const copy = duplicateElement(t, working as Slide, 0)
-        if (t.group) copy.group = `${t.group}-kopie`
-        working.elements.push(copy)
-        copies.push(copy)
-      }
-      editPage((p) => void p.elements.push(...structuredClone(copies)))
+      const copies = duplicateElements(targets, page, 0)
+      editPage((p) => void p.elements.push(...structuredClone(copies)), token)
       targets = copies
       onSelect(copies.map((c) => c.id))
     }
     layer.current?.setPointerCapture(e.pointerId)
     const start = new Map(targets.map((t) => [t.id, { ...t.frame }]))
-    setDrag({ kind: 'move', pointer: e.pointerId, x: e.clientX, y: e.clientY, start, box: unionFrame([...start.values()]), moved: false })
+    setDrag({ kind: 'move', pointer: e.pointerId, token, x: e.clientX, y: e.clientY, start, box: unionFrame([...start.values()]), moved: false })
   }
 
   const startResize = (e: ReactPointerEvent, handle: Handle) => {
@@ -155,7 +151,7 @@ function SelectionLayer({ deck, view, page, selected, onSelect, editing, onEditT
     layer.current?.setPointerCapture(e.pointerId)
     const start = new Map(movable.map((t) => [t.id, { ...t.frame }]))
     const single = movable.length === 1
-    setDrag({ kind: 'resize', pointer: e.pointerId, x: e.clientX, y: e.clientY, start, box: single ? { ...movable[0]!.frame } : unionFrame([...start.values()]), handle, single })
+    setDrag({ kind: 'resize', pointer: e.pointerId, token: `drag-${++dragCount.current}`, x: e.clientX, y: e.clientY, start, box: single ? { ...movable[0]!.frame } : unionFrame([...start.values()]), handle, single })
   }
 
   const startRotate = (e: ReactPointerEvent) => {
@@ -164,7 +160,7 @@ function SelectionLayer({ deck, view, page, selected, onSelect, editing, onEditT
     e.preventDefault()
     e.stopPropagation()
     layer.current?.setPointerCapture(e.pointerId)
-    setDrag({ kind: 'rotate', pointer: e.pointerId, id: el.id, cx: el.frame.x + el.frame.w / 2, cy: el.frame.y + el.frame.h / 2 })
+    setDrag({ kind: 'rotate', pointer: e.pointerId, token: `drag-${++dragCount.current}`, id: el.id, cx: el.frame.x + el.frame.w / 2, cy: el.frame.y + el.frame.h / 2 })
   }
 
   const onPointerDown = (e: ReactPointerEvent) => {
@@ -243,7 +239,7 @@ function SelectionLayer({ deck, view, page, selected, onSelect, editing, onEditT
         if (!t) return
         if (angle) t.frame.rotation = angle
         else delete t.frame.rotation
-      }, `drag-${d.pointer}`)
+      }, d.token)
       setBadge({ x: p.x, y: p.y, text: `${angle}°` })
       return
     }
@@ -278,7 +274,7 @@ function SelectionLayer({ deck, view, page, selected, onSelect, editing, onEditT
           const f = d.start.get(t.id)
           if (f) t.frame = roundFrame({ ...f, x: f.x + dx, y: f.y + dy })
         }
-      }, `drag-${d.pointer}`)
+      }, d.token)
       setBadge({ x: d.box.x + dx, y: d.box.y + dy, text: `${Math.round(d.box.x + dx)}, ${Math.round(d.box.y + dy)}` })
     }
 
@@ -317,7 +313,7 @@ function SelectionLayer({ deck, view, page, selected, onSelect, editing, onEditT
             ? roundFrame({ ...f, x: next.x, y: next.y, w: next.w, h: next.h })
             : roundFrame({ ...f, x: next.x + (f.x - box.x) * sx, y: next.y + (f.y - box.y) * sy, w: f.w * sx, h: f.h * sy })
         }
-      }, `drag-${d.pointer}`)
+      }, d.token)
       setBadge({ x: next.x + next.w, y: next.y + next.h, text: `${Math.round(next.w)} × ${Math.round(next.h)}` })
     }
     setGuides(nextGuides)

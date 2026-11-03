@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs'
-import { mkdir, readdir, readFile, rename, writeFile } from 'node:fs/promises'
+import { mkdir, readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Brand } from '../src/schema/brand'
@@ -7,6 +7,7 @@ import { Deck } from '../src/schema/deck'
 import { formatPath, fromZod, type Issue } from '../src/schema/issues'
 import { Layout } from '../src/schema/layout'
 import { Theme } from '../src/schema/theme'
+import { parseJsonText, writeAtomic } from './fsSafe'
 
 export const STUDIO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 export const DECKS_DIR = path.join(STUDIO_ROOT, 'decks')
@@ -46,7 +47,7 @@ export async function listDeckNames(): Promise<string[]> {
 
 function parseJson(text: string): { ok: true; value: unknown } | { ok: false; issues: Issue[] } {
   try {
-    return { ok: true, value: JSON.parse(text) }
+    return { ok: true, value: parseJsonText(text) }
   } catch (err) {
     return { ok: false, issues: [{ path: '', message: `Kein gültiges JSON: ${(err as Error).message}` }] }
   }
@@ -156,9 +157,7 @@ export async function writeDeck(name: string, value: unknown): Promise<DeckResul
   const file = deckFile(name)
   await mkdir(path.dirname(file), { recursive: true })
   const text = serializeDeck(value)
-  const tmp = `${file}.${process.pid}.tmp`
-  await writeFile(tmp, text, 'utf8')
-  await rename(tmp, file)
+  await writeAtomic(file, text)
   return { ...result, text }
 }
 

@@ -1,5 +1,5 @@
 import type { Draft } from 'immer'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { resolveColor } from '../engine/brand'
 import type { Animation, Element, TextStyle } from '../schema/deck'
 import { Icon } from '../ui/Icon'
@@ -31,6 +31,29 @@ const ALIGN: { kind: AlignKind; icon: 'alignLeft' | 'alignHCenter' | 'alignRight
 /** Schwebende Mini-Toolbar am ausgewählten Element: das Schnelle direkt an der Folie. */
 export function MiniToolbar({ elements, brand, editEach, onAlign, onGroup, onUngroup, onDuplicate, onDelete }: Props) {
   const [colorOpen, setColorOpen] = useState(false)
+  // Andere Auswahl (z. B. über die Ebenen) → Farbfeld schließen.
+  const ids = elements.map((e) => e.id).join(',')
+  const [openFor, setOpenFor] = useState(ids)
+  if (openFor !== ids) {
+    setOpenFor(ids)
+    setColorOpen(false)
+  }
+  const colorRef = useRef<HTMLSpanElement>(null)
+  useEffect(() => {
+    if (!colorOpen) return
+    const onDown = (e: PointerEvent) => {
+      if (!colorRef.current?.contains(e.target as Node)) setColorOpen(false)
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setColorOpen(false)
+    }
+    window.addEventListener('pointerdown', onDown, true)
+    window.addEventListener('keydown', onKey, true)
+    return () => {
+      window.removeEventListener('pointerdown', onDown, true)
+      window.removeEventListener('keydown', onKey, true)
+    }
+  }, [colorOpen])
   const el = elements.length === 1 ? elements[0] : undefined
   const multi = elements.length > 1
   const grouped = elements.some((e) => e.group)
@@ -74,7 +97,10 @@ export function MiniToolbar({ elements, brand, editEach, onAlign, onGroup, onUng
             className="mini-select"
             title="Textstil"
             value={el.style ?? 'body'}
-            onChange={(e) => editEach((x) => void (x.type === 'text' && (x.style = e.target.value as TextStyle)))}
+            onChange={(e) => {
+              editEach((x) => void (x.type === 'text' && (x.style = e.target.value as TextStyle)))
+              e.currentTarget.blur()
+            }}
           >
             {TEXT_STYLE_OPTIONS.map((o) => (
               <option key={o.value} value={o.value}>
@@ -119,7 +145,7 @@ export function MiniToolbar({ elements, brand, editEach, onAlign, onGroup, onUng
       )}
 
       {colorable.length > 0 && (
-        <span className="mini-color">
+        <span className="mini-color" ref={colorRef}>
           <button type="button" className="mini-btn" title="Farbe" onClick={() => setColorOpen((o) => !o)}>
             <span className="mini-color__dot" style={{ background: resolveColor(current) ?? 'transparent' }} />
           </button>
@@ -148,7 +174,11 @@ export function MiniToolbar({ elements, brand, editEach, onAlign, onGroup, onUng
         className="mini-select"
         title="Einblenden"
         value={samePreset ? (preset ?? 'none') : ''}
-        onChange={(e) => setPreset(e.target.value as Animation['preset'] | 'none')}
+        onChange={(e) => {
+          setPreset(e.target.value as Animation['preset'] | 'none')
+          // Fokus zurück an die Folie – sonst ändern die Pfeiltasten danach den Wert statt das Element.
+          e.currentTarget.blur()
+        }}
       >
         {!samePreset && <option value="">Gemischt</option>}
         <option value="none">Kein Build</option>
@@ -173,7 +203,7 @@ export function MiniToolbar({ elements, brand, editEach, onAlign, onGroup, onUng
       <button type="button" className="mini-btn" title={`Duplizieren (${shortcut('⌘D')})`} onClick={onDuplicate}>
         <Icon name="copy" size={14} />
       </button>
-      <button type="button" className="mini-btn" title="Löschen (⌫)" onClick={onDelete}>
+      <button type="button" className="mini-btn" title={`Löschen (${shortcut('⌫')})`} onClick={onDelete}>
         <Icon name="trash" size={14} />
       </button>
     </div>

@@ -6,6 +6,9 @@ import { createProgram } from './gl/program'
 import { LEAK } from './gl/shaders'
 import { ease } from './timeline'
 
+/** Unschärfe beim Blur-Überblenden. Auf Touch-Geräten (iPad) weniger – Vollbild-Blur kostet dort viel. */
+const BLUR = typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches ? 10 : 24
+
 /** Standarddauer je Übergang in ms. */
 export const TRANSITION_DURATION: Record<Transition['type'], number> = {
   none: 0,
@@ -78,8 +81,8 @@ export function runTransition(args: Args): TransitionRun {
       tl.fromTo(to, { opacity: 0 }, { opacity: 1, duration, ease: 'none' })
       break
     case 'blurDissolve':
-      tl.to(from, { opacity: 0, filter: 'blur(24px)', duration, ease: e }, 0)
-      tl.fromTo(to, { opacity: 0, filter: 'blur(24px)' }, { opacity: 1, filter: 'blur(0px)', duration, ease: e }, 0)
+      tl.to(from, { opacity: 0, filter: `blur(${BLUR}px)`, duration, ease: e }, 0)
+      tl.fromTo(to, { opacity: 0, filter: `blur(${BLUR}px)` }, { opacity: 1, filter: 'blur(0px)', duration, ease: e }, 0)
       break
     case 'push':
     case 'whipPan': {
@@ -87,7 +90,7 @@ export function runTransition(args: Args): TransitionRun {
       const axis = dir === 'left' || dir === 'right' ? 'x' : 'y'
       const size = axis === 'x' ? W : H
       const sign = dir === 'left' || dir === 'up' ? -1 : 1
-      const blur = type === 'whipPan' ? 'blur(28px)' : 'blur(0px)'
+      const blur = type === 'whipPan' ? `blur(${Math.round(BLUR * 1.15)}px)` : 'blur(0px)'
       tl.to(from, { [axis]: sign * size, duration, ease: e }, 0)
       tl.fromTo(to, { [axis]: -sign * size }, { [axis]: 0, duration, ease: e }, 0)
       if (type === 'whipPan') {
@@ -123,6 +126,26 @@ export function runTransition(args: Args): TransitionRun {
   tl.set(from, { opacity: 0 })
   tl.set(to, { clearProps: 'opacity,filter,clipPath,transform' })
   return { timeline: tl, matched }
+}
+
+/**
+ * Folie nach einem (abgebrochenen) Übergang wieder auf den Stand bringen, den React gerendert hat.
+ * Nötig, wenn eine gerade ausgeblendete Folie sofort wieder gezeigt wird (z. B. „zurück“ mitten im Übergang).
+ */
+export function resetSlideDom(root: HTMLElement, slide: Slide) {
+  gsap.set(root, { clearProps: 'opacity,filter,clipPath,transform' })
+  for (const el of slide.elements) {
+    const node = elOf(root, el.id)
+    if (!node) continue
+    gsap.set(node, { clearProps: 'transform,opacity,left,top,width,height,transformOrigin' })
+    const f = el.frame
+    node.style.left = `${f.x}px`
+    node.style.top = `${f.y}px`
+    node.style.width = `${f.w}px`
+    node.style.height = `${f.h}px`
+    node.style.transform = f.rotation ? `rotate(${f.rotation}deg)` : ''
+    node.style.opacity = el.opacity === undefined ? '' : String(el.opacity)
+  }
 }
 
 /* ---------- Kamerafahrt ---------- */

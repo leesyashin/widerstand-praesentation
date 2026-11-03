@@ -120,6 +120,31 @@ export function duplicateElement(el: Element, slide: Slide, offset = 24): Elemen
   return copy
 }
 
+/**
+ * Kopien mehrerer Elemente auf derselben Seite: neue IDs, und kopierte Gruppen bekommen einen neuen Gruppen-Schlüssel –
+ * sonst würde die Kopie mit dem Original (oder einer früheren Kopie) zu einer Gruppe verschmelzen.
+ */
+export function duplicateElements(els: Element[], page: Page, offset = 24): Element[] {
+  const working = { ...page, elements: [...page.elements] } as Slide
+  const copies = els.map((el) => {
+    const c = duplicateElement(el, working, offset)
+    working.elements.push(c)
+    return c
+  })
+  const groups = new Map<string, string>()
+  const taken = page.elements.flatMap((e) => (e.group ? [e.group] : []))
+  for (const c of copies) {
+    if (!c.group) continue
+    if (!groups.has(c.group)) {
+      const next = uniqueId(c.group, taken)
+      taken.push(next)
+      groups.set(c.group, next)
+    }
+    c.group = groups.get(c.group)
+  }
+  return copies
+}
+
 /** Kopie einer Folie mit neuer ID. */
 export function duplicateSlide(slide: Slide, deck: Deck): Slide {
   const copy = structuredClone(slide)

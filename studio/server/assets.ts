@@ -1,10 +1,11 @@
 import { createWriteStream, existsSync } from 'node:fs'
-import { mkdir, readdir, rename, rm, stat, writeFile } from 'node:fs/promises'
+import { mkdir, readdir, rm, stat } from 'node:fs/promises'
 import type { IncomingMessage } from 'node:http'
 import path from 'node:path'
 import { Brand } from '../src/schema/brand'
 import { fromZod, type Issue } from '../src/schema/issues'
 import { BRAND_DIR, BRAND_FILE, DECKS_DIR, readBrand } from './decks'
+import { renameRetry, tempName, writeAtomic } from './fsSafe'
 
 /** Medien: Bilder, Videos, Lottie, SVG. Große Dateien landen nicht im Speicher, sondern direkt auf der Platte. */
 export const MAX_UPLOAD = 100 * 1024 * 1024
@@ -80,7 +81,7 @@ export async function listBrandAssets(): Promise<AssetInfo[]> {
 /** Schreibt den Anfrage-Body als Datenstrom in eine Datei (atomar über .tmp). */
 function streamToFile(req: IncomingMessage, file: string, limit: number): Promise<number> {
   return new Promise((resolve, reject) => {
-    const tmp = `${file}.${process.pid}.tmp`
+    const tmp = tempName(file)
     const out = createWriteStream(tmp)
     let size = 0
     let failed = false
@@ -102,7 +103,7 @@ function streamToFile(req: IncomingMessage, file: string, limit: number): Promis
     out.on('finish', () => {
       if (failed) return
       if (size === 0) return fail(new Error('Leere Datei'))
-      rename(tmp, file).then(() => resolve(size), fail)
+      renameRetry(tmp, file).then(() => resolve(size), fail)
     })
     req.pipe(out)
   })
@@ -156,9 +157,7 @@ export async function uploadFont(name: string, req: IncomingMessage): Promise<Up
 export async function writeBrand(value: unknown): Promise<{ ok: true; brand: Brand } | { ok: false; issues: Issue[] }> {
   const parsed = Brand.safeParse(value)
   if (!parsed.success) return { ok: false, issues: fromZod(parsed.error) }
-  const tmp = `${BRAND_FILE}.${process.pid}.tmp`
-  await writeFile(tmp, JSON.stringify(parsed.data, null, 2) + '\n', 'utf8')
-  await rename(tmp, BRAND_FILE)
+  await writeAtomic(BRAND_FILE, JSON.stringify(parsed.data, null, 2) + '\n')
   const check = await readBrand()
   return check.ok ? { ok: true, brand: check.brand } : { ok: false, issues: check.issues }
 }

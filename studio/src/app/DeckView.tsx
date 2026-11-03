@@ -16,7 +16,7 @@ import {
   alignElements,
   arrange,
   distributeElements,
-  duplicateElement,
+  duplicateElements,
   duplicateSlide,
   elementsFromBlock,
   groupElements,
@@ -315,18 +315,7 @@ function EditorShell({
 
   const duplicateSelection = () => {
     if (!page || !selectedEls.length) return
-    const working = { ...page, elements: [...page.elements] }
-    const copies = selectedEls.map((el) => {
-      const c = duplicateElement(el, working as Deck['slides'][number])
-      working.elements.push(c)
-      return c
-    })
-    const groups = new Map<string, string>()
-    for (const c of copies) {
-      if (!c.group) continue
-      if (!groups.has(c.group)) groups.set(c.group, uniqueId(c.group, page.elements.flatMap((e) => (e.group ? [e.group] : []))))
-      c.group = groups.get(c.group)
-    }
+    const copies = duplicateElements(selectedEls, page)
     editPage((p) => void p.elements.push(...copies))
     select(copies.map((c) => c.id))
   }
@@ -377,9 +366,13 @@ function EditorShell({
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement
       if (target.closest('input, textarea, select, [contenteditable]') || editing) return
+      // Offene Fenster (Medien, Layouts, Bausteine, Schriften) haben eigene Tasten – nichts dahinter löschen.
+      if (media || picker || blockPicker || fonts) return
       const mod = e.metaKey || e.ctrlKey
       const key = e.key.toLowerCase()
-      const has = selectedEls.length > 0
+      // Übersicht/Raum: Elemente sind dort nicht zu sehen – nur Blättern, Rückgängig/Wiederholen und Esc.
+      const has = mode === 'edit' && selectedEls.length > 0
+      if (mode !== 'edit' && mod && key !== 'z' && key !== 'y') return
 
       if (mod && key === 'z') {
         if (e.shiftKey) editor.redo()
@@ -395,19 +388,16 @@ function EditorShell({
         clipboard.current = structuredClone(selectedEls)
         if (key === 'x') deleteSelection()
       } else if (mod && key === 'v' && clipboard.current.length) {
-        const working = { ...page, elements: [...page.elements] }
-        const copies = clipboard.current.map((el) => {
-          const c = duplicateElement(el, working as Deck['slides'][number])
-          working.elements.push(c)
-          return c
-        })
+        const copies = duplicateElements(clipboard.current, page)
         editPage((p) => void p.elements.push(...structuredClone(copies)))
         select(copies.map((c) => c.id))
-      } else if (mod && (e.code === 'BracketRight' || e.code === 'BracketLeft') && has) {
-        const front = e.code === 'BracketRight'
-        editPage((p) => arrange(p, selectedIds, e.shiftKey ? (front ? 'front' : 'back') : front ? 'forward' : 'backward'))
+      } else if (mod && ['[', ']', '{', '}'].includes(e.key) && has) {
+        // Nach Zeichen statt Taste: auf deutscher Tastatur kommen [ ] über AltGr (= Strg+Alt) – so klappt es überall.
+        const front = e.key === ']' || e.key === '}'
+        const all = e.shiftKey || e.key === '{' || e.key === '}'
+        editPage((p) => arrange(p, selectedIds, all ? (front ? 'front' : 'back') : front ? 'forward' : 'backward'))
       } else if ((e.key === 'Backspace' || e.key === 'Delete') && has) deleteSelection()
-      else if (e.key === 'Enter' && selectedEls.length === 1 && selectedEls[0]?.type === 'text') setEditing(selectedEls[0].id)
+      else if (e.key === 'Enter' && has && selectedEls.length === 1 && selectedEls[0]?.type === 'text') setEditing(selectedEls[0].id)
       else if (e.key === 'Escape') {
         if (mode !== 'edit') setMode('edit')
         else if (has) select([])
