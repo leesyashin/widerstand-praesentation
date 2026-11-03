@@ -237,7 +237,7 @@ function Show({ deck, name, startId, player }: { deck: Deck; name: string; start
     if (player && id) history.replaceState(null, '', `#${encodeURIComponent(id)}`)
   }, [player, deck, current])
 
-  // Web-Player auf Handy und Tablet: nach links wischen = weiter, nach rechts = zurück.
+  // Handy und Tablet: nach links wischen = weiter, nach rechts = zurück.
   const touch = useRef<{ x: number; y: number } | null>(null)
   const swiped = useRef(false)
 
@@ -314,7 +314,7 @@ function Show({ deck, name, startId, player }: { deck: Deck; name: string; start
         const start = touch.current
         const t = e.changedTouches[0]
         touch.current = null
-        if (!player || !start || !t) return
+        if (!start || !t) return
         const dx = t.clientX - start.x
         if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(t.clientY - start.y)) return
         swiped.current = true

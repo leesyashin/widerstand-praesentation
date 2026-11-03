@@ -42,6 +42,7 @@ const paths = {
   backward: 'M2.5 2.5h8v8h-8zM5.5 10.5v3h8v-8h-3',
   rotate: 'M13 8a5 5 0 1 1-1.5-3.6M13 2.5v2.5h-2.5',
   x: 'M4 4l8 8M12 4l-8 8',
+  sliders: 'M2.5 4.5h7M12.5 4.5h1M2.5 11.5h1M6.5 11.5h7M11 3v3M5 10v3',
 } as const
 
 export type IconName = keyof typeof paths

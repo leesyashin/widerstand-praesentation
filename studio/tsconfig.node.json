@@ -15,5 +15,5 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["vite.config.ts", "server", "scripts", "src/schema", "src/api/events.ts"]
+  "include": ["vite.config.ts", "api", "server", "scripts", "src/schema", "src/api/events.ts"]
 }

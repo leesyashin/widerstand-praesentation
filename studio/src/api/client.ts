@@ -4,6 +4,8 @@ import type { Deck } from '../schema/deck'
 import type { Issue } from '../schema/issues'
 import type { Layout } from '../schema/layout'
 import type { Theme } from '../schema/theme'
+import { assetVersion, cloudApi } from './cloud/backend'
+import { CLOUD } from './cloud/config'
 
 export type Result<T> = { ok: true; value: T } | { ok: false; status: number; issues: Issue[] }
 
@@ -39,19 +41,18 @@ export function setBundle(value: Bundle) {
 
 const fixed = <T>(value: T): Promise<Result<T>> => Promise.resolve({ ok: true, value })
 
-export const api = {
+/** Datei-Dienst des Dev-Servers (server/vitePlugin.ts). */
+const localApi = {
   listDecks: () => request('/api/decks', (b) => b.decks as DeckSummary[]),
-  getDeck: (name: string) =>
-    bundle ? fixed(bundle.deck) : request(`/api/decks/${encodeURIComponent(name)}`, (b) => b.deck as Deck),
+  getDeck: (name: string) => request(`/api/decks/${encodeURIComponent(name)}`, (b) => b.deck as Deck),
   saveDeck: (name: string, deck: Deck) =>
     request(`/api/decks/${encodeURIComponent(name)}`, (b) => b.deck as Deck, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(deck),
     }),
-  getBrand: () => (bundle ? fixed(bundle.brand) : request('/api/brand', (b) => b.brand as Brand)),
-  getTheme: (name: string) =>
-    bundle?.theme ? fixed(bundle.theme) : request(`/api/themes/${encodeURIComponent(name)}`, (b) => b.theme as Theme),
+  getBrand: () => request('/api/brand', (b) => b.brand as Brand),
+  getTheme: (name: string) => request(`/api/themes/${encodeURIComponent(name)}`, (b) => b.theme as Theme),
   listLayouts: () => request('/api/layouts', (b) => b.layouts as Layout[]),
   listThemes: () => request('/api/themes', (b) => b.themes as Theme[]),
   listBlocks: () => request('/api/blocks', (b) => b.blocks as Block[]),
@@ -86,6 +87,16 @@ export const api = {
     }),
 }
 
+/** Gehostete App (Phase 7) speichert im GitHub-Repo, sonst der Dev-Server. Der Web-Player hat alles eingebaut. */
+const backend: typeof localApi = CLOUD ? cloudApi : localApi
+
+export const api: typeof localApi = {
+  ...backend,
+  getDeck: (name) => (bundle ? fixed(bundle.deck) : backend.getDeck(name)),
+  getBrand: () => (bundle ? fixed(bundle.brand) : backend.getBrand()),
+  getTheme: (name) => (bundle?.theme ? fixed(bundle.theme) : backend.getTheme(name)),
+}
+
 export type AssetInfo = { path: string; size: number; kind: 'image' | 'video' | 'lottie' | 'other' }
 
 /**
@@ -95,5 +106,9 @@ export type AssetInfo = { path: string; size: number; kind: 'image' | 'video' | 
 export function assetUrl(deckName: string, src: string): string {
   const path = src.split('/').map(encodeURIComponent).join('/')
   const base = import.meta.env.BASE_URL
-  return src.startsWith('brand/') ? `${base}${path}` : `${base}decks/${encodeURIComponent(deckName)}/${path}`
+  const url = src.startsWith('brand/') ? `${base}${path}` : `${base}decks/${encodeURIComponent(deckName)}/${path}`
+  if (!CLOUD || bundle) return url
+  // Unterwegs lädt der Service Worker (public/sw.js) die Datei aus dem Repo – über die Blob-SHA dauerhaft im Cache.
+  const version = assetVersion(src.startsWith('brand/') ? src : `decks/${deckName}/${src}`)
+  return version ? `${url}?v=${version}` : url
 }

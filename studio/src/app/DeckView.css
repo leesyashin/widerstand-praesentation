@@ -230,3 +230,212 @@
   height: 100%;
   padding: var(--space-4);
 }
+
+/* ---------- Handy (Phase 7): Folie groß, Folienstreifen unten, Details als Blatt ---------- */
+
+.compact-only {
+  display: none !important;
+}
+
+@media (max-width: 760px), (max-height: 500px) and (pointer: coarse) {
+  .compact-only {
+    display: revert !important;
+  }
+
+  .deck {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'toolbar'
+      'canvas'
+      'nav';
+  }
+
+  .deck .deck__toolbar {
+    grid-template-columns: auto minmax(0, 1fr);
+    row-gap: 4px;
+    padding: max(6px, env(safe-area-inset-top)) var(--space-2) 6px;
+  }
+
+  .deck .deck__toolbar .btn--plain:first-child {
+    padding: 0 6px;
+  }
+
+  .deck .deck__title {
+    align-items: flex-end;
+    min-width: 0;
+    text-align: right;
+  }
+
+  .deck .deck__title strong {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Werkzeuge: eine waagerecht wischbare Leiste. */
+  .deck .deck__toolbar > .toolbar__group--end {
+    grid-column: 1 / -1;
+    justify-self: stretch;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .deck .deck__toolbar > .toolbar__group--end::-webkit-scrollbar {
+    display: none;
+  }
+
+  .deck .toolbar__group--end > * {
+    flex: none;
+  }
+
+  .deck .toolbar__group--end > .compact-only {
+    order: -2;
+  }
+
+  .deck .toolbar__group--end > .btn--primary {
+    order: -1;
+  }
+
+  .deck .mini-toolbar {
+    max-width: calc(100vw - 16px);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .deck .presenter-btn,
+  .deck .toolbar__sep {
+    display: none !important;
+  }
+
+  .deck .deck__canvas {
+    padding: var(--space-3);
+  }
+
+  /* Folien als Streifen unten */
+  .deck .deck__navigator {
+    /* ohne backdrop-filter: sonst klemmen fixierte Popups (Neue Folie) im Streifen fest */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: var(--bg);
+    border-right: 0;
+    border-top: var(--hairline) solid var(--separator);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .deck .nav-slides {
+    flex-direction: row;
+    align-items: flex-start;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: var(--space-2) var(--space-3);
+    scroll-snap-type: x proximity;
+  }
+
+  .deck .nav-slide {
+    flex: none;
+    grid-template-columns: 1fr;
+    width: 132px;
+    scroll-snap-align: center;
+  }
+
+  .deck .nav-slide__number,
+  .deck .nav-slide__label,
+  .deck .nav-layers {
+    display: none !important;
+  }
+
+  .deck .nav-slide.is-active .nav-slide__actions {
+    opacity: 1;
+  }
+
+  .deck .nav-slide__actions .btn--mini {
+    width: 26px;
+    height: 26px;
+  }
+
+  .deck .nav-add {
+    flex: none;
+    align-self: stretch;
+    display: flex;
+    padding-left: 0;
+  }
+
+  .deck .nav-add__btn {
+    width: 96px;
+    height: auto;
+    flex-direction: column;
+    font-size: var(--text-xs);
+  }
+
+  body .layout-picker {
+    z-index: 40;
+    left: 8px;
+    right: 8px;
+    bottom: calc(8px + env(safe-area-inset-bottom));
+    width: auto;
+    max-height: 70dvh;
+    overflow-y: auto;
+  }
+
+  /* Details (Inspector) als Blatt von unten */
+  .deck .deck__inspector {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 30;
+    max-height: 62dvh;
+    border-left: 0;
+    border-radius: 16px 16px 0 0;
+    box-shadow: var(--shadow-lg), inset 0 0.5px 0 var(--material-edge);
+    padding-bottom: env(safe-area-inset-bottom);
+    background: var(--bg);
+    transform: translateY(105%);
+    transition: transform var(--dur-spring, 360ms) var(--ease-spring, ease-out);
+  }
+
+  .deck.is-sheet-open .deck__inspector {
+    transform: none;
+  }
+
+  .deck .sheet-head {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 6px var(--space-2) 0;
+    background: inherit;
+  }
+
+  .deck .sheet-head__grip {
+    position: absolute;
+    left: 50%;
+    top: 6px;
+    width: 36px;
+    height: 5px;
+    border-radius: 3px;
+    background: var(--text-3);
+    transform: translateX(-50%);
+  }
+
+  /* 16 px in Eingabefeldern: iOS zoomt sonst beim Antippen. */
+  .deck .deck__inspector input,
+  .deck .deck__inspector select,
+  .deck .deck__inspector textarea {
+    font-size: 16px;
+  }
+}
+
+/* Finger: größere Trefferflächen für Griffe */
+@media (pointer: coarse) {
+  .sel-handle::after,
+  .sel-rotate::after {
+    content: '';
+    position: absolute;
+    inset: -150%;
+  }
+}

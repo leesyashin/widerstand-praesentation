@@ -115,6 +115,8 @@ function EditorShell({
   const [blockPicker, setBlockPicker] = useState(false)
   const [fonts, setFonts] = useState(false)
   const [layersOpen, setLayersOpen] = useState(true)
+  // Handy: Inspector als Blatt von unten, nur auf Wunsch offen.
+  const [sheet, setSheet] = useState(false)
   const [notice, setNotice] = useState({ text: '', token: 0 })
   const [navDrop, setNavDrop] = useState<{ index: number; before: boolean } | null>(null)
   const clipboard = useRef<Element[]>([])
@@ -449,7 +451,7 @@ function EditorShell({
   const slideMaster = !master && slide?.master ? deck?.masters?.find((m) => m.id === slide.master) : undefined
 
   return (
-    <div className={`deck ${master ? 'is-master-mode' : ''}`}>
+    <div className={`deck ${master ? 'is-master-mode' : ''} ${sheet ? 'is-sheet-open' : ''}`}>
       <header className="deck__toolbar material">
         <div className="toolbar__group">
           <a className="btn btn--plain" href={href({ page: 'decks' })}>
@@ -522,11 +524,15 @@ function EditorShell({
               <span>Master</span>
             </button>
           </div>
+          <button className={`tool compact-only ${sheet ? 'is-on' : ''}`} title="Stil, Animation und Folie bearbeiten" onClick={() => setSheet((s) => !s)} disabled={!page}>
+            <Icon name="sliders" />
+            <span>Details</span>
+          </button>
           <span className={`save-status save-status--${editor.status}`} title={editor.saveIssues.map((i) => i.message).join('\n')}>
             {status}
           </span>
           <ShareMenu name={name} disabled={!deck} />
-          <button className="btn" onClick={() => openPresenter(name, slide?.id)} disabled={!slide} title="Referentenansicht in neuem Fenster: Notizen, Timer, Probe-Modus, Handy-Fernbedienung">
+          <button className="btn presenter-btn" onClick={() => openPresenter(name, slide?.id)} disabled={!slide} title="Referentenansicht in neuem Fenster: Notizen, Timer, Probe-Modus, Handy-Fernbedienung">
             Referentenansicht
           </button>
           <button className="btn btn--primary" onClick={play} disabled={!slide} title="Abspielen (⌥⌘P)">
@@ -615,6 +621,22 @@ function EditorShell({
                   </Stage>
                 </a>
                 <span className="nav-slide__actions">
+                  <button
+                    className="btn btn--icon btn--mini compact-only"
+                    title="Nach vorne"
+                    disabled={i === 0}
+                    onClick={() => edit((d) => moveSlide(d, i, i - 1))}
+                  >
+                    <Icon name="chevronLeft" size={12} />
+                  </button>
+                  <button
+                    className="btn btn--icon btn--mini compact-only"
+                    title="Nach hinten"
+                    disabled={i === resolved.slides.length - 1}
+                    onClick={() => edit((d) => moveSlide(d, i, i + 1))}
+                  >
+                    <Icon name="chevronRight" size={12} />
+                  </button>
                   <button className="btn btn--icon btn--mini" title="Folie duplizieren" onClick={() => copySlide(i)}>
                     <Icon name="copy" size={12} />
                   </button>
@@ -768,6 +790,12 @@ function EditorShell({
       </main>
 
       <aside className="deck__inspector material" aria-label="Inspector">
+        <div className="sheet-head compact-only">
+          <span className="sheet-head__grip" />
+          <button className="btn btn--plain" onClick={() => setSheet(false)}>
+            Fertig
+          </button>
+        </div>
         {deck && page && (
           <Inspector
             deck={deck}

@@ -5,6 +5,8 @@ import type { Deck } from '../schema/deck'
 import type { Issue } from '../schema/issues'
 import type { Layout } from '../schema/layout'
 import type { Theme } from '../schema/theme'
+import { onCloudEvent } from './cloud/backend'
+import { CLOUD } from './cloud/config'
 import { api, type AssetInfo, type DeckSummary, type Result } from './client'
 import { BRAND_CHANGED, DECK_CHANGED, TEMPLATES_CHANGED, type DeckChangedData } from './events'
 
@@ -19,6 +21,7 @@ export type Live<T> = {
 }
 
 function onServerEvent<T>(event: string, cb: (data: T) => void): () => void {
+  if (CLOUD) return onCloudEvent(event, cb)
   const hot = import.meta.hot
   if (!hot) return () => {}
   hot.on(event, cb)
