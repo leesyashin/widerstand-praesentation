@@ -69,6 +69,10 @@ export const PRESETS: { value: Animation['preset']; label: string }[] = [
   { value: 'countUp', label: 'Hochzählen' },
   { value: 'kenBurns', label: 'Ken Burns' },
   { value: 'grow', label: 'Aufbauen (Charts)' },
+  { value: 'charByChar', label: 'Buchstabe für Buchstabe' },
+  { value: 'typewriter', label: 'Schreibmaschine' },
+  { value: 'scramble', label: 'Zeichen-Wirbel' },
+  { value: 'assemble', label: 'Zusammensetzen' },
 ]
 
 const EASINGS: { value: NonNullable<Animation['easing']>; label: string }[] = [
@@ -435,6 +439,50 @@ function ElementStyle(props: ElementProps) {
         </Group>
       )}
 
+      {el.type === 'path' && (
+        <Group title="Pfad">
+          <Row label="Kontur">
+            <ColorField
+              brand={brand}
+              allowNone
+              value={el.stroke?.color}
+              onChange={(v) =>
+                set((x) => {
+                  if (x.type !== 'path') return
+                  if (v === undefined) delete x.stroke
+                  else x.stroke = { color: v, width: x.stroke?.width ?? 4 }
+                }, 'stroke')
+              }
+            />
+          </Row>
+          {el.stroke && (
+            <Row label="Stärke">
+              <NumberField value={el.stroke.width} min={0.5} step={0.5} onChange={(v) => set((x) => void (x.type === 'path' && x.stroke && (x.stroke.width = v ?? 1)), 'strokeW')} />
+            </Row>
+          )}
+          <Row label="Füllung">
+            <ColorField
+              brand={brand}
+              allowNone
+              value={el.fill}
+              onChange={(v) =>
+                set((x) => {
+                  if (x.type !== 'path') return
+                  if (v === undefined) delete x.fill
+                  else x.fill = v
+                }, 'fill')
+              }
+            />
+          </Row>
+          {el.text && (
+            <Row label="Text">
+              <TextField value={el.text.content} onChange={(v) => set((x) => void (x.type === 'path' && x.text && v && (x.text.content = v)), 'ptext')} />
+            </Row>
+          )}
+          <p className="field-hint muted">Die Form selbst (SVG-Pfad) und Verwandlungen baut Claude im deck.json.</p>
+        </Group>
+      )}
+
       {el.type === 'chart' && <ChartFields {...props} element={el} />}
 
       {el.type === 'lottie' && (
@@ -772,7 +820,19 @@ function MotionFields(props: ElementProps) {
       if (m) recipe(m)
     }, merge ? `${merge}-${i}` : undefined)
   const describe = (m: NonNullable<Element['motion']>[number]) =>
-    m.path ? 'Pfad' : m.keys ? `${m.keys.length} Schlüssel` : m.from && !m.to ? 'Herein' : m.to && !m.from ? 'Zum Ziel' : 'Von → zu'
+    m.path
+      ? 'Pfad'
+      : m.keys
+        ? `${m.keys.length} Schlüssel`
+        : m.to?.d || m.from?.d
+          ? 'Formwandel'
+          : m.split
+            ? { char: 'Buchstaben', word: 'Wörter', line: 'Zeilen' }[m.split]
+            : m.from && !m.to
+              ? 'Herein'
+              : m.to && !m.from
+                ? 'Zum Ziel'
+                : 'Von → zu'
   return (
     <Group title="Bewegung">
       {el.motion!.map((m, i) => {

@@ -29,11 +29,17 @@ const PRESET_NAMES: Record<string, string> = {
   countUp: 'Zählen',
   kenBurns: 'Ken Burns',
   grow: 'Aufbauen',
+  charByChar: 'Buchstaben',
+  typewriter: 'Schreibmaschine',
+  scramble: 'Wirbel',
+  assemble: 'Zusammensetzen',
 }
 
 function motionLabel(m: MotionItem['motion']): string {
   if (m.path) return 'Pfad'
   if (m.keys) return `${m.keys.length} Schlüssel`
+  if (m.to?.d || m.from?.d) return 'Formwandel'
+  if (m.split) return { char: 'Buchstaben', word: 'Wörter', line: 'Zeilen' }[m.split]
   return m.from && !m.to ? 'Herein' : 'Bewegung'
 }
 

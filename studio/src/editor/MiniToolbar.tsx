@@ -60,8 +60,16 @@ export function MiniToolbar({ elements, brand, editEach, onAlign, onGroup, onUng
   const sameGroup = multi && elements.every((e) => e.group && e.group === elements[0]!.group)
 
   const colorOf = (e: Element): string | undefined =>
-    e.type === 'text' || e.type === 'icon' || e.type === 'chart' ? e.color : e.type === 'shape' ? (e.shape === 'line' || e.shape === 'arrow' ? e.stroke?.color : e.fill) : undefined
-  const colorable = elements.filter((e) => ['text', 'icon', 'chart', 'shape'].includes(e.type))
+    e.type === 'text' || e.type === 'icon' || e.type === 'chart'
+      ? e.color
+      : e.type === 'shape'
+        ? e.shape === 'line' || e.shape === 'arrow'
+          ? e.stroke?.color
+          : e.fill
+        : e.type === 'path'
+          ? (e.stroke?.color ?? e.fill)
+          : undefined
+  const colorable = elements.filter((e) => ['text', 'icon', 'chart', 'shape', 'path'].includes(e.type))
   const current = colorable[0] ? colorOf(colorable[0]) : undefined
 
   const setColor = (token: string) =>
@@ -69,6 +77,10 @@ export function MiniToolbar({ elements, brand, editEach, onAlign, onGroup, onUng
       if (x.type === 'text' || x.type === 'icon' || x.type === 'chart') x.color = token
       if (x.type === 'shape') {
         if (x.shape === 'line' || x.shape === 'arrow') x.stroke = { width: x.stroke?.width ?? 4, color: token }
+        else x.fill = token
+      }
+      if (x.type === 'path') {
+        if (x.stroke || !x.fill) x.stroke = { width: x.stroke?.width ?? 4, color: token }
         else x.fill = token
       }
     })

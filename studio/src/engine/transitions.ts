@@ -1,4 +1,5 @@
 import { gsap } from 'gsap'
+import { formatChartValue } from './chart'
 import type { Element, Slide, Transition, World } from '../schema/deck'
 import type { TextStyles } from './brand'
 import { resolveRgba } from './gl/color'
@@ -290,7 +291,9 @@ function flip(self: Element, other: Element, selfBox: Box, otherBox: Box, styles
 /** Gleichartige Formen, Icons und identische Bilder verwandeln sich direkt statt überzublenden. */
 function morphsGeometry(a: Element, b: Element): boolean {
   if (a.type !== b.type) return false
-  if (a.type === 'shape' || a.type === 'icon') return true
+  if (a.type === 'shape' || a.type === 'icon' || a.type === 'path') return true
+  // Daten-Magic-Move: gleiche Chart-Art baut sich um (Balken wachsen/schrumpfen, Linien verformen sich, Werte zählen).
+  if (a.type === 'chart' && b.type === 'chart') return a.chart === b.chart
   if ((a.type === 'image' || a.type === 'video') && (b.type === 'image' || b.type === 'video')) return a.src === b.src
   return false
 }
@@ -324,6 +327,96 @@ function morph(
     // Endwerte bleiben stehen (= berechnete Zielwerte); clearProps würde Reacts background-Kurzform zerstören.
     tl.fromTo(innerB, fromVars, { ...toVars, duration, ease: e }, 0)
   }
+  if (a.type === 'path') morphPath(tl, nodeA, nodeB, duration, e)
+  if (a.type === 'chart' && b.type === 'chart') morphChart(tl, nodeA, nodeB, b.unit, duration, e)
+}
+
+/** Pfad → Pfad: Form, Kontur und Füllung verwandeln sich. */
+function morphPath(tl: gsap.core.Timeline, nodeA: HTMLElement, nodeB: HTMLElement, duration: number, e: ReturnType<typeof ease>) {
+  const pa = nodeA.querySelector<SVGPathElement>('path.el-path')
+  const pb = nodeB.querySelector<SVGPathElement>('path.el-path')
+  if (!pa || !pb) return
+  const sa = getComputedStyle(pa)
+  const sb = getComputedStyle(pb)
+  tl.fromTo(
+    pb,
+    { morphSVG: pa.getAttribute('d') ?? '', stroke: sa.stroke, fill: sa.fill, strokeWidth: sa.strokeWidth },
+    { morphSVG: pb.getAttribute('d') ?? '', stroke: sb.stroke, fill: sb.fill, strokeWidth: sb.strokeWidth, duration, ease: e },
+    0,
+  )
+}
+
+/** Chart → Chart gleicher Art: Teile wandern von den alten zu den neuen Werten, Zahlen zählen mit. */
+function morphChart(tl: gsap.core.Timeline, nodeA: HTMLElement, nodeB: HTMLElement, unit: string | undefined, duration: number, e: ReturnType<typeof ease>) {
+  const all = (node: HTMLElement, sel: string) => [...node.querySelectorAll<SVGElement>(sel)]
+  const num = (el: globalThis.Element | undefined, attr: string) => Number(el?.getAttribute(attr) ?? 0)
+  const attrs = (el: SVGElement, names: string[]) => Object.fromEntries(names.map((n) => [n, num(el, n)]))
+
+  // Balken: Position und Höhe; neue Balken wachsen aus der Grundlinie.
+  const barsA = all(nodeA, '.chart-bar')
+  all(nodeB, '.chart-bar').forEach((bar, i) => {
+    const prev = barsA[i]
+    const goal = attrs(bar, ['x', 'y', 'width', 'height'])
+    const start = prev ? attrs(prev, ['x', 'y', 'width', 'height']) : { ...goal, y: goal.y! + goal.height!, height: 0 }
+    const fill = prev ? getComputedStyle(prev).fill : getComputedStyle(bar).fill
+    tl.fromTo(bar, { attr: start, fill }, { attr: goal, fill: getComputedStyle(bar).fill, duration, ease: e }, 0)
+  })
+
+  // Linie und Fläche verformen sich, Punkte wandern mit.
+  const lineA = nodeA.querySelector('.chart-line')
+  const lineB = nodeB.querySelector('.chart-line')
+  if (lineA && lineB) tl.fromTo(lineB, { morphSVG: lineA.getAttribute('d') ?? '' }, { morphSVG: lineB.getAttribute('d') ?? '', duration, ease: e }, 0)
+  const areaA = nodeA.querySelector('.chart-area')
+  const areaB = nodeB.querySelector('.chart-area')
+  if (areaA && areaB) tl.fromTo(areaB, { morphSVG: areaA.getAttribute('d') ?? '' }, { morphSVG: areaB.getAttribute('d') ?? '', duration, ease: e }, 0)
+  const dotsA = all(nodeA, '.chart-dot')
+  all(nodeB, '.chart-dot').forEach((dot, i) => {
+    const prev = dotsA[i]
+    if (prev) tl.fromTo(dot, { attr: attrs(prev, ['cx', 'cy']) }, { attr: attrs(dot, ['cx', 'cy']), duration, ease: e }, 0)
+  })
+
+  // Ring: Segmente verschieben und verlängern sich.
+  const segsA = all(nodeA, '.chart-seg')
+  all(nodeB, '.chart-seg').forEach((seg, i) => {
+    const prev = segsA[i]
+    const circ = Number(seg.dataset.circ ?? 0)
+    const from = prev ? { strokeDasharray: prev.getAttribute('stroke-dasharray') ?? `0 ${circ}`, strokeDashoffset: num(prev, 'stroke-dashoffset') } : { strokeDasharray: `0 ${circ}` }
+    tl.fromTo(seg, from, { strokeDasharray: seg.getAttribute('stroke-dasharray') ?? '', strokeDashoffset: num(seg, 'stroke-dashoffset'), duration, ease: e }, 0)
+  })
+
+  // Werte: wandern an ihren neuen Platz und zählen von alt nach neu.
+  const valuesA = all(nodeA, '.chart-value')
+  all(nodeB, '.chart-value').forEach((text, i) => {
+    const prev = valuesA[i]
+    const to = Number(text.dataset.value ?? 0)
+    const from = prev ? Number(prev.dataset.value ?? 0) : 0
+    if (prev) tl.fromTo(text, { attr: attrs(prev, ['x', 'y']) }, { attr: attrs(text, ['x', 'y']), duration, ease: e }, 0)
+    const proxy = { v: from }
+    const final = text.textContent
+    tl.fromTo(
+      proxy,
+      { v: from },
+      {
+        v: to,
+        duration,
+        ease: e,
+        onUpdate: () => {
+          text.textContent = formatChartValue(Number.isInteger(to) && Number.isInteger(from) ? Math.round(proxy.v) : proxy.v, unit)
+        },
+        onComplete: () => {
+          text.textContent = final
+        },
+      },
+      0,
+    )
+  })
+  // Beschriftungen wandern mit (Text bleibt der neue).
+  const labelsA = all(nodeA, '.chart-label')
+  all(nodeB, '.chart-label').forEach((label, i) => {
+    const prev = labelsA[i]
+    if (prev) tl.fromTo(label, { attr: attrs(prev, ['x', 'y']) }, { attr: attrs(label, ['x', 'y']), duration, ease: e }, 0)
+    else tl.fromTo(label, { opacity: 0 }, { opacity: 1, duration, ease: 'none' }, 0)
+  })
 }
 
 function magicMove(args: Args, tl: gsap.core.Timeline, duration: number, e: ReturnType<typeof ease>, matched: Set<string>) {

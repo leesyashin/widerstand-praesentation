@@ -3,10 +3,11 @@ import { parseLine } from './markup'
 
 /**
  * Minimales Inline-Markup für Text-Elemente: **fett**, *kursiv*, ***beides***, \n für Zeilenumbruch (siehe markup.ts).
- * `split` zerlegt den Text für Builds in Wörter (.w) oder Zeilen (.ln).
+ * `split` zerlegt den Text für Builds in Wörter (.w), Zeilen (.ln) oder Buchstaben (.c in .w – Wörter brechen nie
+ * mitten im Wort um; `data-ch` hält das Zeichen für Effekte wie Scramble).
  * `count` markiert die erste Zahl als .count – Ziel für den Hochzähl-Build.
  */
-export type TextSplit = 'none' | 'word' | 'line'
+export type TextSplit = 'none' | 'word' | 'line' | 'char'
 
 export function renderInline(content: string, split: TextSplit = 'none', count = false): ReactNode {
   let counted = false
@@ -36,14 +37,21 @@ export function renderInline(content: string, split: TextSplit = 'none', count =
 function renderLine(line: string, split: TextSplit): ReactNode[] {
   const out: ReactNode[] = []
   for (const span of parseLine(line)) {
-    const pieces = split === 'word' ? span.text.split(/(\s+)/) : [span.text]
+    const pieces = split === 'word' || split === 'char' ? span.text.split(/(\s+)/) : [span.text]
     pieces.forEach((piece) => {
       if (!piece) return
       const key = out.length
-      let node: ReactNode = piece
+      let node: ReactNode =
+        split === 'char' && piece.trim()
+          ? [...piece].map((ch, i) => (
+              <span key={i} className="c" data-ch={ch}>
+                {ch}
+              </span>
+            ))
+          : piece
       if (span.italic) node = <em key={key}>{node}</em>
       if (span.bold) node = <strong key={key}>{node}</strong>
-      if (split === 'word' && piece.trim()) {
+      if ((split === 'word' || split === 'char') && piece.trim()) {
         node = (
           <span key={key} className="w">
             {node}

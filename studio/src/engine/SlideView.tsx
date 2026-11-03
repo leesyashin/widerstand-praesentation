@@ -1,6 +1,6 @@
 import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react'
 import { assetUrl } from '../api/client'
-import type { Background, Effect, Element, Slide, VideoElement } from '../schema/deck'
+import type { Background, Effect, Element, PathElement, Slide, VideoElement } from '../schema/deck'
 import { resolveColor, type TextStyles } from './brand'
 import { ChartBody } from './chart'
 import { useEffectScale, useTextStyles } from './context'
@@ -10,7 +10,7 @@ import { findIcon, LucideIcon } from './icons'
 import { BUILD_IN_EVENT } from './buildEvents'
 import { LottieView } from './lottie'
 import { hasMotion } from './motion'
-import { renderInline } from './text'
+import { renderInline, type TextSplit } from './text'
 import './engine.css'
 
 /**
@@ -117,6 +117,59 @@ function BackgroundView({ background, ctx }: { background: Background | undefine
 
 /* ---------- Elemente ---------- */
 
+const CHAR_PRESETS = new Set(['charByChar', 'typewriter', 'scramble', 'assemble'])
+
+/** Wie ein Text für Animationen zerlegt wird – Buchstaben schließen Wörter ein (.c liegt in .w). */
+export function textSplitOf(el: Extract<Element, { type: 'text' }>): TextSplit {
+  const presets = [el.build?.in?.preset, el.build?.out?.preset]
+  const splits = el.motion?.map((m) => m.split) ?? []
+  if (presets.some((p) => p && CHAR_PRESETS.has(p)) || splits.includes('char')) return 'char'
+  if (presets.includes('wordByWord') || splits.includes('word')) return 'word'
+  if (presets.includes('lineByLine') || splits.includes('line')) return 'line'
+  return 'none'
+}
+
+/** Freie Vektorform, optional mit Text auf dem Pfad. */
+function PathBody({ el, styles }: { el: PathElement; styles: TextStyles }) {
+  const id = `pfad-${el.id}`
+  const t = el.text
+  const ts = styles[t?.style ?? 'body']
+  const visible = Boolean(el.stroke || el.fill)
+  return (
+    <svg className="el-path-svg" viewBox={el.viewBox ?? `0 0 ${el.frame.w} ${el.frame.h}`} overflow="visible">
+      <path
+        id={id}
+        className="el-path"
+        d={el.d}
+        style={{
+          fill: resolveColor(el.fill) ?? 'none',
+          stroke: el.stroke ? resolveColor(el.stroke.color) : visible ? 'none' : 'transparent',
+          strokeWidth: el.stroke?.width ?? 0,
+          strokeLinecap: el.lineCap ?? 'round',
+          strokeLinejoin: 'round',
+        }}
+      />
+      {t && (
+        <text
+          className="el-path-text"
+          style={{
+            fill: resolveColor(t.color ?? ts.color),
+            fontFamily: `var(--font-${ts.font})`,
+            fontSize: t.fontSize ?? ts.size,
+            fontWeight: ts.weight,
+            letterSpacing: `${ts.letterSpacing}em`,
+            textTransform: ts.uppercase ? 'uppercase' : undefined,
+          }}
+        >
+          <textPath href={`#${id}`} startOffset={`${t.offset ?? 0}%`} textAnchor={t.anchor ?? 'start'}>
+            {t.content}
+          </textPath>
+        </text>
+      )}
+    </svg>
+  )
+}
+
 function ElementView({ element, ctx }: { element: Element; ctx: Ctx }) {
   const { frame } = element
   const style: CSSProperties & Record<`--${string}`, number> = {
@@ -161,7 +214,7 @@ function ElementBody({ element: el, ctx }: { element: Element; ctx: Ctx }): Reac
     case 'text': {
       const justify = { top: 'flex-start', middle: 'center', bottom: 'flex-end' }[el.verticalAlign ?? 'top']
       const preset = el.build?.in?.preset
-      const split = preset === 'wordByWord' ? 'word' : preset === 'lineByLine' ? 'line' : 'none'
+      const split = textSplitOf(el)
       return (
         <div className="el-text" style={{ justifyContent: justify, ...textCss(el, styles) }}>
           <div>{renderInline(el.content, split, preset === 'countUp')}</div>
@@ -184,6 +237,8 @@ function ElementBody({ element: el, ctx }: { element: Element; ctx: Ctx }): Reac
       )
     case 'video':
       return <VideoBody el={el} ctx={ctx} />
+    case 'path':
+      return <PathBody el={el} styles={styles} />
     case 'chart':
       return <ChartBody el={el} />
     case 'lottie':

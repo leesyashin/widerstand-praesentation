@@ -51,6 +51,11 @@ export const BuildPreset = z.enum([
   'kenBurns',
   /** Charts: Balken wachsen, Linien zeichnen sich, Ringe füllen sich. */
   'grow',
+  /** Kinetische Typo (nur Text): Buchstabe für Buchstabe, Schreibmaschine, Zeichen-Wirbel, aus Einzelteilen zusammensetzen. */
+  'charByChar',
+  'typewriter',
+  'scramble',
+  'assemble',
 ])
 
 export const Animation = z.strictObject({
@@ -104,6 +109,12 @@ export const MotionProps = z.strictObject({
   blur: z.number().min(0).max(200).optional(),
   color: Color.optional(),
   fill: Color.optional(),
+  /** Pfad-Elemente: neue Form (SVG-Pfad im viewBox des Elements) – die Form verwandelt sich. */
+  d: z.string().min(3).optional(),
+  /** Linien, Pfade, Icons: gezeichneter Anteil der Kontur 0–1. */
+  draw: unit.optional(),
+  /** Text auf Pfad: Position auf dem Pfad in Prozent (0–100). */
+  textOffset: z.number().min(-100).max(200).optional(),
 })
 
 export const MotionKey = MotionProps.extend({
@@ -139,6 +150,12 @@ export const Motion = z
     yoyo: z.boolean().optional(),
     /** Pause zwischen Wiederholungen in ms. */
     repeatDelay: z.number().int().min(0).max(60000).optional(),
+    /** Text in Buchstaben, Wörter oder Zeilen zerlegen – jedes Teil bewegt sich einzeln (kinetische Typo). */
+    split: z.enum(['char', 'word', 'line']).optional(),
+    /** Versatz zwischen den Teilen in ms (mit `split`). */
+    stagger: z.number().int().min(0).max(5000).optional(),
+    /** Wo die Welle beginnt: vorn, hinten, in der Mitte oder zufällig. */
+    staggerFrom: z.enum(['start', 'end', 'center', 'random']).optional(),
   })
   .superRefine((m, ctx) => {
     if (m.keys && (m.from || m.to)) ctx.addIssue({ code: 'custom', path: ['keys'], message: 'Entweder keys oder from/to' })
@@ -242,6 +259,36 @@ export const IconElement = z.strictObject({
   strokeWidth: z.number().positive().optional(),
 })
 
+/**
+ * Freie Vektorform/Linie. `d` ist ein SVG-Pfad im Koordinatensystem `viewBox` (Standard: "0 0 <Breite> <Höhe>" des
+ * Rahmens). Zeichnet sich mit Build `drawLine`, verwandelt sich per Bewegung (`to: { d }`) oder Magic Move in eine
+ * andere Form (gleiches viewBox verwenden). Mit `text` läuft Text auf dem Pfad entlang.
+ */
+export const PathElement = z.strictObject({
+  ...elementBase,
+  type: z.literal('path'),
+  d: z.string().min(3),
+  viewBox: z
+    .string()
+    .regex(/^-?[\d.]+\s+-?[\d.]+\s+[\d.]+\s+[\d.]+$/, 'viewBox: "x y breite höhe", z. B. "0 0 400 200"')
+    .optional(),
+  stroke: z.strictObject({ color: Color, width: z.number().positive() }).optional(),
+  fill: Color.optional(),
+  lineCap: z.enum(['round', 'butt', 'square']).optional(),
+  text: z
+    .strictObject({
+      content: z.string().min(1),
+      style: z.enum(['display', 'title', 'heading', 'subtitle', 'body', 'caption', 'label']).optional(),
+      fontSize: z.number().positive().optional(),
+      color: Color.optional(),
+      /** Startposition auf dem Pfad in Prozent. */
+      offset: z.number().min(-100).max(200).optional(),
+      /** Ausrichtung am Startpunkt. */
+      anchor: z.enum(['start', 'middle', 'end']).optional(),
+    })
+    .optional(),
+})
+
 export const ChartPoint = z.strictObject({
   label: z.string(),
   value: z.number(),
@@ -283,6 +330,7 @@ export const CustomElement = z.strictObject({
 })
 
 export const Element = z.discriminatedUnion('type', [
+  PathElement,
   TextElement,
   ImageElement,
   VideoElement,
@@ -519,6 +567,7 @@ export type ShapeElement = z.infer<typeof ShapeElement>
 export type IconElement = z.infer<typeof IconElement>
 export type CustomElement = z.infer<typeof CustomElement>
 export type ChartElement = z.infer<typeof ChartElement>
+export type PathElement = z.infer<typeof PathElement>
 export type LottieElement = z.infer<typeof LottieElement>
 export type World = z.infer<typeof World>
 export type Background = z.infer<typeof Background>

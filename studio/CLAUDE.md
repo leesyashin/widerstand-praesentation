@@ -48,8 +48,8 @@ ansehen – auf Überlappungen, Lesbarkeit, Abstände und Ränder achten. Bei An
   Build-Reihenfolge per Drag & Drop, Bausteine einfügen, Theme wechseln.
 - Bibliothek (Phase 5): 4 Themes (`silber`, `kino`, `sachlich`, `papier`), 16 Layouts, 6 animierte Bausteine,
   4 Deck-Vorlagen (`portfolio`, `angebot`, `pitch`, `vortrag`); neue Decks über die Startseite („Neues Deck“).
-- **Phase 8 „Animations-Paradies“** (Plan in `PLAN.md`): 8a fertig – freie Bewegungen, Kurven, Pfade, Szenen,
-  Zeitleiste (siehe unten). 8b–8e folgen. Motion-Charakter laut Vincent: *alles erlaubt* (Motion-Stufen in `STYLE.md`) –
+- **Phase 8 „Animations-Paradies“** (Plan in `PLAN.md`): 8a + 8b fertig – freie Bewegungen, Kurven, Pfade,
+  Szenen, Zeitleiste, kinetische Typo, Formwandel, Text auf Pfad, Daten-Magic-Move (siehe unten). 8c–8e folgen. Motion-Charakter laut Vincent: *alles erlaubt* (Motion-Stufen in `STYLE.md`) –
   für Schule/Uni (iPad am Beamer) aber leichtgewichtig bauen.
 
 ## Master-Folien, Textstile, Gruppen
@@ -95,7 +95,7 @@ Kurz:
 - `trigger`: `click` startet einen neuen Klick-Schritt. `withPrevious` startet gleichzeitig mit dem vorigen Build,
   `afterPrevious` direkt nach dessen Ende. Builds vor dem ersten `click` laufen **automatisch** beim Betreten der Folie.
 - Presets: `fade`, `rise`, `blurRise` (Signature „Seide“), `scaleIn`, `maskReveal` (mit `direction`),
-  `wordByWord`, `lineByLine` (nur Text), `drawLine` (Linien, Pfeile, Lucide-Icons), `countUp` (erste Zahl im Text,
+  `wordByWord`, `lineByLine`, `charByChar`, `typewriter`, `scramble`, `assemble` (nur Text), `drawLine` (Linien, Pfeile, Lucide-Icons), `countUp` (erste Zahl im Text,
   deutsche Schreibweise „1.250“), `kenBurns` (Bilder; lang – nicht mit `afterPrevious` dahinter verketten).
 - `transition` gilt für den Übergang **zu** dieser Folie: `blurDissolve`, `dissolve`, `magicMove`, `push`, `zoom`,
   `maskReveal`, `whipPan`, `camera`, `lightLeak`.
@@ -130,6 +130,25 @@ Kurz:
 - Editor: Zeitleiste unter der Folie (Balken ziehen = Start, rechte Kante = Dauer), Inspector → Animation → „Bewegung“
   (Klick, Start, Dauer, Kurve, Wiederholung), Folie → „Ablauf“ (Szene an/aus, Schleife). Engine: `src/engine/motion.ts`,
   Schritte in `computeSteps` (`timeline.ts`).
+
+## Kinetische Typo, Pfade, Daten (Phase 8b)
+
+- Text-Builds: `charByChar` (Buchstabe für Buchstabe, mit `direction`), `typewriter` (Schreibmaschine), `scramble`
+  (Zeichen wirbeln zum Wort), `assemble` (fliegt aus Einzelteilen zusammen – als `out` zerfällt der Text). Gehen auch
+  als Ausblendung (`out`).
+- Freie Bewegung für Textteile: `split: "char" | "word" | "line"` + `stagger` (ms, Standard 40) + `staggerFrom`
+  (`start`/`end`/`center`/`random`) – jedes Teil bekommt die Bewegung versetzt, z. B. eine Welle:
+  `{ "step": 1, "split": "char", "stagger": 45, "duration": 700, "repeat": -1, "yoyo": true, "to": { "y": -28 } }`.
+  Buchstaben liegen als `.c` in Wörtern `.w` (Wörter brechen nie mitten im Wort um).
+- Element `path`: freie Vektorform. `d` = SVG-Pfad im `viewBox` (Standard: Rahmengröße), `stroke { color, width }`,
+  `fill`, `lineCap`. Zeichnet sich mit Build `drawLine`. Formwandel per Bewegung `to: { d: "…" }` (auch in `keys`)
+  oder per Magic Move zwischen zwei `path` mit gleichem `match` – **beide Formen im selben viewBox** zeichnen.
+  `text: { content, style?, fontSize?, color?, offset? (0–100 %), anchor? }` setzt Text auf den Pfad; ohne `stroke`
+  bleibt der Pfad unsichtbar. Bewegung `textOffset` lässt den Text den Pfad entlanglaufen.
+- `draw` (0–1) in Bewegungen zeichnet Konturen von Pfaden, Linien und Icons an/ab (z. B. `from: { draw: 0 }`).
+- Daten-Magic-Move: zwei `chart` gleicher Art mit gleichem `match` auf aufeinanderfolgenden Folien (Übergang
+  `magicMove`) – Balken wachsen/schrumpfen, Linien und Flächen verformen sich, Ringsegmente wandern, Werte zählen von
+  alt nach neu. Gleiche Anzahl Datenpunkte wirkt am besten; neue Balken wachsen aus der Grundlinie.
 
 ## Grafik & Effekte
 

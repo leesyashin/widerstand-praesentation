@@ -223,7 +223,11 @@
             "drawLine",
             "countUp",
             "kenBurns",
-            "grow"
+            "grow",
+            "charByChar",
+            "typewriter",
+            "scramble",
+            "assemble"
           ]
         },
         "transition": {

@@ -2,7 +2,7 @@
   "$schema": "../../src/schema/deck.schema.json",
   "version": 1,
   "title": "Motion-Demo",
-  "description": "Phase 8a: freie Bewegungen, Timing-Kurven, Pfade, Schleifen und Szenen.",
+  "description": "Phase 8a/8b: freie Bewegungen, Kurven, Pfade, Schleifen, Szenen, kinetische Typo, Formwandel, Daten-Magic-Move.",
   "format": {
     "preset": "16:9",
     "width": 1920,
@@ -274,6 +274,363 @@
           "style": "body",
           "align": "center",
           "verticalAlign": "middle"
+        }
+      ]
+    },
+    {
+      "id": "typo",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "notes": "Kinetische Typo: vier Presets plus eine Welle als Bewegung mit split.",
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Phase 8b · Kinetische Typo",
+          "frame": {
+            "x": 160,
+            "y": 120,
+            "w": 1200,
+            "h": 40
+          },
+          "build": {
+            "in": {
+              "preset": "typewriter",
+              "duration": 900
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "welle",
+          "type": "text",
+          "style": "display",
+          "content": "Buchstaben tanzen.",
+          "frame": {
+            "x": 160,
+            "y": 190,
+            "w": 1600,
+            "h": 200
+          },
+          "build": {
+            "in": {
+              "preset": "charByChar",
+              "duration": 1100
+            },
+            "trigger": "afterPrevious"
+          },
+          "motion": [
+            {
+              "step": 1,
+              "split": "char",
+              "stagger": 45,
+              "duration": 700,
+              "ease": "inOut",
+              "repeat": -1,
+              "yoyo": true,
+              "to": {
+                "y": -28
+              }
+            }
+          ]
+        },
+        {
+          "id": "scramble",
+          "type": "text",
+          "style": "heading",
+          "content": "Zeichen wirbeln zum Wort.",
+          "frame": {
+            "x": 160,
+            "y": 480,
+            "w": 1600,
+            "h": 90
+          },
+          "build": {
+            "in": {
+              "preset": "scramble",
+              "duration": 1400
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "assemble",
+          "type": "text",
+          "style": "heading",
+          "color": "brand.accent",
+          "content": "Aus Einzelteilen zusammengesetzt.",
+          "frame": {
+            "x": 160,
+            "y": 620,
+            "w": 1600,
+            "h": 90
+          },
+          "build": {
+            "in": {
+              "preset": "assemble",
+              "duration": 1800
+            },
+            "out": {
+              "preset": "assemble",
+              "duration": 1400
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "hinweis",
+          "type": "text",
+          "style": "caption",
+          "content": "Klick 1: Welle · Klick 2: Wirbel · Klick 3: Zusammensetzen · Klick 4: Zerfallen",
+          "frame": {
+            "x": 160,
+            "y": 900,
+            "w": 1600,
+            "h": 40
+          }
+        }
+      ]
+    },
+    {
+      "id": "formen",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "notes": "Pfad-Element: zeichnet sich, verwandelt sich Kreis → Stern → Pfeil, Text läuft den Bogen entlang.",
+      "elements": [
+        {
+          "id": "titel",
+          "type": "text",
+          "style": "title",
+          "content": "Formen verwandeln sich.",
+          "frame": {
+            "x": 160,
+            "y": 120,
+            "w": 1600,
+            "h": 130
+          },
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "form",
+          "type": "path",
+          "d": "M 200 40 C 288 40 360 112 360 200 C 360 288 288 360 200 360 C 112 360 40 288 40 200 C 40 112 112 40 200 40 Z",
+          "viewBox": "0 0 400 400",
+          "stroke": {
+            "color": "brand.accent",
+            "width": 6
+          },
+          "frame": {
+            "x": 260,
+            "y": 360,
+            "w": 400,
+            "h": 400
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine",
+              "duration": 1200
+            },
+            "trigger": "afterPrevious"
+          },
+          "motion": [
+            {
+              "step": 1,
+              "duration": 1100,
+              "ease": "spring(0.35)",
+              "to": {
+                "d": "M 200 30 L 245 150 L 370 150 L 270 225 L 310 350 L 200 275 L 90 350 L 130 225 L 30 150 L 155 150 Z",
+                "rotate": 18
+              }
+            },
+            {
+              "step": 2,
+              "duration": 1100,
+              "ease": "spring(0.25)",
+              "to": {
+                "d": "M 40 170 L 230 170 L 230 80 L 370 200 L 230 320 L 230 230 L 40 230 Z",
+                "rotate": 0
+              }
+            }
+          ]
+        },
+        {
+          "id": "bogen",
+          "type": "path",
+          "d": "M 20 300 C 300 20, 900 20, 1080 300",
+          "viewBox": "0 0 1100 320",
+          "stroke": {
+            "color": "brand.surface",
+            "width": 3
+          },
+          "text": {
+            "content": "Text läuft auf jedem Pfad entlang – auch in Bewegung.",
+            "style": "subtitle",
+            "color": "brand.text",
+            "offset": 0
+          },
+          "frame": {
+            "x": 760,
+            "y": 420,
+            "w": 1000,
+            "h": 290
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          },
+          "motion": [
+            {
+              "step": 0,
+              "at": 400,
+              "duration": 2600,
+              "ease": "out",
+              "from": {
+                "textOffset": 100
+              },
+              "to": {
+                "textOffset": 4
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "daten-1",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "notes": "Daten-Magic-Move: gleicher match auf beiden Folien.",
+      "elements": [
+        {
+          "id": "titel",
+          "type": "text",
+          "style": "title",
+          "match": "daten-titel",
+          "content": "2024",
+          "frame": {
+            "x": 160,
+            "y": 120,
+            "w": 1600,
+            "h": 130
+          }
+        },
+        {
+          "id": "chart",
+          "type": "chart",
+          "chart": "bar",
+          "match": "umsatz",
+          "unit": " T€",
+          "data": [
+            {
+              "label": "Q1",
+              "value": 32
+            },
+            {
+              "label": "Q2",
+              "value": 48
+            },
+            {
+              "label": "Q3",
+              "value": 41
+            },
+            {
+              "label": "Q4",
+              "value": 55
+            }
+          ],
+          "frame": {
+            "x": 160,
+            "y": 320,
+            "w": 1600,
+            "h": 620
+          },
+          "build": {
+            "in": {
+              "preset": "grow"
+            },
+            "trigger": "afterPrevious"
+          }
+        }
+      ]
+    },
+    {
+      "id": "daten-2",
+      "transition": {
+        "type": "magicMove",
+        "duration": 1400
+      },
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "elements": [
+        {
+          "id": "titel",
+          "type": "text",
+          "style": "title",
+          "match": "daten-titel",
+          "content": "2025",
+          "frame": {
+            "x": 160,
+            "y": 120,
+            "w": 1600,
+            "h": 130
+          }
+        },
+        {
+          "id": "chart",
+          "type": "chart",
+          "chart": "bar",
+          "match": "umsatz",
+          "unit": " T€",
+          "data": [
+            {
+              "label": "Q1",
+              "value": 61
+            },
+            {
+              "label": "Q2",
+              "value": 74
+            },
+            {
+              "label": "Q3",
+              "value": 88
+            },
+            {
+              "label": "Q4",
+              "value": 120,
+              "color": "brand.text"
+            }
+          ],
+          "frame": {
+            "x": 160,
+            "y": 320,
+            "w": 1600,
+            "h": 620
+          }
         }
       ]
     },

@@ -20,6 +20,7 @@ const TYPE_ICON: Record<Element['type'], IconName> = {
   video: 'play',
   shape: 'shape',
   icon: 'icon',
+  path: 'line',
   chart: 'chart',
   lottie: 'sparkle',
   custom: 'stack',

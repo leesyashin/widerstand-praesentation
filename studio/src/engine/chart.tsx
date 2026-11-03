@@ -9,7 +9,7 @@ import { formatGermanNumber } from './text'
 const LABEL = 26
 const VALUE = 34
 
-function format(value: number, unit: string | undefined): string {
+export function formatChartValue(value: number, unit: string | undefined): string {
   const decimals = Number.isInteger(value) ? 0 : 1
   return formatGermanNumber(value, decimals, Math.abs(value) >= 10000) + (unit ?? '')
 }
@@ -57,13 +57,14 @@ export function ChartBody({ el }: { el: ChartElement }) {
         {showValues && (
           <text
             className="chart-value"
+            data-value={el.data[0]?.value ?? 0}
             x={w / 2}
             y={h / 2}
             textAnchor="middle"
             dominantBaseline="central"
             style={{ fill: 'var(--brand-text)', fontSize: size * 0.16, fontWeight: 650 }}
           >
-            {format(el.data[0]?.value ?? 0, el.unit)}
+            {formatChartValue(el.data[0]?.value ?? 0, el.unit)}
           </text>
         )}
         {showLabels && el.data[0] && (
@@ -105,8 +106,8 @@ export function ChartBody({ el }: { el: ChartElement }) {
           <g key={i}>
             <circle className="chart-dot" cx={x} cy={py} r={9} style={{ fill: color(el.data[i]?.color), stroke: 'var(--brand-background)', strokeWidth: 4 }} />
             {showValues && (
-              <text className="chart-value" x={x} y={py - 26} textAnchor="middle" style={{ fill: 'var(--brand-text)', fontSize: VALUE * 0.8, fontWeight: 600 }}>
-                {format(el.data[i]!.value, el.unit)}
+              <text className="chart-value" data-value={el.data[i]!.value} x={x} y={py - 26} textAnchor="middle" style={{ fill: 'var(--brand-text)', fontSize: VALUE * 0.8, fontWeight: 600 }}>
+                {formatChartValue(el.data[i]!.value, el.unit)}
               </text>
             )}
             {showLabels && (
@@ -132,8 +133,8 @@ export function ChartBody({ el }: { el: ChartElement }) {
           <g key={i}>
             <rect className="chart-bar" x={x} y={by} width={barW} height={top + plotH - by} rx={Math.min(10, barW / 6)} style={{ fill: color(d.color) }} />
             {showValues && (
-              <text className="chart-value" x={x + barW / 2} y={by - 16} textAnchor="middle" style={{ fill: 'var(--brand-text)', fontSize: VALUE, fontWeight: 650 }}>
-                {format(d.value, el.unit)}
+              <text className="chart-value" data-value={d.value} x={x + barW / 2} y={by - 16} textAnchor="middle" style={{ fill: 'var(--brand-text)', fontSize: VALUE, fontWeight: 650 }}>
+                {formatChartValue(d.value, el.unit)}
               </text>
             )}
             {showLabels && (

@@ -1,10 +1,12 @@
 import { gsap } from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
 import { CustomWiggle } from 'gsap/CustomWiggle'
+import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin'
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin'
 import type { Element, Motion, MotionProps } from '../schema/deck'
+import { plainText } from './markup'
 
-gsap.registerPlugin(CustomEase, CustomWiggle, MotionPathPlugin)
+gsap.registerPlugin(CustomEase, CustomWiggle, MotionPathPlugin, MorphSVGPlugin)
 
 /**
  * Freie Bewegungen (Phase 8a): Spuren mit from/to, Schlüsseln oder Pfad auf der Folien-Zeitleiste.
@@ -137,9 +139,18 @@ function pathOffset(el: Element) {
   return { x: -(el.frame.x + el.frame.w / 2), y: -(el.frame.y + el.frame.h / 2) }
 }
 
-/** Gesamtdauer einer Bewegung in Sekunden (ohne endlose Wiederholung). */
-export function motionSpan(m: Motion): number {
-  const d = (m.duration ?? MOTION_DURATION) / 1000
+/** Anzahl der Teile, in die ein Text für `split` zerfällt (Buchstaben ohne Leerzeichen, Wörter, Zeilen). */
+export function partCount(el: Element, split: Motion['split']): number {
+  if (!split || el.type !== 'text') return 0
+  const text = plainText(el.content)
+  if (split === 'char') return text.replace(/\s+/g, '').length
+  if (split === 'word') return text.split(/\s+/).filter(Boolean).length
+  return text.split('\n').length
+}
+
+/** Gesamtdauer einer Bewegung in Sekunden (ohne endlose Wiederholung), inkl. Versatz der Teile. */
+export function motionSpan(m: Motion, parts = 0): number {
+  const d = (m.duration ?? MOTION_DURATION) / 1000 + (parts > 1 ? ((m.stagger ?? 40) / 1000) * (parts - 1) : 0)
   const repeat = m.repeat && m.repeat > 0 ? m.repeat : 0
   return d * (repeat + 1) + ((m.repeatDelay ?? 0) / 1000) * repeat
 }
@@ -150,9 +161,38 @@ function needs3d(m: Motion): boolean {
   return all.some((p) => p && (p.z !== undefined || p.rotateX !== undefined || p.rotateY !== undefined))
 }
 
+const SPLIT_SELECTOR = { char: '.c', word: '.w', line: '.ln' } as const
+
+/** Reihenfolge der Teile für den Versatz. */
+function staggerOrder(n: number, from: Motion['staggerFrom']): number[] {
+  const idx = Array.from({ length: n }, (_, i) => i)
+  if (from === 'end') return idx.map((i) => n - 1 - i)
+  if (from === 'center') return idx.map((i) => Math.abs(i - (n - 1) / 2))
+  if (from === 'random') {
+    // Wiederholbar gemischt, damit Screenshots gleich bleiben.
+    const keys = idx.map((i) => {
+      const x = Math.sin(i * 91.17 + 7.3) * 10000
+      return x - Math.floor(x)
+    })
+    const sorted = [...idx].sort((a, b) => keys[a]! - keys[b]!)
+    return idx.map((i) => sorted.indexOf(i))
+  }
+  return idx
+}
+
+/** Konturen in einem Element (für `draw`). */
+function strokesIn(node: HTMLElement): SVGGeometryElement[] {
+  const shapes = [...node.querySelectorAll<SVGGeometryElement>('path, line, circle, rect, polyline, polygon, ellipse')]
+  return shapes.filter((s) => {
+    const st = getComputedStyle(s)
+    return st.stroke !== 'none' && parseFloat(st.strokeWidth) > 0
+  })
+}
+
 /**
  * Baut eine Bewegung als eigene kleine Timeline (Zeit 0 = Start der Bewegung, Wiederholungen eingebaut).
  * `first` = erste Bewegung dieses Elements: ihr Startzustand gilt sofort (Zustand vor dem Abspielen).
+ * Mit `split` bewegt sich jeder Buchstabe/jedes Wort/jede Zeile einzeln, versetzt um `stagger`.
  * Endlose Bewegungen (repeat −1) hängt der Aufrufer nicht in die Folien-Timeline, sondern startet sie selbst.
  */
 export function buildMotion(wrap: HTMLElement, el: Element, m: Motion, first: boolean): gsap.core.Timeline {
@@ -161,53 +201,98 @@ export function buildMotion(wrap: HTMLElement, el: Element, m: Motion, first: bo
   const ease = motionEase(m.ease)
   const root = (wrap.closest('.slide') as HTMLElement | null) ?? wrap
   if (needs3d(m)) gsap.set(wrap, { transformPerspective: 1800, transformStyle: 'preserve-3d' })
-  const { color: colorEl, fill: fillEl } = colorTargets(wrap)
 
-  /** Ein Abschnitt von `a` nach `b` (Farben eingeschlossen). */
-  const segment = (a: MotionProps | undefined, b: MotionProps | undefined, start: number, dur: number, segEase: gsap.EaseFunction | string, render: boolean) => {
-    const fromV = transformVars(a)
-    const toV = { ...(b ? transformVars(b) : restFor(fromV)) }
-    // Was nur im Start steht, läuft zurück zur Ruhe-Position.
-    for (const k of Object.keys(fromV)) if (!(k in toV) && k in REST) toV[k] = REST[k]
-    const base = { duration: dur, ease: segEase }
-    if (Object.keys(fromV).length) sub.fromTo(wrap, { ...fromV }, { ...toV, ...base, immediateRender: render }, start)
-    else if (Object.keys(toV).length) sub.to(wrap, { ...toV, ...base }, start)
-    const colorFrom = a?.color && colorEl ? computedColor(root, a.color) : undefined
-    const colorTo = b?.color && colorEl ? computedColor(root, b.color) : undefined
-    if (colorEl && (colorFrom || colorTo)) {
-      const target = colorTo ?? getComputedStyle(colorEl).color
-      if (colorFrom) sub.fromTo(colorEl, { color: colorFrom }, { color: target, ...base, immediateRender: render }, start)
-      else sub.to(colorEl, { color: target, ...base }, start)
+  /** Alle Tweens einer Bewegung für ein Ziel, ab `t0` in `sub`. */
+  const track = (target: HTMLElement, t0: number, parts: boolean) => {
+    const colorEl = parts ? target : colorTargets(wrap).color
+    const fillEl = parts ? null : colorTargets(wrap).fill
+    const pathEl = parts ? null : wrap.querySelector<SVGPathElement>('path.el-path')
+    const textPathEl = parts ? null : wrap.querySelector<SVGTextPathElement>('textPath')
+    const strokes = parts ? [] : strokesIn(wrap)
+
+    /** Ein Abschnitt von `a` nach `b` (Form, Farbe, Kontur eingeschlossen). */
+    const segment = (a: MotionProps | undefined, b: MotionProps | undefined, start: number, dur: number, segEase: gsap.EaseFunction | string, render: boolean) => {
+      const at = t0 + start
+      const base = { duration: dur, ease: segEase }
+      const fromV = transformVars(a)
+      const toV = { ...(b ? transformVars(b) : restFor(fromV)) }
+      // Was nur im Start steht, läuft zurück zur Ruhe-Position.
+      for (const k of Object.keys(fromV)) if (!(k in toV) && k in REST) toV[k] = REST[k]
+      if (Object.keys(fromV).length) sub.fromTo(target, { ...fromV }, { ...toV, ...base, immediateRender: render }, at)
+      else if (Object.keys(toV).length) sub.to(target, { ...toV, ...base }, at)
+
+      const colorFrom = a?.color && colorEl ? computedColor(root, a.color) : undefined
+      const colorTo = b?.color && colorEl ? computedColor(root, b.color) : undefined
+      if (colorEl && (colorFrom || colorTo)) {
+        const goal = colorTo ?? getComputedStyle(colorEl).color
+        if (colorFrom) sub.fromTo(colorEl, { color: colorFrom }, { color: goal, ...base, immediateRender: render }, at)
+        else sub.to(colorEl, { color: goal, ...base }, at)
+      }
+      const fillFrom = a?.fill && fillEl ? computedColor(root, a.fill) : undefined
+      const fillTo = b?.fill && fillEl ? computedColor(root, b.fill) : undefined
+      if (fillEl && (fillFrom || fillTo)) {
+        const goal = fillTo ?? getComputedStyle(fillEl).backgroundColor
+        if (fillFrom) sub.fromTo(fillEl, { backgroundColor: fillFrom }, { backgroundColor: goal, ...base, immediateRender: render }, at)
+        else sub.to(fillEl, { backgroundColor: goal, ...base }, at)
+      }
+      // Formwandel (Pfad-Elemente).
+      if (pathEl && (a?.d || b?.d)) {
+        const goal = b?.d ?? pathEl.getAttribute('d') ?? ''
+        if (a?.d) sub.fromTo(pathEl, { morphSVG: a.d }, { morphSVG: goal, ...base, immediateRender: render }, at)
+        else sub.to(pathEl, { morphSVG: goal, ...base }, at)
+      }
+      // Kontur zeichnen/wegnehmen.
+      if (strokes.length && (a?.draw !== undefined || b?.draw !== undefined)) {
+        for (const s of strokes) {
+          const len = s.getTotalLength()
+          const fromDraw = a?.draw ?? 1
+          const toDraw = b?.draw ?? 1
+          sub.fromTo(
+            s,
+            { strokeDasharray: len, strokeDashoffset: len * (1 - fromDraw) },
+            { strokeDashoffset: len * (1 - toDraw), ...base, immediateRender: render && a?.draw !== undefined },
+            at,
+          )
+        }
+      }
+      // Text auf dem Pfad wandern lassen.
+      if (textPathEl && (a?.textOffset !== undefined || b?.textOffset !== undefined)) {
+        const current = parseFloat(textPathEl.getAttribute('startOffset') ?? '0')
+        const goal = `${b?.textOffset ?? current}%`
+        if (a?.textOffset !== undefined) sub.fromTo(textPathEl, { attr: { startOffset: `${a.textOffset}%` } }, { attr: { startOffset: goal }, ...base, immediateRender: render }, at)
+        else sub.to(textPathEl, { attr: { startOffset: goal }, ...base }, at)
+      }
     }
-    const fillFrom = a?.fill && fillEl ? computedColor(root, a.fill) : undefined
-    const fillTo = b?.fill && fillEl ? computedColor(root, b.fill) : undefined
-    if (fillEl && (fillFrom || fillTo)) {
-      const target = fillTo ?? getComputedStyle(fillEl).backgroundColor
-      if (fillFrom) sub.fromTo(fillEl, { backgroundColor: fillFrom }, { backgroundColor: target, ...base, immediateRender: render }, start)
-      else sub.to(fillEl, { backgroundColor: target, ...base }, start)
+
+    if (m.path) {
+      const off = pathOffset(el)
+      const startPt = pathStart(m.path)
+      const fromV = transformVars(m.from)
+      const toV = m.to ? transformVars(m.to) : restFor(fromV)
+      const motionPath = { path: m.path, autoRotate: Boolean(m.orient), offsetX: off.x, offsetY: off.y }
+      const initial = { ...fromV, ...(startPt ? { x: startPt.x + off.x, y: startPt.y + off.y } : {}) }
+      sub.fromTo(target, initial, { ...toV, motionPath, duration, ease, immediateRender: first }, t0)
+    } else if (m.keys) {
+      const keys = m.keys
+      const n = keys.length
+      const pos = keys.map((k, i) => k.t ?? i / (n - 1))
+      for (let i = 1; i < n; i++) {
+        const segDur = Math.max(0.001, (pos[i]! - pos[i - 1]!) * duration)
+        const segEase = keys[i - 1]!.ease ? motionEase(keys[i - 1]!.ease) : ease
+        segment(keys[i - 1], keys[i], pos[i - 1]! * duration, segDur, segEase, first && i === 1)
+      }
+    } else {
+      segment(m.from, m.to, 0, duration, ease, first)
     }
   }
 
-  if (m.path) {
-    const off = pathOffset(el)
-    const startPt = pathStart(m.path)
-    const fromV = transformVars(m.from)
-    const toV = m.to ? transformVars(m.to) : restFor(fromV)
-    const motionPath = { path: m.path, autoRotate: Boolean(m.orient), offsetX: off.x, offsetY: off.y }
-    const initial = { ...fromV, ...(startPt ? { x: startPt.x + off.x, y: startPt.y + off.y } : {}) }
-    sub.fromTo(wrap, initial, { ...toV, motionPath, duration, ease, immediateRender: first }, 0)
-  } else if (m.keys) {
-    const keys = m.keys
-    const n = keys.length
-    const pos = keys.map((k, i) => k.t ?? i / (n - 1))
-    for (let i = 1; i < n; i++) {
-      const segDur = Math.max(0.001, (pos[i]! - pos[i - 1]!) * duration)
-      const segEase = keys[i - 1]!.ease ? motionEase(keys[i - 1]!.ease) : ease
-      segment(keys[i - 1], keys[i], pos[i - 1]! * duration, segDur, segEase, first && i === 1)
-    }
-  } else {
-    segment(m.from, m.to, 0, duration, ease, first)
-  }
+  const parts = m.split ? [...wrap.querySelectorAll<HTMLElement>(SPLIT_SELECTOR[m.split])] : []
+  if (parts.length) {
+    const order = staggerOrder(parts.length, m.staggerFrom)
+    const each = (m.stagger ?? 40) / 1000
+    parts.forEach((part, i) => track(part, (order[i] ?? i) * each, true))
+  } else track(wrap, 0, false)
+
   // In der Folien-Timeline steuert die Folie; allein (endlos) startet der Aufrufer.
   sub.paused(false)
   return sub

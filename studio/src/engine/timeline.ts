@@ -2,7 +2,7 @@ import { gsap } from 'gsap'
 import { CustomEase } from 'gsap/CustomEase'
 import type { Animation, Element, Motion, Slide } from '../schema/deck'
 import { BUILD_IN_EVENT } from './buildEvents'
-import { buildMotion, MOTION_DURATION, motionSpan } from './motion'
+import { buildMotion, motionSpan, partCount } from './motion'
 import { formatGermanNumber, parseGermanNumber } from './text'
 
 gsap.registerPlugin(CustomEase)
@@ -34,6 +34,10 @@ export const PRESET_DURATION: Record<Animation['preset'], number> = {
   countUp: 1600,
   kenBurns: 6000,
   grow: 1400,
+  charByChar: 1000,
+  typewriter: 1200,
+  scramble: 1300,
+  assemble: 1600,
 }
 
 /* ---------- Schritte berechnen ---------- */
@@ -113,7 +117,8 @@ export function computeSteps(slide: Slide, skipIn: ReadonlySet<string> = new Set
       const step = steps[n]!
       const start = (motion.at ?? 0) / 1000
       const loop = motion.repeat === -1
-      const duration = loop ? (motion.duration ?? MOTION_DURATION) / 1000 : motionSpan(motion)
+      const parts = partCount(element, motion.split)
+      const duration = loop ? motionSpan({ ...motion, repeat: 0 }, parts) : motionSpan(motion, parts)
       step.motions.push({ element, motion, index, start, duration, loop })
       if (!loop) step.duration = Math.max(step.duration, start + duration)
     })
@@ -248,6 +253,13 @@ function addIn(tl: gsap.core.Timeline, target: HTMLElement, item: BuildItem, at:
       if (!addChartGrow(tl, target, duration, at)) break
       return
     }
+    case 'charByChar':
+    case 'typewriter':
+    case 'scramble':
+    case 'assemble': {
+      if (!addCharsIn(tl, target, item, at)) break
+      return
+    }
     case 'kenBurns': {
       tl.fromTo(target, { opacity: 0 }, { opacity: 1, duration: Math.min(0.8, duration), ease: 'none' }, at)
       tl.fromTo(target, { scale: 1.12 }, { scale: 1, duration, ease: 'power1.out' }, at)
@@ -298,9 +310,134 @@ function addChartGrow(tl: gsap.core.Timeline, target: HTMLElement, duration: num
   return true
 }
 
+/* ---------- Kinetische Typo ---------- */
+
+/** Wiederholbarer Zufall (gleiche Folie = gleiches Bild, auch in Screenshots). */
+function seeded(i: number, salt: number): number {
+  const x = Math.sin(i * 12.9898 + salt * 78.233) * 43758.5453
+  return x - Math.floor(x)
+}
+
+const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&*+=?/<>'
+
+/** Buchstaben-Builds: Teile sind die .c-Spans (siehe text.tsx, split "char"). */
+function addCharsIn(tl: gsap.core.Timeline, target: HTMLElement, item: BuildItem, at: number): boolean {
+  const chars = [...target.querySelectorAll<HTMLElement>('.c')]
+  if (!chars.length) return false
+  const { anim, duration } = item
+  const n = chars.length
+  const e = ease(anim.easing)
+  switch (anim.preset) {
+    case 'charByChar': {
+      const each = Math.min(0.55, duration * 0.55)
+      const stagger = n > 1 ? (duration - each) / (n - 1) : 0
+      tl.fromTo(
+        chars,
+        { opacity: 0, ...offset(anim.direction, 28), filter: 'blur(6px)' },
+        { opacity: 1, x: 0, y: 0, filter: 'blur(0px)', clearProps: 'filter', duration: each, ease: e, stagger },
+        at,
+      )
+      return true
+    }
+    case 'typewriter': {
+      // Jedes Zeichen erscheint schlagartig, gleichmäßiger Takt.
+      tl.fromTo(chars, { opacity: 0 }, { opacity: 1, duration: 0.001, ease: 'none', stagger: duration / n }, at)
+      return true
+    }
+    case 'scramble': {
+      const proxy = { p: 0 }
+      const finals = chars.map((c) => c.dataset.ch ?? c.textContent ?? '')
+      let widths: number[] = []
+      const render = () => {
+        const done = proxy.p * (n + 4) - 4
+        chars.forEach((c, i) => {
+          if (proxy.p >= 1 || i < done) {
+            c.textContent = finals[i] ?? ''
+            c.style.width = ''
+            c.style.textAlign = ''
+          } else {
+            const g = Math.floor(seeded(i, Math.floor(proxy.p * 40)) * GLYPHS.length)
+            if (widths[i]) {
+              c.style.width = `${widths[i]}px`
+              c.style.textAlign = 'center'
+            }
+            c.textContent = i < done + 6 ? (GLYPHS[g] ?? '#') : ''
+          }
+        })
+      }
+      tl.fromTo(target, { opacity: 0 }, { opacity: 1, duration: 0.15, ease: 'none' }, at)
+      tl.fromTo(
+        proxy,
+        { p: 0 },
+        {
+          p: 1,
+          duration,
+          ease: 'none',
+          onStart: () => {
+            widths = chars.map((c) => c.getBoundingClientRect().width / Math.max(0.0001, scaleOf(c)))
+          },
+          onUpdate: render,
+          onComplete: render,
+          onReverseComplete: render,
+        },
+        at,
+      )
+      return true
+    }
+    case 'assemble': {
+      const each = Math.min(1, duration * 0.6)
+      chars.forEach((c, i) => {
+        const r = (k: number) => seeded(i, k) * 2 - 1
+        tl.fromTo(
+          c,
+          { x: r(1) * 420, y: r(2) * 280, rotation: r(3) * 120, scale: 0.4 + seeded(i, 4) * 1.4, opacity: 0, filter: 'blur(8px)' },
+          { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1, filter: 'blur(0px)', clearProps: 'filter', duration: each, ease: 'expo.out' },
+          at + seeded(i, 5) * (duration - each),
+        )
+      })
+      return true
+    }
+  }
+  return false
+}
+
+/** Ausblenden in Buchstaben: „assemble“ zerfällt in alle Richtungen, sonst verschwinden die Zeichen von hinten. */
+function addCharsOut(tl: gsap.core.Timeline, target: HTMLElement, item: BuildItem, at: number): boolean {
+  const chars = [...target.querySelectorAll<HTMLElement>('.c')]
+  if (!chars.length) return false
+  const { anim, duration } = item
+  if (anim.preset === 'assemble') {
+    const each = Math.min(1, duration * 0.6)
+    chars.forEach((c, i) => {
+      const r = (k: number) => seeded(i, k + 10) * 2 - 1
+      tl.fromTo(
+        c,
+        { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1 },
+        { x: r(1) * 520, y: r(2) * 340, rotation: r(3) * 160, scale: 0.3 + seeded(i, 14), opacity: 0, duration: each, ease: 'power2.in', immediateRender: false },
+        at + seeded(i, 15) * (duration - each),
+      )
+    })
+    return true
+  }
+  const each = anim.preset === 'typewriter' ? 0.001 : Math.min(0.4, duration * 0.5)
+  tl.fromTo(chars, { opacity: 1 }, { opacity: 0, duration: each, ease: 'none', stagger: { each: (duration - each) / chars.length, from: 'end' }, immediateRender: false }, at)
+  return true
+}
+
+/** Bildschirm-Maßstab eines Elements (Bühne ist skaliert) – für Breiten in logischen Pixeln. */
+function scaleOf(el: HTMLElement): number {
+  const stage = el.closest<HTMLElement>('.stage__surface')
+  const m = stage ? /scale\(([\d.]+)\)/.exec(stage.style.transform) : null
+  return m ? Number(m[1]) : 1
+}
+
+const CHAR_PRESETS = new Set(['charByChar', 'typewriter', 'scramble', 'assemble'])
+
 function addOut(tl: gsap.core.Timeline, target: HTMLElement, item: BuildItem, at: number) {
+  if (CHAR_PRESETS.has(item.anim.preset) && addCharsOut(tl, target, item, at)) return
   const hidden = hiddenVars(item.anim)
-  tl.fromTo(target, shownFor(hidden), { ...hidden, duration: item.duration, ease: ease(item.anim.easing ?? 'inOut') }, at)
+  // Nicht sofort anwenden: sonst überschreibt das Ausblenden den versteckten Startzustand der Einblendung.
+  tl.fromTo(target, shownFor(hidden), { ...hidden, duration: item.duration, ease: ease(item.anim.easing ?? 'inOut'), immediateRender: false }, at)
 }
 
 export type SlideTimeline = {
@@ -410,6 +547,12 @@ export function createSlideTimeline(
     },
     kill() {
       stop()
+      // Scramble schreibt Zeichen direkt – Originale zurück.
+      for (const c of root.querySelectorAll<HTMLElement>('.c[data-ch]')) {
+        if (c.textContent !== c.dataset.ch) c.textContent = c.dataset.ch ?? ''
+        c.style.width = ''
+        c.style.textAlign = ''
+      }
       // Zurück auf die gerenderten Werte: eine neue Timeline auf demselben DOM startet sonst vom alten Endzustand.
       for (const l of loops) l.tl.revert()
       timeline.revert()
