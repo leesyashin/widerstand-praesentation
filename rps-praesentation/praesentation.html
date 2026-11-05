@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schere, Stein, Papier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff; --side:#f6f7f9; --bar:#eef0f3; --line:#e3e6eb; --ink:#1c2128; --mute:#6b7380; --faint:#a3aab5;
+  --acc:#2563eb; --acc-bg:#eaf1ff; --grn:#16a34a; --red:#dc2626; --org:#c2410c; --vio:#7c3aed;
+  --sans:'Inter',system-ui,sans-serif; --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#cfd4db;overflow:hidden;color:var(--ink);font-family:var(--sans)}
+.stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:center;background:var(--bg);overflow:hidden;
+  display:grid;grid-template-columns:250px 1fr;grid-template-rows:38px 1fr 30px}
+
+/* Fensterrahmen */
+.titlebar{grid-column:1/-1;background:var(--bar);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 16px;gap:8px;font:500 13px var(--sans);color:var(--mute)}
+.titlebar i{width:12px;height:12px;border-radius:50%;background:#d6dae0;display:inline-block}
+.titlebar .ttl{margin:0 auto;transform:translateX(-30px)}
+.side{background:var(--side);border-right:1px solid var(--line);padding:16px 0;font:400 14px var(--mono)}
+.side h6{font:600 11px var(--sans);letter-spacing:.12em;color:var(--mute);text-transform:uppercase;padding:0 18px 12px}
+.side .f{padding:6px 18px 6px 34px;color:var(--mute);display:flex;gap:10px;align-items:center;cursor:pointer}
+.side .f:hover{color:var(--ink)}
+.side .f::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--faint)}
+.side .f.dir{padding-left:18px;color:var(--ink);font-weight:500;cursor:default}
+.side .f.dir::before{content:"▾";width:auto;height:auto;background:none;color:var(--mute);font-size:11px}
+.side .f.java::before{background:#f59e0b}
+.side .f.log::before{background:#64748b}
+.side .f.on{background:var(--acc-bg);color:var(--acc);box-shadow:inset 2px 0 0 var(--acc)}
+.side .f.on::before{background:var(--acc)}
+.side .sep{height:1px;background:var(--line);margin:14px 18px}
+.side .who{position:absolute;left:0;bottom:46px;width:250px;padding:0 18px;font:400 12px/1.5 var(--sans);color:var(--mute)}
+.side .who b{display:block;color:var(--ink);font-weight:600;font-size:13px}
+.main{position:relative;display:grid;grid-template-rows:40px 1fr;min-width:0}
+.tabs{display:flex;border-bottom:1px solid var(--line);background:var(--side)}
+.tab{font:400 13px var(--mono);color:var(--mute);padding:0 20px;display:flex;align-items:center;border-right:1px solid var(--line)}
+.tab.on{background:var(--bg);color:var(--ink);box-shadow:inset 0 2px 0 var(--acc);margin-bottom:-1px}
+.view{position:relative;overflow:hidden}
+.gutter{position:absolute;left:0;top:0;bottom:0;width:46px;border-right:1px solid var(--line);font:400 12px/30px var(--mono);color:#c4c9d1;text-align:right;padding:46px 10px 0 0;white-space:pre;overflow:hidden}
+.status{grid-column:1/-1;background:var(--acc);color:#fff;display:flex;align-items:center;gap:22px;padding:0 16px;font:500 12px var(--mono)}
+.status .r{margin-left:auto}
+.status .hint{opacity:.75}
+
+/* Folien */
+.slide{position:absolute;inset:0 0 0 46px;padding:46px 64px;opacity:0;visibility:hidden;transition:opacity .35s,visibility .35s}
+.slide.active{opacity:1;visibility:visible}
+.slide.active .in{animation:in .5s cubic-bezier(.2,.7,.2,1) both}
+.slide.active .d1{animation-delay:.06s}.slide.active .d2{animation-delay:.12s}.slide.active .d3{animation-delay:.18s}.slide.active .d4{animation-delay:.24s}.slide.active .d5{animation-delay:.3s}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.slide .notes{display:none}
+.cm{font:500 15px var(--mono);color:var(--faint)}
+h1{font:700 92px/1.02 var(--sans);letter-spacing:-.035em}
+h2{font:700 44px/1.1 var(--sans);letter-spacing:-.025em;margin-top:10px}
+code.i{font:500 .88em var(--mono);color:var(--acc);background:var(--acc-bg);padding:1px 6px;border-radius:4px}
+
+/* Titel */
+.ti{display:flex;flex-direction:column;justify-content:center;height:100%;gap:26px}
+.ti h1 .k{color:var(--acc)}
+.ti p{font:400 24px/1.5 var(--sans);color:var(--mute);max-width:760px}
+.sig{font:400 22px/1.7 var(--mono);background:var(--side);border:1px solid var(--line);border-radius:10px;padding:18px 24px;width:fit-content}
+.sig .k{color:var(--vio)}.sig .t{color:var(--org)}
+.emo{position:absolute;right:70px;top:50%;transform:translateY(-50%);display:grid;gap:16px}
+.emo div{width:130px;height:130px;border:1px solid var(--line);border-radius:18px;display:grid;place-items:center;font-size:62px;background:var(--side)}
+
+/* Übersicht */
+.ag{margin-top:42px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.ag .r{display:grid;grid-template-columns:90px 280px 1fr 120px;align-items:center;padding:22px 28px;border-top:1px solid var(--line);font-size:22px}
+.ag .r:first-child{border-top:0}
+.ag .k{font:600 28px var(--mono);color:var(--acc)}
+.ag .v{font-weight:600}
+.ag .t{color:var(--mute);font-size:19px}
+.ag .s{font:500 13px var(--mono);color:var(--mute);text-align:right}
+
+/* UML */
+.cmp{display:grid;grid-template-columns:290px 290px 1fr;gap:32px;margin-top:26px}
+.vl{font:600 12px var(--mono);color:var(--mute);margin-bottom:8px}
+.uml{border:1px solid #c9ced6;border-radius:8px;overflow:hidden;font:400 14px/1.5 var(--mono);background:#fff}
+.uml>div{padding:6px 12px;border-top:1px solid #c9ced6}
+.uml>div:first-child{border-top:0;text-align:center;font:600 15px var(--sans);background:var(--side)}
+.uml .hl{background:var(--acc-bg);color:var(--acc);display:block;margin:0 -12px;padding:0 12px}
+.uml .hi{background:var(--acc-bg);color:var(--acc);padding:0 3px;border-radius:3px}
+.uml .err{color:var(--red);text-decoration:underline wavy;text-underline-offset:3px}
+.assoc{height:54px;margin-left:145px;position:relative}
+.assoc::before{content:"";position:absolute;left:0;top:0;bottom:3px;border-left:1.5px solid var(--acc)}
+.assoc::after{content:"";position:absolute;left:-5px;bottom:2px;width:9px;height:9px;border-right:1.5px solid var(--acc);border-bottom:1.5px solid var(--acc);transform:rotate(45deg)}
+.assoc span{position:absolute;left:12px;top:6px;font:400 12.5px/1.35 var(--mono);color:var(--acc)}
+.noassoc{height:54px;display:grid;place-items:center;font:400 12.5px var(--mono);color:var(--faint)}
+.issues{display:flex;flex-direction:column;gap:12px}
+.iss{border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;grid-template-columns:30px 1fr;gap:4px}
+.iss .ic{width:20px;height:20px;border-radius:50%;background:var(--acc);color:#fff;font:600 12px/20px var(--mono);text-align:center;margin-top:2px}
+.iss h4{font:600 16px var(--sans)}
+.iss p{grid-column:2;font:400 16px/1.5 var(--sans);color:#3f4652}
+.iss.err{border-color:#fecaca;background:#fef2f2}.iss.err .ic{background:var(--red)}
+.iss.ok{border-color:#bbf7d0;background:#f0fdf4}.iss.ok .ic{background:var(--grn)}
+.iss.warn{border-color:#fed7aa;background:#fff7ed}.iss.warn .ic{background:var(--org)}
+
+/* Panels */
+.panel{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+.panel .hd{background:var(--side);border-bottom:1px solid var(--line);padding:12px 18px;font:600 14px var(--mono);display:flex;justify-content:space-between}
+.panel .hd span{color:var(--mute);font-weight:400}
+.panel .bd{padding:14px 18px;font:400 16px/1.9 var(--mono)}
+.panel .cls{font:600 12px var(--sans);letter-spacing:.1em;color:var(--mute);text-transform:uppercase;margin-top:6px}
+.gs{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:30px}
+.g{color:var(--grn)}.s{color:var(--org)}
+.info{margin-top:22px;border-left:3px solid var(--acc);background:var(--acc-bg);padding:14px 20px;font:400 18px/1.55 var(--sans);border-radius:0 8px 8px 0}
+
+/* Vor-/Nachteile als Diff */
+.diffs{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:30px}
+.diff .bd{padding:6px 0;font:400 17px/1.5 var(--sans)}
+.diff .ln{display:grid;grid-template-columns:40px 1fr;padding:8px 18px 8px 0}
+.diff .ln::before{font:600 16px var(--mono);text-align:center}
+.diff .p{background:#f0fdf4}.diff .p::before{content:"+";color:var(--grn)}
+.diff .n{background:#fef2f2}.diff .n::before{content:"−";color:var(--red)}
+.verdict-line{margin-top:22px;font:400 19px/1.55 var(--sans);color:#3f4652}
+.verdict-line b{color:var(--ink)}
+
+/* Entscheidung */
+.dec{display:grid;grid-template-columns:380px 1fr;gap:28px;margin-top:30px}
+.ok{border:1px solid #bbf7d0;background:#f0fdf4;border-radius:12px;padding:26px}
+.ok .b{display:inline-block;font:600 12px var(--mono);color:#fff;background:var(--grn);padding:4px 10px;border-radius:20px}
+.ok .v{font:700 52px var(--sans);letter-spacing:-.03em;margin:14px 0}
+.ok p{font:400 18px/1.55 var(--sans);color:#2f3a35}
+.jd{font:400 15.5px/1.5 var(--mono)}
+.jd .row{display:grid;grid-template-columns:250px 1fr;padding:9px 18px;border-top:1px solid var(--line)}
+.jd .row b{color:var(--acc);font-weight:500}
+.jd .row span{font-family:var(--sans);color:#3f4652;font-size:16px}
+.jd .cl{background:var(--side);font:600 12px var(--sans);letter-spacing:.1em;color:var(--mute);text-transform:uppercase;padding:8px 18px;border-top:1px solid var(--line)}
+
+/* Code */
+.cw{display:grid;grid-template-columns:1fr 400px;gap:24px;margin-top:22px}
+pre{font:400 15px/1.55 var(--mono);padding:16px 0;background:#fbfbfc}
+pre code{display:block}
+pre .line{display:block;padding:0 20px}
+pre .line.mark{background:#fff7d6;box-shadow:inset 3px 0 0 #f59e0b}
+.c-kw{color:var(--vio)}.c-str{color:var(--grn)}.c-type{color:var(--org)}.c-num{color:var(--acc)}.c-com{color:var(--faint);font-style:italic}
+.term{background:#1c2128;color:#cdd3dc;font:400 14px/1.6 var(--mono);padding:14px 18px;white-space:pre}
+.term .u{color:#7dd3fc}.term .w{color:#86efac}.term .x{color:#fcd34d;font-weight:600}
+.side-col{display:flex;flex-direction:column;gap:12px}
+
+/* Ablauf */
+.flow{display:flex;flex-direction:column;align-items:stretch}
+.step{border:1px solid var(--line);border-radius:10px;padding:10px 14px;font:400 15px/1.4 var(--sans);background:#fff;display:grid;grid-template-columns:28px 1fr;align-items:center}
+.step .n{font:600 12px var(--mono);color:var(--acc)}
+.step code{font:500 13.5px var(--mono);color:var(--acc)}
+.step.loop{border-color:#c7d7fe;background:var(--acc-bg)}
+.arr{height:16px;margin-left:27px;border-left:1.5px solid var(--faint)}
+.loopbox{border:1.5px dashed #9db6fb;border-radius:12px;padding:12px;position:relative;display:flex;flex-direction:column}
+.loopbox .lbl{position:absolute;top:-10px;right:14px;background:#fff;padding:0 8px;font:500 12px var(--mono);color:var(--acc)}
+
+/* Regeln */
+.rules .rr{display:grid;grid-template-columns:60px 1fr 60px;align-items:center;padding:12px 18px;border-top:1px solid var(--line);font:500 16px var(--sans);text-align:center}
+.rules .rr:first-of-type{border-top:0}
+.rules .rr .e{font-size:36px}
+.rules .rr small{display:block;font:400 13px var(--mono);color:var(--mute)}
+.rules .ft{padding:12px 18px;border-top:1px solid var(--line);background:var(--side);font:400 15px/1.5 var(--sans);color:#3f4652}
+
+/* Fazit */
+.end{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:34px}
+.end .bd{padding:20px 22px;font:400 21px/1.55 var(--sans)}
+.todo{list-style:none}
+.todo li{display:grid;grid-template-columns:34px 1fr;padding:10px 0;border-top:1px solid var(--line);font:400 20px/1.4 var(--sans)}
+.todo li:first-child{border-top:0}
+.todo li::before{content:"";width:18px;height:18px;border:1.5px solid var(--faint);border-radius:4px;margin-top:3px}
+
+/* Sprechernotizen (Taste N) */
+.notepad{position:absolute;left:46px;right:0;bottom:0;background:#1c2128;color:#e6e9ee;padding:18px 26px 20px;font:400 18px/1.55 var(--sans);transform:translateY(100%);transition:transform .25s;z-index:5;border-top:3px solid #f59e0b}
+.notepad.open{transform:none}
+.notepad h6{font:600 11px var(--mono);letter-spacing:.12em;color:#f59e0b;text-transform:uppercase;margin-bottom:8px}
+.notepad li{margin-left:20px}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="titlebar"><i></i><i></i><i></i><span class="ttl">SchereSteinPapier — BlueJ-Projekt</span></div>
+  <aside class="side">
+    <h6>Explorer</h6>
+    <div class="f dir">praesentation</div>
+    <div class="f" data-s="0">00_titel.md</div>
+    <div class="f" data-s="1">01_aufgaben.md</div>
+    <div class="f" data-s="2">a_analyse.md</div>
+    <div class="f" data-s="3">b_getset.md</div>
+    <div class="f" data-s="4">c_beurteilung.md</div>
+    <div class="f" data-s="5">d_entscheidung.md</div>
+    <div class="f" data-s="10">fazit.md</div>
+    <div class="sep"></div>
+    <div class="f dir">src</div>
+    <div class="f java" data-s="6">Start.java</div>
+    <div class="f java" data-s="7">Spieler.java</div>
+    <div class="f java" data-s="8">Spiel.java</div>
+    <div class="f log" data-s="9">terminal.log</div>
+    <div class="who" id="who"></div>
+  </aside>
+  <div class="main">
+    <div class="tabs"><div class="tab on" id="tabname">00_titel.md</div></div>
+    <div class="view">
+      <div class="gutter" id="gutter"></div>
+
+  <!-- 1 · Titel -->
+  <section class="slide" data-file="00_titel.md">
+    <div class="ti">
+      <div class="cm in">// Informatik · Objektorientierte Modellierung</div>
+      <h1 class="in d1">Schere, Stein,<br><span class="k">Papier</span></h1>
+      <p class="in d2">Vom Implementationsdiagramm zum lauffähigen Java-Programm in BlueJ – Aufgaben a bis e.</p>
+      <div class="sig in d3"><span class="k">public</span> <span class="t">Spieler</span> siegerErmitteln()</div>
+    </div>
+    <div class="emo"><div class="in d2">✊</div><div class="in d3">✋</div><div class="in d4">✌️</div></div>
+    <ul class="notes">
+      <li>Begrüßung, Thema vorstellen: Schere, Stein, Papier – erst modelliert, dann in BlueJ programmiert.</li>
+      <li>Spielregel kurz: Wer zuerst 2 Runden gewinnt, gewinnt das Spiel.</li>
+    </ul>
+  </section>
+
+  <!-- 2 · Übersicht -->
+  <section class="slide" data-file="01_aufgaben.md">
+    <div class="cm in">// Übersicht</div>
+    <h2 class="in d1">Fünf Aufgaben, ein Programm.</h2>
+    <div class="ag in d2">
+      <div class="r"><span class="k">a</span><span class="v">Analysieren</span><span class="t">Version 1 und 2 im Sachzusammenhang vergleichen</span><span class="s">Folie 3</span></div>
+      <div class="r"><span class="k">b</span><span class="v">Ermitteln</span><span class="t">Get- und Set-Methoden festlegen und erläutern</span><span class="s">Folie 4</span></div>
+      <div class="r"><span class="k">c</span><span class="v">Beurteilen</span><span class="t">Vor- und Nachteile beider Versionen</span><span class="s">Folie 5</span></div>
+      <div class="r"><span class="k">d</span><span class="v">Entscheiden</span><span class="t">Diagramm wählen, Methoden dokumentieren</span><span class="s">Folie 6</span></div>
+      <div class="r"><span class="k">e</span><span class="v">Implementieren</span><span class="t">Das Spiel in Java / BlueJ umsetzen</span><span class="s">Folie 7–10</span></div>
+    </div>
+    <ul class="notes">
+      <li>Die fünf Aufgaben nacheinander – jede baut auf der vorherigen auf.</li>
+      <li>Von der Analyse der Diagramme bis zum fertigen Programm.</li>
+    </ul>
+  </section>
+
+  <!-- 3 · a -->
+  <section class="slide" data-file="a_analyse.md">
+    <div class="cm in">// Aufgabe a · Analysieren</div>
+    <h2 class="in d1">Gleiche Klassen, andere Verteilung der Daten.</h2>
+    <div class="cmp">
+      <div class="in d1"><div class="vl">version-1.uml</div>
+        <div class="uml"><div>Spiel</div>
+          <div>- runde : int<span class="hl">- rundenpunkteS01 : int<br>- rundenpunkteS02 : int<br>- gewonneneSpieleS01 : int<br>- gewonneneSpieleS02 : int</span></div>
+          <div>+ Spiel()<br>+ spielStarten() : void<br>+ rundeStarten() : void<br>+ siegerErmitteln() : <span class="hi">Spieler</span></div></div>
+        <div class="assoc"><span>- spieler01<br>- spieler02</span></div>
+        <div class="uml"><div>Spieler</div>
+          <div>- name : String<br>- runde : int<br>- aktSymbol : String</div>
+          <div><span class="err">+ Spiel()</span><br>+ spielStarten() : void<br>+ symbolUebermitteln(…)</div></div>
+      </div>
+      <div class="in d2"><div class="vl">version-2.uml</div>
+        <div class="uml"><div>Spiel</div>
+          <div>- runde : int</div>
+          <div>+ Spiel()<br>+ spielStarten(<span class="hi">pS1, pS2</span>)<br>+ rundeStarten() : void<br>+ siegerErmitteln() : <span class="hi">String</span></div></div>
+        <div class="noassoc">keine Assoziation</div>
+        <div class="uml"><div>Spieler</div>
+          <div>- name : String<br>- runde : int<br>- aktSymbol : String<span class="hl">- rundenpunkte : int<br>- gewonneneSpiele : int</span></div>
+          <div><span class="err">+ Spiel()</span><br>+ spielStarten() : void<br>+ symbolUebermitteln(…)</div></div>
+      </div>
+      <div class="issues">
+        <div class="iss in d2"><span class="ic">1</span><h4>Spielstand</h4><p>V1 speichert die Punkte im Spiel – je Spieler ein eigenes Attribut. V2 gibt jedem Spieler seine eigenen Punkte.</p></div>
+        <div class="iss in d3"><span class="ic">2</span><h4>Beziehung</h4><p>V1: gerichtete Assoziation, das Spiel kennt beide Spieler dauerhaft. V2: nur Übergabe als Parameter in <code class="i">spielStarten(pS1, pS2)</code>.</p></div>
+        <div class="iss in d4"><span class="ic">3</span><h4>Sieger</h4><p><code class="i">siegerErmitteln()</code> liefert in V1 ein Spieler-Objekt, in V2 einen String.</p></div>
+        <div class="iss err in d5"><span class="ic">!</span><h4>Fehler in beiden Diagrammen</h4><p>Der Konstruktor von Spieler heißt <code class="i">Spiel()</code> – richtig: <code class="i">Spieler()</code>.</p></div>
+      </div>
+    </div>
+    <ul class="notes">
+      <li>Gemeinsam: beide Versionen haben die Klassen Spiel und Spieler, Spieler hat name, runde, aktSymbol.</li>
+      <li>Blau markiert = Unterschiede: Punktestand, Beziehung, Rückgabetyp des Siegers.</li>
+      <li>Fehler zeigen: Spieler hat in beiden Diagrammen „Spiel()“ als Konstruktor.</li>
+    </ul>
+  </section>
+
+  <!-- 4 · b -->
+  <section class="slide" data-file="b_getset.md">
+    <div class="cm in">// Aufgabe b · Ermitteln &amp; Erläutern</div>
+    <h2 class="in d1">Get- und Set-Methoden – nur so viele wie nötig.</h2>
+    <div class="gs">
+      <div class="panel in d2"><div class="hd">Version 1 <span><span class="g">get</span> · <span class="s">set</span></span></div><div class="bd">
+        <div class="cls">Spiel</div>
+        <span class="g">getRunde()</span><br><span class="g">getRundenpunkteS01()</span> · <span class="g">getRundenpunkteS02()</span><br><span class="g">getGewonneneSpieleS01()</span> · <span class="g">…S02()</span><br><span class="g">getSpieler01()</span> · <span class="g">getSpieler02()</span>
+        <div class="cls">Spieler</div>
+        <span class="g">getName()</span> · <span class="s">setName(pName)</span><br><span class="g">getAktSymbol()</span> · <span class="g">getRunde()</span></div></div>
+      <div class="panel in d3"><div class="hd">Version 2 <span><span class="g">get</span> · <span class="s">set</span></span></div><div class="bd">
+        <div class="cls">Spiel</div>
+        <span class="g">getRunde()</span>
+        <div class="cls">Spieler</div>
+        <span class="g">getName()</span> · <span class="s">setName(pName)</span><br><span class="g">getAktSymbol()</span> · <span class="g">getRunde()</span><br><span class="g">getRundenpunkte()</span> · <span class="s">setRundenpunkte(p)</span><br><span class="g">getGewonneneSpiele()</span> · <span class="s">setGewonneneSpiele(p)</span></div></div>
+    </div>
+    <div class="info in d4"><b>Getter</b>, wenn eine andere Klasse den Wert lesen muss. <b>Setter</b> nur, wenn er von außen geändert werden muss – sonst bleibt das Attribut gekapselt. Kein <code class="i">setAktSymbol()</code>: das übernimmt <code class="i">symbolUebermitteln()</code>. In V2 muss das Spiel die Punkte im Spieler setzen.</div>
+    <ul class="notes">
+      <li>Prinzip Datenkapselung: Attribute sind private, Zugriff nur über Methoden.</li>
+      <li>V1: Start braucht die Getter, um Stand und Spieler abzufragen; setName, weil das Spiel die Namen vergibt.</li>
+      <li>V2: Spiel muss Punkte im Spieler ändern → zusätzliche Setter.</li>
+    </ul>
+  </section>
+
+  <!-- 5 · c -->
+  <section class="slide" data-file="c_beurteilung.md">
+    <div class="cm in">// Aufgabe c · Beurteilen</div>
+    <h2 class="in d1">Vor- und Nachteile im Sachzusammenhang.</h2>
+    <div class="diffs">
+      <div class="panel diff in d2"><div class="hd">Version 1 <span>zentral</span></div><div class="bd">
+        <div class="ln p">Spiel steuert alles – Spieler bleibt schlank</div>
+        <div class="ln p">Assoziation: Zugriff auf beide Spieler in jeder Runde</div>
+        <div class="ln p">Sieger als Objekt – alle Daten abrufbar</div>
+        <div class="ln n">Doppelte Attribute S01/S02 → Redundanz</div>
+        <div class="ln n">Schlecht erweiterbar für mehr Spieler</div></div></div>
+      <div class="panel diff in d3"><div class="hd">Version 2 <span>verteilt</span></div><div class="bd">
+        <div class="ln p">Punkte liegen beim Spieler – hohe Kohäsion</div>
+        <div class="ln p">Kein doppelter Code, besser erweiterbar</div>
+        <div class="ln n"><span>Ohne Assoziation kennt <code class="i">rundeStarten()</code> die Spieler nicht</span></div>
+        <div class="ln n">Setter für Punkte schwächen die Kapselung</div>
+        <div class="ln n">Sieger nur als String</div></div></div>
+    </div>
+    <p class="verdict-line in d4"><b>Kernproblem von Version 2:</b> Die Spieler werden zwar übergeben, aber nirgends gespeichert – in jeder neuen Runde fehlt der Zugriff.</p>
+    <ul class="notes">
+      <li>V1 ist einfacher und funktioniert sofort, aber Daten der Spieler liegen im Spiel.</li>
+      <li>V2 ist objektorientiert „schöner“, aber unvollständig: ohne Assoziation kein Zugriff in rundeStarten().</li>
+    </ul>
+  </section>
+
+  <!-- 6 · d -->
+  <section class="slide" data-file="d_entscheidung.md">
+    <div class="cm in">// Aufgabe d · Entscheiden &amp; Dokumentieren</div>
+    <h2 class="in d1">Entscheidung: Version 1.</h2>
+    <div class="dec">
+      <div class="ok in d2"><span class="b">✓ gewählt</span><div class="v">Version 1</div>
+        <p>Vollständig und konsistent: Das Spiel kennt beide Spieler in jeder Runde. Für genau zwei Spieler ist die Redundanz vertretbar.</p></div>
+      <div class="panel jd in d3">
+        <div class="cl" style="border-top:0">Klasse Spiel</div>
+        <div class="row"><b>Spiel()</b><span>erzeugt zwei Spieler, setzt Namen und alle Zähler auf 0</span></div>
+        <div class="row"><b>spielStarten()</b><span>setzt Runde und Rundenpunkte zurück, startet beide Spieler neu</span></div>
+        <div class="row"><b>rundeStarten()</b><span>vergleicht die Symbole und vergibt den Rundenpunkt</span></div>
+        <div class="row"><b>siegerErmitteln()</b><span>liefert den Spieler mit 2 Punkten, sonst null</span></div>
+        <div class="cl">Klasse Spieler</div>
+        <div class="row"><b>Spieler()</b><span>setzt Name, Runde und Symbol auf Startwerte</span></div>
+        <div class="row"><b>symbolUebermitteln(p)</b><span>speichert das Symbol und erhöht die Runde</span></div>
+        <div class="row"><b>symbolWaehlen()</b><span>liest das Symbol per Scanner ein (Ergänzung)</span></div>
+      </div>
+    </div>
+    <ul class="notes">
+      <li>Begründung: V1 ist vollständig – das ist für die Umsetzung entscheidend.</li>
+      <li>Methoden kurz durchgehen; symbolWaehlen() haben wir ergänzt, damit man über die Konsole spielen kann.</li>
+    </ul>
+  </section>
+
+  <!-- 7 · e Ablauf -->
+  <section class="slide" data-file="Start.java">
+    <div class="cm in">// Aufgabe e · Implementieren – Programmablauf</div>
+    <h2 class="in d1">Start: die Spielschleife.</h2>
+    <div class="cw">
+      <div class="panel in d2"><div class="hd">Start.java <span>main()</span></div>
+<pre><code class="java">public class Start
+{
+    public static void main(String[] args)
+    {
+        Spiel spiel = new Spiel();
+        spiel.spielStarten();
+
+        while (spiel.siegerErmitteln() == null)
+        {
+            spiel.getSpieler01().symbolWaehlen();
+            spiel.getSpieler02().symbolWaehlen();
+            spiel.rundeStarten();
+            System.out.println("Stand: " + spiel.getRundenpunkteS01()
+                             + " : " + spiel.getRundenpunkteS02());
+        }
+
+        System.out.println("Sieger: " + spiel.siegerErmitteln().getName());
+    }
+}</code></pre></div>
+      <div class="flow in d3">
+        <div class="step"><span class="n">1</span><span>Spiel erzeugen, <code>spielStarten()</code></span></div>
+        <div class="arr"></div>
+        <div class="loopbox"><span class="lbl">while kein Sieger</span>
+          <div class="step loop"><span class="n">2</span><span>Spieler 1 wählt Symbol</span></div>
+          <div class="arr"></div>
+          <div class="step loop"><span class="n">3</span><span>Spieler 2 wählt Symbol</span></div>
+          <div class="arr"></div>
+          <div class="step loop"><span class="n">4</span><span><code>rundeStarten()</code> wertet aus</span></div>
+          <div class="arr"></div>
+          <div class="step loop"><span class="n">5</span><span>Stand ausgeben</span></div>
+        </div>
+        <div class="arr"></div>
+        <div class="step"><span class="n">6</span><span>Sieger ausgeben</span></div>
+      </div>
+    </div>
+    <ul class="notes">
+      <li>Start enthält nur die main-Methode und steuert den Ablauf.</li>
+      <li>Die Schleife läuft, solange siegerErmitteln() null liefert – also bis jemand 2 Punkte hat.</li>
+    </ul>
+  </section>
+
+  <!-- 8 · e Spieler -->
+  <section class="slide" data-file="Spieler.java">
+    <div class="cm in">// Aufgabe e · Implementieren – Klasse Spieler</div>
+    <h2 class="in d1">Spieler: Symbol wählen und übermitteln.</h2>
+    <div class="cw">
+      <div class="panel in d2"><div class="hd">Spieler.java <span>Ausschnitt</span></div>
+<pre><code class="java" data-mark="1">import java.util.Scanner;
+
+public class Spieler
+{
+    // name, runde, aktSymbol, Konstruktor, Getter/Setter …
+
+    public void symbolUebermitteln(String pSymbol)
+    {
+        aktSymbol = pSymbol;
+        runde = runde + 1;
+    }
+
+    public void symbolWaehlen()
+    {
+        Scanner eingabe = new Scanner(System.in);
+        System.out.print(name + " (Stein/Papier/Schere): ");
+        String symbol = eingabe.nextLine();
+        symbolUebermitteln(symbol);
+    }
+}</code></pre></div>
+      <div class="side-col">
+        <div class="iss warn in d3"><span class="ic">!</span><h4>Import nicht vergessen</h4><p>Ohne <code class="i">import java.util.Scanner;</code> meldet BlueJ einen Compilerfehler.</p></div>
+        <div class="iss in d4"><span class="ic">1</span><h4>Eingabe → Übermittlung</h4><p><code class="i">symbolWaehlen()</code> liest ein und ruft <code class="i">symbolUebermitteln()</code> auf – die Methode aus dem Diagramm.</p></div>
+        <div class="iss in d5"><span class="ic">2</span><h4>Exakte Schreibweise</h4><p>Verglichen wird mit <code class="i">equals("Stein")</code> – „stein“ zählt nicht.</p></div>
+      </div>
+    </div>
+    <ul class="notes">
+      <li>Scanner liest eine Zeile von der Tastatur; dafür ist der Import nötig.</li>
+      <li>symbolUebermitteln() speichert das Symbol und zählt die Runde des Spielers hoch.</li>
+    </ul>
+  </section>
+
+  <!-- 9 · e rundeStarten -->
+  <section class="slide" data-file="Spiel.java">
+    <div class="cm in">// Aufgabe e · Implementieren – Klasse Spiel</div>
+    <h2 class="in d1">Wie eine Runde entschieden wird.</h2>
+    <div class="cw">
+      <div class="panel in d2"><div class="hd">Spiel.java <span>rundeStarten()</span></div>
+<pre><code class="java">public void rundeStarten()
+{
+    runde = runde + 1;
+    String s1 = spieler01.getAktSymbol();
+    String s2 = spieler02.getAktSymbol();
+
+    if (s1.equals(s2))
+    {
+        System.out.println("Runde " + runde + ": Unentschieden");
+    }
+    else if ((s1.equals("Stein") &amp;&amp; s2.equals("Schere"))
+          || (s1.equals("Schere") &amp;&amp; s2.equals("Papier"))
+          || (s1.equals("Papier") &amp;&amp; s2.equals("Stein")))
+    {
+        rundenpunkteS01 = rundenpunkteS01 + 1;  // Spieler 1
+    }
+    else
+    {
+        rundenpunkteS02 = rundenpunkteS02 + 1;  // Spieler 2
+    }
+}</code></pre></div>
+      <div class="panel rules in d3"><div class="hd">Regeln <span>Spieler 1 gewinnt, wenn …</span></div>
+        <div class="rr"><span class="e">✊</span><span>schlägt<small>"Stein" vs "Schere"</small></span><span class="e">✌️</span></div>
+        <div class="rr"><span class="e">✌️</span><span>schlägt<small>"Schere" vs "Papier"</small></span><span class="e">✋</span></div>
+        <div class="rr"><span class="e">✋</span><span>schlägt<small>"Papier" vs "Stein"</small></span><span class="e">✊</span></div>
+        <div class="ft">Gleiches Symbol → <b>Unentschieden</b>, kein Punkt.<br>Alles andere → Punkt für <b>Spieler 2</b>.</div>
+      </div>
+    </div>
+    <ul class="notes">
+      <li>Drei Fälle: gleich → unentschieden; eine der drei Gewinnkombinationen → Spieler 1; sonst Spieler 2.</li>
+      <li>Strings immer mit equals() vergleichen, nicht mit ==.</li>
+    </ul>
+  </section>
+
+  <!-- 10 · e Sieger + Demo -->
+  <section class="slide" data-file="terminal.log">
+    <div class="cm in">// Aufgabe e · Implementieren – Sieger &amp; Testlauf</div>
+    <h2 class="in d1">Wer zuerst 2 Punkte hat, gewinnt.</h2>
+    <div class="cw" style="grid-template-columns:1fr 520px">
+      <div class="side-col">
+        <div class="panel in d2"><div class="hd">Spiel.java <span>siegerErmitteln()</span></div>
+<pre><code class="java">public Spieler siegerErmitteln()
+{
+    if (rundenpunkteS01 == 2)
+    {
+        return spieler01;
+    }
+    if (rundenpunkteS02 == 2)
+    {
+        return spieler02;
+    }
+    return null;  // noch kein Sieger
+}</code></pre></div>
+        <div class="iss ok in d4"><span class="ic">✓</span><h4>Rückgabe als Objekt</h4><p>Start kann direkt <code class="i">siegerErmitteln().getName()</code> ausgeben.</p></div>
+      </div>
+      <div class="panel in d3"><div class="hd">Terminal <span>Testlauf</span></div>
+<div class="term">Spieler 1 (Stein/Papier/Schere): <span class="u">Stein</span>
+Spieler 2 (Stein/Papier/Schere): <span class="u">Schere</span>
+<span class="w">Runde 1: Spieler 1 gewinnt</span>
+Stand: 1 : 0
+Spieler 1 (Stein/Papier/Schere): <span class="u">Papier</span>
+Spieler 2 (Stein/Papier/Schere): <span class="u">Papier</span>
+Runde 2: Unentschieden
+Stand: 1 : 0
+Spieler 1 (Stein/Papier/Schere): <span class="u">Schere</span>
+Spieler 2 (Stein/Papier/Schere): <span class="u">Papier</span>
+<span class="w">Runde 3: Spieler 1 gewinnt</span>
+Stand: 2 : 0
+<span class="x">Sieger: Spieler 1</span>
+</div></div>
+    </div>
+    <ul class="notes">
+      <li>null bedeutet: noch kein Sieger – deshalb läuft die Schleife in Start weiter.</li>
+      <li>Hier ggf. live in BlueJ vorführen: Start.main() ausführen.</li>
+    </ul>
+  </section>
+
+  <!-- 11 · Fazit -->
+  <section class="slide" data-file="fazit.md">
+    <div class="cm in">// Fazit</div>
+    <h2 class="in d1">Gutes Modell, einfacher Code.</h2>
+    <div class="end">
+      <div class="panel in d2"><div class="hd">Erkenntnis</div><div class="bd">Wo die Daten liegen, entscheidet, wie der Code aussieht. Version 1 trägt das Spiel für zwei Spieler – Version 2 zeigt, wie es besser skaliert.</div></div>
+      <div class="panel in d3"><div class="hd">TODO.md <span>Ausblick</span></div><div class="bd"><ul class="todo">
+        <li>Eingaben prüfen („stein“, Tippfehler)</li>
+        <li>Das Beste aus beiden: Assoziation + Punkte im Spieler</li>
+        <li>Grafische Oberfläche statt Konsole</li></ul></div></div>
+    </div>
+    <div class="cm in d4" style="margin-top:40px">// Vielen Dank – Fragen?</div>
+    <ul class="notes">
+      <li>Kernaussage wiederholen: Modellierung bestimmt die Qualität des Codes.</li>
+      <li>Ausblick nennen, dann Fragen.</li>
+    </ul>
+  </section>
+
+      <div class="notepad" id="notepad"><h6>Sprechernotizen · Taste N</h6><ul id="notetext"></ul></div>
+    </div>
+  </div>
+  <div class="status"><span>⎇ main</span><span>✓ 0 Fehler</span><span class="hint">← → blättern · N Notizen · F Vollbild</span><span class="r" id="pos">Folie 1 / 11</span><span>Java · UTF-8</span></div>
+</div>
+
+<script>
+/* ===== Hier deinen Namen eintragen (leer lassen = ausblenden) ===== */
+const AUTOR = "";
+const DATUM = "";
+/* ================================================================== */
+(()=>{
+  const stage=document.querySelector('.stage'),slides=[...document.querySelectorAll('.slide')];
+  const files=[...document.querySelectorAll('.side .f[data-s]')];
+  const pad=document.getElementById('notepad'),noteText=document.getElementById('notetext');
+  if(AUTOR||DATUM)document.getElementById('who').innerHTML=`<b>${AUTOR}</b>${DATUM}`;
+  document.getElementById('gutter').textContent=Array.from({length:30},(_,k)=>k+1).join('\n');
+  let i=Math.max(0,Math.min(slides.length-1,(parseInt(location.hash.slice(1))||1)-1));
+  const fit=()=>{const s=Math.min(innerWidth/1600,innerHeight/900);stage.style.transform=`translate(-50%,-50%) scale(${s})`};
+  const show=n=>{i=Math.max(0,Math.min(slides.length-1,n));slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+    files.forEach(f=>f.classList.toggle('on',f.dataset.s.split(',').map(Number).includes(i)));
+    document.getElementById('tabname').textContent=slides[i].dataset.file;
+    const nt=slides[i].querySelector('.notes');noteText.innerHTML=nt?nt.innerHTML:'';
+    document.getElementById('pos').textContent=`Folie ${i+1} / ${slides.length}`;history.replaceState(null,'','#'+(i+1))};
+  files.forEach(f=>f.addEventListener('click',e=>{e.stopPropagation();show(Number(f.dataset.s.split(',')[0]))}));
+  pad.addEventListener('click',e=>e.stopPropagation());
+  addEventListener('resize',fit);
+  addEventListener('hashchange',()=>{const n=(parseInt(location.hash.slice(1))||1)-1;if(n!==i)show(n)});
+  addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();show(i+1)}else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();show(i-1)}else if(e.key==='Home')show(0);else if(e.key==='End')show(slides.length-1);else if(e.key==='f'||e.key==='F')document.documentElement.requestFullscreen?.();else if(e.key==='n'||e.key==='N')pad.classList.toggle('open')});
+  addEventListener('click',e=>show(e.clientX>innerWidth/2?i+1:i-1));
+  let tx=null;addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+  addEventListener('touchend',e=>{if(tx==null)return;const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>40)show(d<0?i+1:i-1);tx=null});
+  // Java-Syntaxhervorhebung (+ optionale Zeilenmarkierung über data-mark="1,3")
+  const re=/(\/\/[^\n]*)|("(?:[^"\\]|\\.)*")|\b(public|private|class|void|int|new|return|if|else|while|static|null|import)\b|\b([A-Z][A-Za-z0-9]*)\b|\b(\d+)\b/g;
+  document.querySelectorAll('code.java').forEach(c=>{const t=c.textContent.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    const h=t.replace(re,(m,com,str,kw,ty,num)=>com?`<span class="c-com">${m}</span>`:str?`<span class="c-str">${m}</span>`:kw?`<span class="c-kw">${m}</span>`:ty?`<span class="c-type">${m}</span>`:`<span class="c-num">${m}</span>`);
+    const mark=(c.dataset.mark||'').split(',').filter(Boolean).map(Number);
+    c.innerHTML=h.split('\n').map((l,k)=>`<span class="line${mark.includes(k+1)?' mark':''}">${l||' '}</span>`).join('')});
+  fit();show(i);
+})();
+</script>
+</body>
+</html>
