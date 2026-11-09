@@ -1,0 +1,4599 @@
+{
+  "$schema": "../../src/schema/deck.schema.json",
+  "version": 1,
+  "title": "Schneller, heller, entspannter in die Zukunft?",
+  "description": "Referat Geschichte, Kapitel 1.4: Mobilität, Elektrizität und Kommunikation 1850–1940. Zwei Sprechende, 5–10 Minuten, Quellen Q3 und Q5 im Mittelpunkt.",
+  "format": {
+    "preset": "16:9",
+    "width": 1920,
+    "height": 1080
+  },
+  "theme": "silber",
+  "colors": {
+    "background": "#111111",
+    "surface": "#1e1d1a",
+    "text": "#f4f0e7",
+    "textMuted": "#9d988c",
+    "accent": "#cfa94e",
+    "accent2": "#3d3524",
+    "light": "#f4f0e7",
+    "ink": "#111111"
+  },
+  "intensity": 0.3,
+  "textStyles": {
+    "heading": {
+      "size": 52
+    },
+    "label": {
+      "letterSpacing": 0.16
+    }
+  },
+  "masters": [
+    {
+      "id": "teil-1",
+      "name": "Chrome · Teil 1 · Name 1",
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "elements": [
+        {
+          "id": "chrome-titel",
+          "type": "text",
+          "style": "label",
+          "content": "1.4 · Schneller, heller, entspannter in die Zukunft?",
+          "frame": {
+            "x": 160,
+            "y": 64,
+            "w": 1000,
+            "h": 26
+          },
+          "color": "brand.textMuted",
+          "fontSize": 16,
+          "letterSpacing": 0.14
+        },
+        {
+          "id": "chrome-punkt",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 1752,
+            "y": 73,
+            "w": 8,
+            "h": 8
+          },
+          "fill": "brand.accent"
+        },
+        {
+          "id": "chrome-teil",
+          "type": "text",
+          "style": "label",
+          "content": "Teil 1 · Name 1",
+          "frame": {
+            "x": 1160,
+            "y": 64,
+            "w": 580,
+            "h": 26
+          },
+          "color": "brand.textMuted",
+          "fontSize": 16,
+          "letterSpacing": 0.14,
+          "align": "right"
+        },
+        {
+          "id": "chrome-linie",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.surface",
+            "width": 1
+          },
+          "frame": {
+            "x": 160,
+            "y": 102,
+            "w": 1600,
+            "h": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "teil-2",
+      "name": "Chrome · Teil 2 · Name 2",
+      "background": {
+        "type": "color",
+        "color": "brand.background"
+      },
+      "elements": [
+        {
+          "id": "chrome-titel",
+          "type": "text",
+          "style": "label",
+          "content": "1.4 · Schneller, heller, entspannter in die Zukunft?",
+          "frame": {
+            "x": 160,
+            "y": 64,
+            "w": 1000,
+            "h": 26
+          },
+          "color": "brand.textMuted",
+          "fontSize": 16,
+          "letterSpacing": 0.14
+        },
+        {
+          "id": "chrome-punkt",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 1752,
+            "y": 73,
+            "w": 8,
+            "h": 8
+          },
+          "fill": "brand.accent"
+        },
+        {
+          "id": "chrome-teil",
+          "type": "text",
+          "style": "label",
+          "content": "Teil 2 · Name 2",
+          "frame": {
+            "x": 1160,
+            "y": 64,
+            "w": 580,
+            "h": 26
+          },
+          "color": "brand.textMuted",
+          "fontSize": 16,
+          "letterSpacing": 0.14,
+          "align": "right"
+        },
+        {
+          "id": "chrome-linie",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.surface",
+            "width": 1
+          },
+          "frame": {
+            "x": 160,
+            "y": 102,
+            "w": 1600,
+            "h": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "teil-2-hell",
+      "name": "Chrome · Teil 2 · Name 2",
+      "background": {
+        "type": "color",
+        "color": "brand.light"
+      },
+      "elements": [
+        {
+          "id": "chrome-titel",
+          "type": "text",
+          "style": "label",
+          "content": "1.4 · Schneller, heller, entspannter in die Zukunft?",
+          "frame": {
+            "x": 160,
+            "y": 64,
+            "w": 1000,
+            "h": 26
+          },
+          "color": "brand.accent2",
+          "fontSize": 16,
+          "letterSpacing": 0.14
+        },
+        {
+          "id": "chrome-punkt",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 1752,
+            "y": 73,
+            "w": 8,
+            "h": 8
+          },
+          "fill": "brand.ink"
+        },
+        {
+          "id": "chrome-teil",
+          "type": "text",
+          "style": "label",
+          "content": "Teil 2 · Name 2",
+          "frame": {
+            "x": 1160,
+            "y": 64,
+            "w": 580,
+            "h": 26
+          },
+          "color": "brand.accent2",
+          "fontSize": 16,
+          "letterSpacing": 0.14,
+          "align": "right"
+        },
+        {
+          "id": "chrome-linie",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.accent2",
+            "width": 1
+          },
+          "frame": {
+            "x": 160,
+            "y": 102,
+            "w": 1600,
+            "h": 4
+          }
+        }
+      ]
+    }
+  ],
+  "slides": [
+    {
+      "id": "titel",
+      "layout": "titel",
+      "background": {
+        "type": "meshGradient",
+        "colors": [
+          "brand.background",
+          "brand.accent2",
+          "brand.accent",
+          "brand.surface"
+        ],
+        "animate": true
+      },
+      "effects": [
+        {
+          "type": "grain",
+          "amount": 0.1
+        },
+        {
+          "type": "vignette",
+          "amount": 0.3
+        },
+        {
+          "type": "lightSweep",
+          "amount": 0.4
+        }
+      ],
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Geschichte · Kapitel 1.4 · Die Zweite Industrielle Revolution 1850–1940",
+          "frame": {
+            "x": 160,
+            "y": 286,
+            "w": 1600,
+            "h": 30
+          },
+          "align": "center",
+          "build": {
+            "in": {
+              "preset": "fade",
+              "duration": 700
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "headline",
+          "type": "text",
+          "style": "display",
+          "content": "Schneller, heller,\nentspannter\nin die Zukunft?",
+          "frame": {
+            "x": 160,
+            "y": 344,
+            "w": 1600,
+            "h": 400
+          },
+          "align": "center",
+          "match": "headline",
+          "fontSize": 124,
+          "build": {
+            "in": {
+              "preset": "blurRise",
+              "duration": 1100,
+              "delay": 150
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "untertitel",
+          "type": "text",
+          "style": "subtitle",
+          "content": "Mobilität, Elektrizität und Kommunikation",
+          "frame": {
+            "x": 160,
+            "y": 770,
+            "w": 1600,
+            "h": 60
+          },
+          "align": "center",
+          "build": {
+            "in": {
+              "preset": "blurRise",
+              "delay": 500
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "namen",
+          "type": "text",
+          "style": "caption",
+          "content": "Referat von **Name 1** und **Name 2**",
+          "frame": {
+            "x": 960,
+            "y": 944,
+            "w": 800,
+            "h": 32
+          },
+          "align": "right",
+          "color": "brand.textMuted",
+          "build": {
+            "in": {
+              "preset": "fade",
+              "duration": 900
+            },
+            "trigger": "afterPrevious"
+          }
+        }
+      ],
+      "notes": "Begrüßung durch beide. „Unser Thema: Kapitel 1.4 – Schneller, heller, entspannter in die Zukunft? Es geht um Mobilität, Elektrizität und Kommunikation zwischen 1850 und 1940. Und um das Fragezeichen im Titel.“ Namen in dieser Folie und in den beiden Mastern (chrome-teil) eintragen."
+    },
+    {
+      "id": "einstieg",
+      "master": "teil-1",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Berlin, Potsdamer Platz · 1883",
+          "frame": {
+            "x": 160,
+            "y": 300,
+            "w": 1200,
+            "h": 30
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "zitat",
+          "type": "text",
+          "style": "title",
+          "content": "„… als träte man nicht in einen neuen Stadtteil, sondern in eine *völlig neue Epoche*.“",
+          "frame": {
+            "x": 160,
+            "y": 360,
+            "w": 1560,
+            "h": 330
+          },
+          "match": "zitat",
+          "build": {
+            "in": {
+              "preset": "maskReveal",
+              "direction": "right",
+              "duration": 1100,
+              "delay": 150
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "linie",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.accent",
+            "width": 3
+          },
+          "frame": {
+            "x": 160,
+            "y": 740,
+            "w": 96,
+            "h": 4
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine"
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "autor",
+          "type": "text",
+          "style": "caption",
+          "content": "Georg Brandes, dänischer Schriftsteller, über das erste elektrische Straßenlicht in Berlin (Q3)",
+          "frame": {
+            "x": 290,
+            "y": 724,
+            "w": 1300,
+            "h": 36
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ],
+      "notes": "Name 1 liest das Zitat vor und lässt es wirken. Klick: Wer das sagt. „Ein Mann steht 1883 abends am Potsdamer Platz – und fühlt sich in eine neue Zeit versetzt. Nur weil Lampen brennen. Was war da los?“ Überleitung zur Leitfrage."
+    },
+    {
+      "id": "leitfrage",
+      "master": "teil-1",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Leitfrage",
+          "frame": {
+            "x": 160,
+            "y": 236,
+            "w": 1200,
+            "h": 30
+          },
+          "color": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "frage",
+          "type": "text",
+          "style": "heading",
+          "content": "Machten Mobilität, Elektrizität und Kommunikation das Leben wirklich schneller, heller und entspannter – *und für wen?*",
+          "frame": {
+            "x": 160,
+            "y": 290,
+            "w": 720,
+            "h": 440
+          },
+          "fontSize": 50,
+          "lineHeight": 1.18,
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "plan-1-flaeche",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 980,
+            "y": 236,
+            "w": 380,
+            "h": 312
+          },
+          "fill": "brand.surface",
+          "radius": 6,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 0
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "plan-1-balken",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 1020,
+            "y": 236,
+            "w": 56,
+            "h": 4
+          },
+          "fill": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 0
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "plan-1-tag",
+          "type": "text",
+          "style": "label",
+          "content": "Teil 1 · Name 1",
+          "frame": {
+            "x": 1020,
+            "y": 280,
+            "w": 300,
+            "h": 30
+          },
+          "color": "brand.textMuted",
+          "fontSize": 17,
+          "letterSpacing": 0.14,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 60
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "plan-1-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Schneller",
+          "frame": {
+            "x": 1020,
+            "y": 330,
+            "w": 300,
+            "h": 65
+          },
+          "color": "brand.text",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 60
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "plan-1-text",
+          "type": "text",
+          "style": "body",
+          "content": "Eisenbahn, Fahrrad, Auto",
+          "frame": {
+            "x": 1020,
+            "y": 409,
+            "w": 300,
+            "h": 107
+          },
+          "color": "brand.textMuted",
+          "fontSize": 26,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 120
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "plan-2-flaeche",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 1380,
+            "y": 236,
+            "w": 380,
+            "h": 312
+          },
+          "fill": "brand.surface",
+          "radius": 6,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 90
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "plan-2-balken",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 1420,
+            "y": 236,
+            "w": 56,
+            "h": 4
+          },
+          "fill": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 90
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "plan-2-tag",
+          "type": "text",
+          "style": "label",
+          "content": "Teil 1 · Name 1",
+          "frame": {
+            "x": 1420,
+            "y": 280,
+            "w": 300,
+            "h": 30
+          },
+          "color": "brand.textMuted",
+          "fontSize": 17,
+          "letterSpacing": 0.14,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 150
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "plan-2-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Vernetzter",
+          "frame": {
+            "x": 1420,
+            "y": 330,
+            "w": 300,
+            "h": 65
+          },
+          "color": "brand.text",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 150
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "plan-2-text",
+          "type": "text",
+          "style": "body",
+          "content": "Telefon, Funk, Rechenmaschine",
+          "frame": {
+            "x": 1420,
+            "y": 409,
+            "w": 300,
+            "h": 107
+          },
+          "color": "brand.textMuted",
+          "fontSize": 26,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 210
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "plan-3-flaeche",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 980,
+            "y": 568,
+            "w": 380,
+            "h": 312
+          },
+          "fill": "brand.surface",
+          "radius": 6,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 180
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "plan-3-balken",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 1020,
+            "y": 568,
+            "w": 56,
+            "h": 4
+          },
+          "fill": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 180
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "plan-3-tag",
+          "type": "text",
+          "style": "label",
+          "content": "Teil 2 · Name 2",
+          "frame": {
+            "x": 1020,
+            "y": 612,
+            "w": 300,
+            "h": 30
+          },
+          "color": "brand.textMuted",
+          "fontSize": 17,
+          "letterSpacing": 0.14,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 240
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "plan-3-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Heller",
+          "frame": {
+            "x": 1020,
+            "y": 662,
+            "w": 300,
+            "h": 65
+          },
+          "color": "brand.text",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 240
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "plan-3-text",
+          "type": "text",
+          "style": "body",
+          "content": "Elektrizität · Quelle Q3",
+          "frame": {
+            "x": 1020,
+            "y": 741,
+            "w": 300,
+            "h": 107
+          },
+          "color": "brand.textMuted",
+          "fontSize": 26,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 300
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "plan-4-flaeche",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 1380,
+            "y": 568,
+            "w": 380,
+            "h": 312
+          },
+          "fill": "brand.surface",
+          "radius": 6,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 270
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "plan-4-balken",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 1420,
+            "y": 568,
+            "w": 56,
+            "h": 4
+          },
+          "fill": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 270
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "plan-4-tag",
+          "type": "text",
+          "style": "label",
+          "content": "Teil 2 · Name 2",
+          "frame": {
+            "x": 1420,
+            "y": 612,
+            "w": 300,
+            "h": 30
+          },
+          "color": "brand.textMuted",
+          "fontSize": 17,
+          "letterSpacing": 0.14,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 330
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "plan-4-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Entspannter?",
+          "frame": {
+            "x": 1420,
+            "y": 662,
+            "w": 300,
+            "h": 65
+          },
+          "color": "brand.text",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 330
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "plan-4-text",
+          "type": "text",
+          "style": "body",
+          "content": "Quelle Q5 · Fazit",
+          "frame": {
+            "x": 1420,
+            "y": 741,
+            "w": 300,
+            "h": 107
+          },
+          "color": "brand.textMuted",
+          "fontSize": 26,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 390
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ],
+      "notes": "Leitfrage vorlesen. Klick: der Fahrplan. „Name 1 übernimmt Mobilität und Kommunikation, Name 2 Elektrizität und die beiden Quellen – Q3 und Q5 – und am Ende das Fazit.“"
+    },
+    {
+      "id": "kapitel-1",
+      "layout": "kapitel",
+      "background": {
+        "type": "meshGradient",
+        "colors": [
+          "brand.background",
+          "brand.accent2",
+          "brand.accent",
+          "brand.surface"
+        ],
+        "animate": true
+      },
+      "effects": [
+        {
+          "type": "grain",
+          "amount": 0.1
+        },
+        {
+          "type": "vignette",
+          "amount": 0.3
+        },
+        {
+          "type": "lightSweep",
+          "amount": 0.35
+        }
+      ],
+      "transition": {
+        "type": "lightLeak",
+        "duration": 1400
+      },
+      "elements": [
+        {
+          "id": "kapitel-kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Teil 1 · Name 1",
+          "frame": {
+            "x": 160,
+            "y": 236,
+            "w": 1200,
+            "h": 30
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "kapitel-nummer",
+          "type": "text",
+          "style": "display",
+          "content": "01",
+          "frame": {
+            "x": 160,
+            "y": 280,
+            "w": 800,
+            "h": 240
+          },
+          "color": "brand.accent",
+          "fontSize": 220,
+          "build": {
+            "in": {
+              "preset": "blurRise",
+              "duration": 1000
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "kapitel-linie",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.accent",
+            "width": 3
+          },
+          "frame": {
+            "x": 160,
+            "y": 556,
+            "w": 160,
+            "h": 4
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine",
+              "duration": 700
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "kapitel-titel",
+          "type": "text",
+          "style": "title",
+          "content": "Schneller – und vernetzter",
+          "frame": {
+            "x": 160,
+            "y": 600,
+            "w": 1600,
+            "h": 130
+          },
+          "match": "kapitel-titel",
+          "build": {
+            "in": {
+              "preset": "maskReveal",
+              "direction": "right",
+              "delay": 200
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "kapitel-text",
+          "type": "text",
+          "style": "subtitle",
+          "content": "Mobilität und Kommunikation · Teil 1",
+          "frame": {
+            "x": 160,
+            "y": 750,
+            "w": 1400,
+            "h": 60
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        }
+      ]
+    },
+    {
+      "id": "zeit",
+      "master": "teil-1",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Teil 1 · Mobilität",
+          "frame": {
+            "x": 160,
+            "y": 170,
+            "w": 1200,
+            "h": 30
+          },
+          "color": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "headline",
+          "type": "text",
+          "style": "title",
+          "content": "Die Zeit wird neu vermessen.",
+          "frame": {
+            "x": 160,
+            "y": 216,
+            "w": 1600,
+            "h": 130
+          },
+          "match": "headline",
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "achse",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.accent2",
+            "width": 2
+          },
+          "frame": {
+            "x": 160,
+            "y": 456,
+            "w": 1600,
+            "h": 4
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine",
+              "duration": 1200
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "punkt-1",
+          "type": "shape",
+          "shape": "ellipse",
+          "fill": "brand.accent",
+          "frame": {
+            "x": 160,
+            "y": 446,
+            "w": 24,
+            "h": 24
+          },
+          "build": {
+            "in": {
+              "preset": "scaleIn",
+              "delay": 0
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "jahr-1",
+          "type": "text",
+          "style": "heading",
+          "content": "1881",
+          "frame": {
+            "x": 160,
+            "y": 350,
+            "w": 360,
+            "h": 70
+          },
+          "color": "brand.accent",
+          "font": "display",
+          "fontSize": 56,
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "titel-1",
+          "type": "text",
+          "style": "heading",
+          "content": "Elektrische Straßenbahn",
+          "frame": {
+            "x": 160,
+            "y": 520,
+            "w": 360,
+            "h": 110
+          },
+          "fontSize": 40,
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "text-1",
+          "type": "text",
+          "style": "body",
+          "content": "Die erste fährt in Berlin-Lichterfelde. Städte wachsen an Schienen entlang – über und unter der Erde.",
+          "frame": {
+            "x": 160,
+            "y": 640,
+            "w": 350,
+            "h": 220
+          },
+          "color": "brand.textMuted",
+          "fontSize": 26,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 80
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "punkt-2",
+          "type": "shape",
+          "shape": "ellipse",
+          "fill": "brand.accent",
+          "frame": {
+            "x": 570,
+            "y": 446,
+            "w": 24,
+            "h": 24
+          },
+          "build": {
+            "in": {
+              "preset": "scaleIn",
+              "delay": 0
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "jahr-2",
+          "type": "text",
+          "style": "heading",
+          "content": "1885",
+          "frame": {
+            "x": 570,
+            "y": 350,
+            "w": 360,
+            "h": 70
+          },
+          "color": "brand.accent",
+          "font": "display",
+          "fontSize": 56,
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "titel-2",
+          "type": "text",
+          "style": "heading",
+          "content": "Das Sicherheitsrad",
+          "frame": {
+            "x": 570,
+            "y": 520,
+            "w": 360,
+            "h": 110
+          },
+          "fontSize": 40,
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "text-2",
+          "type": "text",
+          "style": "body",
+          "content": "John Kemp Starley: gleich große Räder, Kettenantrieb. Der „Drahtesel“ wird zur Massenware.",
+          "frame": {
+            "x": 570,
+            "y": 640,
+            "w": 350,
+            "h": 220
+          },
+          "color": "brand.textMuted",
+          "fontSize": 26,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 80
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "punkt-3",
+          "type": "shape",
+          "shape": "ellipse",
+          "fill": "brand.accent",
+          "frame": {
+            "x": 980,
+            "y": 446,
+            "w": 24,
+            "h": 24
+          },
+          "build": {
+            "in": {
+              "preset": "scaleIn",
+              "delay": 0
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "jahr-3",
+          "type": "text",
+          "style": "heading",
+          "content": "1893",
+          "frame": {
+            "x": 980,
+            "y": 350,
+            "w": 360,
+            "h": 70
+          },
+          "color": "brand.accent",
+          "font": "display",
+          "fontSize": 56,
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "titel-3",
+          "type": "text",
+          "style": "heading",
+          "content": "Einheitszeit per Gesetz",
+          "frame": {
+            "x": 980,
+            "y": 520,
+            "w": 360,
+            "h": 110
+          },
+          "fontSize": 40,
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "text-3",
+          "type": "text",
+          "style": "body",
+          "content": "Fahrpläne verlangen eine Zeit für alle – statt der Kirchturm-Ortszeit. Die Uhr am Körper wird wichtig.",
+          "frame": {
+            "x": 980,
+            "y": 640,
+            "w": 350,
+            "h": 220
+          },
+          "color": "brand.textMuted",
+          "fontSize": 26,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 80
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "punkt-4",
+          "type": "shape",
+          "shape": "ellipse",
+          "fill": "brand.accent",
+          "frame": {
+            "x": 1390,
+            "y": 446,
+            "w": 24,
+            "h": 24
+          },
+          "build": {
+            "in": {
+              "preset": "scaleIn",
+              "delay": 0
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "jahr-4",
+          "type": "text",
+          "style": "heading",
+          "content": "1924",
+          "frame": {
+            "x": 1390,
+            "y": 350,
+            "w": 360,
+            "h": 70
+          },
+          "color": "brand.accent",
+          "font": "display",
+          "fontSize": 56,
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "titel-4",
+          "type": "text",
+          "style": "heading",
+          "content": "Fließband bei Opel",
+          "frame": {
+            "x": 1390,
+            "y": 520,
+            "w": 360,
+            "h": 110
+          },
+          "fontSize": 40,
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "text-4",
+          "type": "text",
+          "style": "body",
+          "content": "Rüsselsheim baut das 30-Fache der Aachener Firma Fafnir. 1926 ist Fafnir pleite.",
+          "frame": {
+            "x": 1390,
+            "y": 640,
+            "w": 350,
+            "h": 220
+          },
+          "color": "brand.textMuted",
+          "fontSize": 26,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 80
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "quelle",
+          "type": "text",
+          "style": "caption",
+          "content": "Darstellungstext S. 46–47: Fließband, Eisenbahn und Einheitszeit, Fahrrad",
+          "frame": {
+            "x": 160,
+            "y": 964,
+            "w": 1600,
+            "h": 32
+          },
+          "color": "brand.textMuted",
+          "fontSize": 19,
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 300
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ],
+      "notes": "Pro Klick eine Station. „Eisenbahn und Straßenbahn machen aus Tagen Stunden – aber nur mit Fahrplan. Dafür braucht es 1893 eine einheitliche Zeit. Und in der Fabrik taktet das Fließband: Wer nicht mithält, wie Fafnir in Aachen, scheitert.“"
+    },
+    {
+      "id": "fahrrad",
+      "master": "teil-1",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Teil 1 · Mobilität · Das Fahrrad als Kern der Revolution",
+          "frame": {
+            "x": 160,
+            "y": 170,
+            "w": 1200,
+            "h": 30
+          },
+          "color": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "headline",
+          "type": "text",
+          "style": "title",
+          "content": "Der Drahtesel.",
+          "frame": {
+            "x": 160,
+            "y": 216,
+            "w": 1600,
+            "h": 130
+          },
+          "match": "headline",
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "zahl",
+          "type": "text",
+          "style": "display",
+          "content": "4×",
+          "frame": {
+            "x": 160,
+            "y": 360,
+            "w": 700,
+            "h": 300
+          },
+          "color": "brand.accent",
+          "fontSize": 300,
+          "lineHeight": 0.9,
+          "build": {
+            "in": {
+              "preset": "countUp",
+              "duration": 1600
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "zahl-text",
+          "type": "text",
+          "style": "subtitle",
+          "content": "weiter kommt ein Mensch mit dem Rad – bei **gleichem Kraftaufwand** wie zu Fuß. In der Stadt und auf dem Land.",
+          "frame": {
+            "x": 160,
+            "y": 700,
+            "w": 700,
+            "h": 200
+          },
+          "fontSize": 34,
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "rad-1-flaeche",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 980,
+            "y": 360,
+            "w": 780,
+            "h": 176
+          },
+          "fill": "brand.surface",
+          "radius": 6,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 0
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "rad-1-balken",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 1012,
+            "y": 360,
+            "w": 56,
+            "h": 4
+          },
+          "fill": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 0
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "rad-1-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Erschwinglich",
+          "frame": {
+            "x": 1012,
+            "y": 396,
+            "w": 716,
+            "h": 50
+          },
+          "color": "brand.text",
+          "fontSize": 40,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 60
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "rad-1-text",
+          "type": "text",
+          "style": "body",
+          "content": "Bezahlbare Hightech, die man selbst repariert – und die keine ausgebauten Straßen braucht.",
+          "frame": {
+            "x": 1012,
+            "y": 460,
+            "w": 716,
+            "h": 52
+          },
+          "color": "brand.textMuted",
+          "fontSize": 26,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 120
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "rad-2-flaeche",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 980,
+            "y": 556,
+            "w": 780,
+            "h": 176
+          },
+          "fill": "brand.surface",
+          "radius": 6,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 90
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "rad-2-balken",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 1012,
+            "y": 556,
+            "w": 56,
+            "h": 4
+          },
+          "fill": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 90
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "rad-2-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Emanzipation",
+          "frame": {
+            "x": 1012,
+            "y": 592,
+            "w": 716,
+            "h": 50
+          },
+          "color": "brand.text",
+          "fontSize": 40,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 150
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "rad-2-text",
+          "type": "text",
+          "style": "body",
+          "content": "Bürgerliche Frauen fahren Rad. Der Kettenschutz macht es mit langen Röcken möglich.",
+          "frame": {
+            "x": 1012,
+            "y": 656,
+            "w": 716,
+            "h": 52
+          },
+          "color": "brand.textMuted",
+          "fontSize": 26,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 210
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "rad-3-flaeche",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 980,
+            "y": 752,
+            "w": 780,
+            "h": 176
+          },
+          "fill": "brand.surface",
+          "radius": 6,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 180
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "rad-3-balken",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 1012,
+            "y": 752,
+            "w": 56,
+            "h": 4
+          },
+          "fill": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 180
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "rad-3-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Schattenseite",
+          "frame": {
+            "x": 1012,
+            "y": 788,
+            "w": 716,
+            "h": 50
+          },
+          "color": "brand.text",
+          "fontSize": 40,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 240
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "rad-3-text",
+          "type": "text",
+          "style": "body",
+          "content": "Rennsport wird Geschäft: 1903 die erste Tour de France – 1896 der erste Dopingtote, Arthur Linton.",
+          "frame": {
+            "x": 1012,
+            "y": 852,
+            "w": 716,
+            "h": 52
+          },
+          "color": "brand.textMuted",
+          "fontSize": 26,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 300
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "quelle",
+          "type": "text",
+          "style": "caption",
+          "content": "Darstellungstext S. 47: „Ein Esel aus Draht als Mobilitätsrevolution“",
+          "frame": {
+            "x": 160,
+            "y": 964,
+            "w": 1600,
+            "h": 32
+          },
+          "color": "brand.textMuted",
+          "fontSize": 19,
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 300
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ],
+      "notes": "Zahl wirken lassen: Aktionsradius mehr als vervierfacht. Klick: drei Karten. „Das Fahrrad war die eigentliche Mobilitätsrevolution – billig, reparierbar, auch für Frauen. Mit Schattenseite: Rennsport und Doping.“"
+    },
+    {
+      "id": "auto",
+      "master": "teil-1",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Teil 1 · Mobilität · Das Auto",
+          "frame": {
+            "x": 160,
+            "y": 170,
+            "w": 1200,
+            "h": 30
+          },
+          "color": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "headline",
+          "type": "text",
+          "style": "title",
+          "content": "Luxus, Streit – und neue Regeln.",
+          "frame": {
+            "x": 160,
+            "y": 216,
+            "w": 1600,
+            "h": 130
+          },
+          "match": "headline",
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "plakat",
+          "type": "image",
+          "src": "assets/q10-fafnir.jpg",
+          "fit": "cover",
+          "radius": 6,
+          "frame": {
+            "x": 160,
+            "y": 360,
+            "w": 360,
+            "h": 560
+          },
+          "focus": {
+            "x": 0.5,
+            "y": 0.45
+          },
+          "build": {
+            "in": {
+              "preset": "maskReveal",
+              "direction": "up"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "auto-1-flaeche",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 600,
+            "y": 360,
+            "w": 1160,
+            "h": 176
+          },
+          "fill": "brand.surface",
+          "radius": 6,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 0
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "auto-1-balken",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 632,
+            "y": 360,
+            "w": 56,
+            "h": 4
+          },
+          "fill": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 0
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "auto-1-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Frankreich zuerst",
+          "frame": {
+            "x": 632,
+            "y": 396,
+            "w": 1096,
+            "h": 50
+          },
+          "color": "brand.text",
+          "fontSize": 40,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 60
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "auto-1-text",
+          "type": "text",
+          "style": "body",
+          "content": "Daimler und Benz bauen den Gasmotor um – doch Daimler verkauft seine Lizenzen nach Frankreich. Erst ab 1890 ziehen deutsche Firmen nach, oft nur kurz.",
+          "frame": {
+            "x": 632,
+            "y": 460,
+            "w": 1096,
+            "h": 52
+          },
+          "color": "brand.textMuted",
+          "fontSize": 25,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 120
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "auto-2-flaeche",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 600,
+            "y": 556,
+            "w": 1160,
+            "h": 176
+          },
+          "fill": "brand.surface",
+          "radius": 6,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 90
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "auto-2-balken",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 632,
+            "y": 556,
+            "w": 56,
+            "h": 4
+          },
+          "fill": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 90
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "auto-2-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Streit um den Antrieb",
+          "frame": {
+            "x": 632,
+            "y": 592,
+            "w": 1096,
+            "h": 50
+          },
+          "color": "brand.text",
+          "fontSize": 40,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 150
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "auto-2-text",
+          "type": "text",
+          "style": "body",
+          "content": "Benzin, Gas oder Batterie? Drei Jahrzehnte Debatte – mit Argumenten, die wir heute wieder hören.",
+          "frame": {
+            "x": 632,
+            "y": 656,
+            "w": 1096,
+            "h": 52
+          },
+          "color": "brand.textMuted",
+          "fontSize": 25,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 210
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "auto-3-flaeche",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 600,
+            "y": 752,
+            "w": 1160,
+            "h": 176
+          },
+          "fill": "brand.surface",
+          "radius": 6,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 180
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "auto-3-balken",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 632,
+            "y": 752,
+            "w": 56,
+            "h": 4
+          },
+          "fill": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 180
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "auto-3-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Neue Regeln",
+          "frame": {
+            "x": 632,
+            "y": 788,
+            "w": 1096,
+            "h": 50
+          },
+          "color": "brand.text",
+          "fontSize": 40,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 240
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "auto-3-text",
+          "type": "text",
+          "style": "body",
+          "content": "Führerschein und Verkehrsordnung entstehen. Kritiker wie Michael von Pidoll (1912) warnen vor dem „Faustrecht“ der Autofahrer (Q8).",
+          "frame": {
+            "x": 632,
+            "y": 852,
+            "w": 1096,
+            "h": 52
+          },
+          "color": "brand.textMuted",
+          "fontSize": 25,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 300
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "quelle",
+          "type": "text",
+          "style": "caption",
+          "content": "Q10 · Fafnir-Werke Aachen, um 1920: „Das Auto des selbstfahrenden Herrn!“ (S. 54) · Darstellungstext S. 47 · Q8 Pidoll 1912 · D3 (S. 53–54)",
+          "frame": {
+            "x": 160,
+            "y": 964,
+            "w": 1600,
+            "h": 32
+          },
+          "color": "brand.textMuted",
+          "fontSize": 19,
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 300
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ],
+      "notes": "Plakat kurz zeigen: ein Luxusgut für den „selbstfahrenden Herrn“. Klick: Karten. „In Deutschland erfunden, in Frankreich zuerst gebaut. Welcher Antrieb gewinnt, war offen – Benzin, Gas oder Batterie. Und das Auto brauchte Regeln, weil Kritiker Chaos und Unfälle sahen.“"
+    },
+    {
+      "id": "kommunikation",
+      "master": "teil-1",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Teil 1 · Kommunikation",
+          "frame": {
+            "x": 160,
+            "y": 170,
+            "w": 1200,
+            "h": 30
+          },
+          "color": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "headline",
+          "type": "text",
+          "style": "title",
+          "content": "Kabel, Funk – und die ersten Rechner.",
+          "frame": {
+            "x": 160,
+            "y": 216,
+            "w": 1600,
+            "h": 130
+          },
+          "match": "headline",
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "komm-1-flaeche",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 160,
+            "y": 360,
+            "w": 500,
+            "h": 420
+          },
+          "fill": "brand.surface",
+          "radius": 6,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 0
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "komm-1-balken",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 196,
+            "y": 360,
+            "w": 56,
+            "h": 4
+          },
+          "fill": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 0
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "komm-1-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Per Kabel",
+          "frame": {
+            "x": 196,
+            "y": 400,
+            "w": 428,
+            "h": 55
+          },
+          "color": "brand.text",
+          "fontSize": 44,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 60
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "komm-1-text",
+          "type": "text",
+          "style": "body",
+          "content": "Nach dem Telegrafen kommt in den 1870ern das Telefon. Durchbruch: Musik aus Konzerten im Kopfhörer (Q7). 1900 die erste Leitung Paris–Berlin – für eine dünne Oberschicht.",
+          "frame": {
+            "x": 196,
+            "y": 469,
+            "w": 428,
+            "h": 283
+          },
+          "color": "brand.textMuted",
+          "fontSize": 27,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 120
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "komm-1-icon",
+          "type": "icon",
+          "icon": "cable",
+          "color": "brand.accent",
+          "strokeWidth": 1.5,
+          "frame": {
+            "x": 576,
+            "y": 396,
+            "w": 48,
+            "h": 48
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine",
+              "duration": 900,
+              "delay": 0
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "komm-2-flaeche",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 710,
+            "y": 360,
+            "w": 500,
+            "h": 420
+          },
+          "fill": "brand.surface",
+          "radius": 6,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 100
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "komm-2-balken",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 746,
+            "y": 360,
+            "w": 56,
+            "h": 4
+          },
+          "fill": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 100
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "komm-2-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Per Funk",
+          "frame": {
+            "x": 746,
+            "y": 400,
+            "w": 428,
+            "h": 55
+          },
+          "color": "brand.text",
+          "fontSize": 44,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 160
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "komm-2-text",
+          "type": "text",
+          "style": "body",
+          "content": "1888 bestätigt Heinrich Hertz die Radiowellen. 1906 wird SOS festgelegt, die Titanic funkt über 400 Seemeilen. 1923 läuft die erste Radiosendung.",
+          "frame": {
+            "x": 746,
+            "y": 469,
+            "w": 428,
+            "h": 283
+          },
+          "color": "brand.textMuted",
+          "fontSize": 27,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 220
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "komm-2-icon",
+          "type": "icon",
+          "icon": "radio-tower",
+          "color": "brand.accent",
+          "strokeWidth": 1.5,
+          "frame": {
+            "x": 1126,
+            "y": 396,
+            "w": 48,
+            "h": 48
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine",
+              "duration": 900,
+              "delay": 100
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "komm-3-flaeche",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 1260,
+            "y": 360,
+            "w": 500,
+            "h": 420
+          },
+          "fill": "brand.surface",
+          "radius": 6,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 200
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "komm-3-balken",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 1296,
+            "y": 360,
+            "w": 56,
+            "h": 4
+          },
+          "fill": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 200
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "komm-3-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Rechnen",
+          "frame": {
+            "x": 1296,
+            "y": 400,
+            "w": 428,
+            "h": 55
+          },
+          "color": "brand.text",
+          "fontSize": 44,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 260
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "komm-3-text",
+          "type": "text",
+          "style": "body",
+          "content": "1843 schreibt Ada Lovelace den ersten Algorithmus. Konrad Zuse baut in den 1930ern programmierbare Rechner, 1944 folgt der 17 Meter lange Mark I.",
+          "frame": {
+            "x": 1296,
+            "y": 469,
+            "w": 428,
+            "h": 283
+          },
+          "color": "brand.textMuted",
+          "fontSize": 27,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 320
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "komm-3-icon",
+          "type": "icon",
+          "icon": "binary",
+          "color": "brand.accent",
+          "strokeWidth": 1.5,
+          "frame": {
+            "x": 1676,
+            "y": 396,
+            "w": 48,
+            "h": 48
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine",
+              "duration": 900,
+              "delay": 200
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "quelle",
+          "type": "text",
+          "style": "caption",
+          "content": "Darstellungstext S. 48–49: Kommunikation per Kabel und Funk, Speicherung und Verarbeitung · Q7 Zeitungsabbildung ca. 1880",
+          "frame": {
+            "x": 160,
+            "y": 964,
+            "w": 1600,
+            "h": 32
+          },
+          "color": "brand.textMuted",
+          "fontSize": 19,
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 300
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ],
+      "notes": "Ein Klick, drei Karten. „Kommunikation wird schneller – aber zuerst teuer und exklusiv. Das Telefon setzt sich erst als Musikübertragung durch, Funk rettet Schiffe, und aus Lochkarten werden Rechner: der Weg in die Dritte Industrielle Revolution.“ Übergabe an Name 2."
+    },
+    {
+      "id": "kapitel-2",
+      "layout": "kapitel",
+      "background": {
+        "type": "meshGradient",
+        "colors": [
+          "brand.background",
+          "brand.accent2",
+          "brand.accent",
+          "brand.surface"
+        ],
+        "animate": true
+      },
+      "effects": [
+        {
+          "type": "grain",
+          "amount": 0.1
+        },
+        {
+          "type": "vignette",
+          "amount": 0.3
+        },
+        {
+          "type": "lightSweep",
+          "amount": 0.35
+        }
+      ],
+      "transition": {
+        "type": "lightLeak",
+        "duration": 1400
+      },
+      "elements": [
+        {
+          "id": "kapitel-kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Teil 2 · Name 2",
+          "frame": {
+            "x": 160,
+            "y": 236,
+            "w": 1200,
+            "h": 30
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "kapitel-nummer",
+          "type": "text",
+          "style": "display",
+          "content": "02",
+          "frame": {
+            "x": 160,
+            "y": 280,
+            "w": 800,
+            "h": 240
+          },
+          "color": "brand.accent",
+          "fontSize": 220,
+          "build": {
+            "in": {
+              "preset": "blurRise",
+              "duration": 1000
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "kapitel-linie",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.accent",
+            "width": 3
+          },
+          "frame": {
+            "x": 160,
+            "y": 556,
+            "w": 160,
+            "h": 4
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine",
+              "duration": 700
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "kapitel-titel",
+          "type": "text",
+          "style": "title",
+          "content": "Heller – und entspannter?",
+          "frame": {
+            "x": 160,
+            "y": 600,
+            "w": 1600,
+            "h": 130
+          },
+          "match": "kapitel-titel",
+          "build": {
+            "in": {
+              "preset": "maskReveal",
+              "direction": "right",
+              "delay": 200
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "kapitel-text",
+          "type": "text",
+          "style": "subtitle",
+          "content": "Elektrizität und zwei Quellen · Teil 2",
+          "frame": {
+            "x": 160,
+            "y": 750,
+            "w": 1400,
+            "h": 60
+          },
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        }
+      ]
+    },
+    {
+      "id": "elektrizitaet",
+      "master": "teil-2",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Teil 2 · Elektrizität",
+          "frame": {
+            "x": 160,
+            "y": 170,
+            "w": 1200,
+            "h": 30
+          },
+          "color": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "headline",
+          "type": "text",
+          "style": "title",
+          "content": "Vom Salon-Trick zur Infrastruktur.",
+          "frame": {
+            "x": 160,
+            "y": 216,
+            "w": 1600,
+            "h": 110
+          },
+          "match": "headline",
+          "fontSize": 84,
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "plakat",
+          "type": "image",
+          "src": "assets/q2-frankfurt-1891.jpg",
+          "fit": "cover",
+          "radius": 6,
+          "frame": {
+            "x": 1365,
+            "y": 360,
+            "w": 395,
+            "h": 560
+          },
+          "build": {
+            "in": {
+              "preset": "maskReveal",
+              "direction": "up",
+              "duration": 1100
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "plakat-text",
+          "type": "text",
+          "style": "caption",
+          "content": "Q2 · Frankfurt 1891",
+          "frame": {
+            "x": 1365,
+            "y": 934,
+            "w": 395,
+            "h": 30
+          },
+          "fontSize": 18,
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 300
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "weg-linie-1",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.surface",
+            "width": 1
+          },
+          "frame": {
+            "x": 160,
+            "y": 360,
+            "w": 1080,
+            "h": 4
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine",
+              "duration": 600
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "weg-jahr-1",
+          "type": "text",
+          "style": "label",
+          "content": "6. Jh. v. Chr.",
+          "frame": {
+            "x": 160,
+            "y": 386,
+            "w": 220,
+            "h": 30
+          },
+          "color": "brand.accent",
+          "fontSize": 20,
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "weg-titel-1",
+          "type": "text",
+          "style": "heading",
+          "content": "Bernstein",
+          "frame": {
+            "x": 400,
+            "y": 378,
+            "w": 840,
+            "h": 46
+          },
+          "fontSize": 34,
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "weg-text-1",
+          "type": "text",
+          "style": "body",
+          "content": "Thales von Milet reibt Bernstein – griechisch *elektron* – und kleine Teilchen springen an.",
+          "frame": {
+            "x": 400,
+            "y": 426,
+            "w": 840,
+            "h": 70
+          },
+          "color": "brand.textMuted",
+          "fontSize": 23,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 60
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "weg-linie-2",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.surface",
+            "width": 1
+          },
+          "frame": {
+            "x": 160,
+            "y": 505,
+            "w": 1080,
+            "h": 4
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine",
+              "duration": 600
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "weg-jahr-2",
+          "type": "text",
+          "style": "label",
+          "content": "1660",
+          "frame": {
+            "x": 160,
+            "y": 531,
+            "w": 220,
+            "h": 30
+          },
+          "color": "brand.accent",
+          "fontSize": 20,
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "weg-titel-2",
+          "type": "text",
+          "style": "heading",
+          "content": "Salonspektakel",
+          "frame": {
+            "x": 400,
+            "y": 523,
+            "w": 840,
+            "h": 46
+          },
+          "fontSize": 34,
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "weg-text-2",
+          "type": "text",
+          "style": "body",
+          "content": "Otto von Guerickes Elektrisiermaschine: Haare stehen zu Berge, Funken springen zwischen Menschen.",
+          "frame": {
+            "x": 400,
+            "y": 571,
+            "w": 840,
+            "h": 70
+          },
+          "color": "brand.textMuted",
+          "fontSize": 23,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 60
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "weg-linie-3",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.surface",
+            "width": 1
+          },
+          "frame": {
+            "x": 160,
+            "y": 650,
+            "w": 1080,
+            "h": 4
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine",
+              "duration": 600
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "weg-jahr-3",
+          "type": "text",
+          "style": "label",
+          "content": "1780",
+          "frame": {
+            "x": 160,
+            "y": 676,
+            "w": 220,
+            "h": 30
+          },
+          "color": "brand.accent",
+          "fontSize": 20,
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "weg-titel-3",
+          "type": "text",
+          "style": "heading",
+          "content": "Galvanis Froschbein",
+          "frame": {
+            "x": 400,
+            "y": 668,
+            "w": 840,
+            "h": 46
+          },
+          "fontSize": 34,
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "weg-text-3",
+          "type": "text",
+          "style": "body",
+          "content": "Strom lässt totes Gewebe zucken – und weckt die Fantasie, Tote zu beleben (Q1, Frankenstein).",
+          "frame": {
+            "x": 400,
+            "y": 716,
+            "w": 840,
+            "h": 70
+          },
+          "color": "brand.textMuted",
+          "fontSize": 23,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 60
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "weg-linie-4",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.surface",
+            "width": 1
+          },
+          "frame": {
+            "x": 160,
+            "y": 795,
+            "w": 1080,
+            "h": 4
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine",
+              "duration": 600
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "weg-jahr-4",
+          "type": "text",
+          "style": "label",
+          "content": "1891",
+          "frame": {
+            "x": 160,
+            "y": 821,
+            "w": 220,
+            "h": 30
+          },
+          "color": "brand.accent",
+          "fontSize": 20,
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "weg-titel-4",
+          "type": "text",
+          "style": "heading",
+          "content": "Strom auf Reisen",
+          "frame": {
+            "x": 400,
+            "y": 813,
+            "w": 840,
+            "h": 46
+          },
+          "fontSize": 34,
+          "build": {
+            "in": {
+              "preset": "rise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "weg-text-4",
+          "type": "text",
+          "style": "body",
+          "content": "Frankfurt: Drehstrom aus 176 km Entfernung, 1.000 Glühlampen, ein künstlicher Wasserfall (Q2).",
+          "frame": {
+            "x": 400,
+            "y": 861,
+            "w": 840,
+            "h": 70
+          },
+          "color": "brand.textMuted",
+          "fontSize": 23,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 60
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "quelle",
+          "type": "text",
+          "style": "caption",
+          "content": "Darstellungstext S. 47–48 · Q1 „Eine galvanisierte Leiche“ (1836) · Q2 Plakat der Elektrotechnischen Ausstellung (S. 50)",
+          "frame": {
+            "x": 160,
+            "y": 964,
+            "w": 1150,
+            "h": 32
+          },
+          "color": "brand.textMuted",
+          "fontSize": 19,
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 300
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ],
+      "notes": "Plakat erscheint automatisch, dann pro Klick eine Station. „Elektrizität war lange ein Partytrick für die Oberschicht. 1891 wird daraus Infrastruktur: Strom reist 176 Kilometer nach Frankfurt – die Grundlage für Stromnetze, Fabriken rund um die Uhr und Licht in den Städten.“"
+    },
+    {
+      "id": "q3-zitat",
+      "master": "teil-2-hell",
+      "transition": {
+        "type": "blurDissolve",
+        "duration": 900
+      },
+      "elements": [
+        {
+          "id": "q-kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Quelle Q3 · Georg Brandes · Berlin 1883",
+          "frame": {
+            "x": 160,
+            "y": 150,
+            "w": 1200,
+            "h": 30
+          },
+          "color": "brand.accent2",
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "anfuehrung",
+          "type": "text",
+          "style": "display",
+          "content": "„",
+          "frame": {
+            "x": 160,
+            "y": 110,
+            "w": 200,
+            "h": 200
+          },
+          "color": "brand.ink",
+          "fontSize": 240,
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "zitat",
+          "type": "text",
+          "style": "heading",
+          "content": "*Tritt man ein, wo dies Licht herrscht, ist es einem im Grunde, als träte man nicht in einen neuen Stadtteil, sondern in eine völlig neue Epoche* […] *Die Potsdamer Straße* […] *mit ihren gewöhnlichen, vor zwanzig Jahren noch so grellen Gaslaternen* […] *nimmt sich im Vergleich zur Leipziger wie die dunkle Hauptstraße einer Kleinstadt des letzten Jahrhunderts aus* […] *dann ist dem Betrachter zumute, als sei er aus dunklen vergangenen und vergehenden Zeiten der Barbarei in ein neues Zeitalter eingezogen, dessen Wesen Licht ist und die Freude über das Licht.*",
+          "frame": {
+            "x": 160,
+            "y": 380,
+            "w": 1600,
+            "h": 400
+          },
+          "color": "brand.ink",
+          "fontSize": 38,
+          "lineHeight": 1.4,
+          "fontWeight": 400,
+          "font": "text",
+          "match": "zitat",
+          "build": {
+            "in": {
+              "preset": "maskReveal",
+              "direction": "right",
+              "duration": 1300,
+              "delay": 200
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "linie",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.ink",
+            "width": 3
+          },
+          "frame": {
+            "x": 160,
+            "y": 850,
+            "w": 96,
+            "h": 4
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine"
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "quelle-angabe",
+          "type": "text",
+          "style": "caption",
+          "content": "Georg Brandes (1842–1927), Berlin als deutsche Reichshauptstadt. Erinnerungen aus den Jahren 1877–1883 – über die ersten elektrischen Straßenlaternen am Potsdamer Platz (Q3, S. 50)",
+          "frame": {
+            "x": 290,
+            "y": 830,
+            "w": 1470,
+            "h": 70
+          },
+          "color": "brand.accent2",
+          "fontSize": 21,
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ],
+      "notes": "Helle Folie – „heller“ wörtlich. Name 2 liest langsam die Kernstellen: neue Epoche, Gaslaternen wie Kleinstadt, Barbarei vs. Licht. Klick: Quellenangabe. Kurz einordnen: Erinnerungen eines dänischen Augenzeugen, der sechs Jahre in Berlin lebte."
+    },
+    {
+      "id": "q3-analyse",
+      "master": "teil-2-hell",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Quelle Q3 · Analyse",
+          "frame": {
+            "x": 160,
+            "y": 170,
+            "w": 1200,
+            "h": 30
+          },
+          "color": "brand.accent2",
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "headline",
+          "type": "text",
+          "style": "title",
+          "content": "Was Brandes uns verrät.",
+          "frame": {
+            "x": 160,
+            "y": 216,
+            "w": 1600,
+            "h": 130
+          },
+          "match": "headline",
+          "color": "brand.ink",
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "ana-1-flaeche",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 160,
+            "y": 360,
+            "w": 500,
+            "h": 420
+          },
+          "stroke": {
+            "color": "brand.accent2",
+            "width": 1.5
+          },
+          "radius": 6,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 0
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "ana-1-balken",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 196,
+            "y": 360,
+            "w": 56,
+            "h": 4
+          },
+          "fill": "brand.ink",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 0
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "ana-1-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Einordnung",
+          "frame": {
+            "x": 196,
+            "y": 400,
+            "w": 428,
+            "h": 55
+          },
+          "color": "brand.ink",
+          "fontSize": 44,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 60
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "ana-1-text",
+          "type": "text",
+          "style": "body",
+          "content": "Dänischer Literaturkritiker, 1877–1883 in Berlin. Erinnerungen – ein Augenzeuge, kein Techniker. Er vergleicht mit Paris, wo er das Licht schon kannte.",
+          "frame": {
+            "x": 196,
+            "y": 469,
+            "w": 428,
+            "h": 283
+          },
+          "color": "brand.accent2",
+          "fontSize": 26,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 120
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "ana-2-flaeche",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 710,
+            "y": 360,
+            "w": 500,
+            "h": 420
+          },
+          "stroke": {
+            "color": "brand.accent2",
+            "width": 1.5
+          },
+          "radius": 6,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 100
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "ana-2-balken",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 746,
+            "y": 360,
+            "w": 56,
+            "h": 4
+          },
+          "fill": "brand.ink",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 100
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "ana-2-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Beobachtung",
+          "frame": {
+            "x": 746,
+            "y": 400,
+            "w": 428,
+            "h": 55
+          },
+          "color": "brand.ink",
+          "fontSize": 44,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 160
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "ana-2-text",
+          "type": "text",
+          "style": "body",
+          "content": "Berlin beleuchtet zuerst Stadtbahn-Stationen und den verkehrsreichen Potsdamer Platz – Paris den Opernplatz. Licht folgt dem Verkehr: *heller* und *schneller* gehören zusammen.",
+          "frame": {
+            "x": 746,
+            "y": 469,
+            "w": 428,
+            "h": 283
+          },
+          "color": "brand.accent2",
+          "fontSize": 26,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 220
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "ana-3-flaeche",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 1260,
+            "y": 360,
+            "w": 500,
+            "h": 420
+          },
+          "stroke": {
+            "color": "brand.accent2",
+            "width": 1.5
+          },
+          "radius": 6,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 200
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "ana-3-balken",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 1296,
+            "y": 360,
+            "w": 56,
+            "h": 4
+          },
+          "fill": "brand.ink",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 200
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "ana-3-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Deutung",
+          "frame": {
+            "x": 1296,
+            "y": 400,
+            "w": 428,
+            "h": 55
+          },
+          "color": "brand.ink",
+          "fontSize": 44,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 260
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "ana-3-text",
+          "type": "text",
+          "style": "body",
+          "content": "Gaslicht wird zur „Barbarei“, Elektrizität zur „neuen Epoche“. Licht ist Symbol des Fortschritts – aber nur zwei Straßen weit. Der Rest der Stadt bleibt dunkel.",
+          "frame": {
+            "x": 1296,
+            "y": 469,
+            "w": 428,
+            "h": 283
+          },
+          "color": "brand.accent2",
+          "fontSize": 26,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 320
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "quelle",
+          "type": "text",
+          "style": "caption",
+          "content": "Q3, S. 50 · Darstellungstext S. 46–47 (Glühbirne als Massenprodukt, Straßenbahn)",
+          "frame": {
+            "x": 160,
+            "y": 964,
+            "w": 1600,
+            "h": 32
+          },
+          "color": "brand.accent2",
+          "fontSize": 19,
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 300
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ],
+      "notes": "Klick: drei Karten. „Brandes ist kein neutraler Beobachter, sondern begeistert. Spannend: Berlin beleuchtet Verkehrsknoten, nicht Vergnügungsorte – Licht und Mobilität greifen ineinander. Und: Begeisterung für zwei Straßen – die Nacht war 1883 noch längst nicht besiegt.“"
+    },
+    {
+      "id": "q5-plakat",
+      "master": "teil-2",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Quelle Q5 · Werbeplakat um 1935",
+          "frame": {
+            "x": 160,
+            "y": 170,
+            "w": 1200,
+            "h": 30
+          },
+          "color": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "headline",
+          "type": "text",
+          "style": "title",
+          "content": "„Mutter hat jetzt Zeit für uns.“",
+          "frame": {
+            "x": 160,
+            "y": 216,
+            "w": 1600,
+            "h": 110
+          },
+          "match": "headline",
+          "fontSize": 84,
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "plakat",
+          "type": "image",
+          "src": "assets/q5-mutter-kocht-elektrisch.jpg",
+          "fit": "cover",
+          "radius": 6,
+          "frame": {
+            "x": 160,
+            "y": 360,
+            "w": 380,
+            "h": 566
+          },
+          "build": {
+            "in": {
+              "preset": "maskReveal",
+              "direction": "up",
+              "duration": 1100
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "q5-1-flaeche",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 620,
+            "y": 360,
+            "w": 1140,
+            "h": 176
+          },
+          "fill": "brand.surface",
+          "radius": 6,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 0
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "q5-1-balken",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 652,
+            "y": 360,
+            "w": 56,
+            "h": 4
+          },
+          "fill": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 0
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q5-1-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Bild",
+          "frame": {
+            "x": 652,
+            "y": 396,
+            "w": 1076,
+            "h": 50
+          },
+          "color": "brand.text",
+          "fontSize": 40,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 60
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q5-1-text",
+          "type": "text",
+          "style": "body",
+          "content": "Mutter und Kinder laufen durch Blüten und Sonne – der Elektroherd backt im Hintergrund von allein, ein Zwerg in Kochmütze passt auf.",
+          "frame": {
+            "x": 652,
+            "y": 460,
+            "w": 1076,
+            "h": 52
+          },
+          "color": "brand.textMuted",
+          "fontSize": 25,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 120
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q5-2-flaeche",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 620,
+            "y": 556,
+            "w": 1140,
+            "h": 176
+          },
+          "fill": "brand.surface",
+          "radius": 6,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 90
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q5-2-balken",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 652,
+            "y": 556,
+            "w": 56,
+            "h": 4
+          },
+          "fill": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 90
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q5-2-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Botschaft",
+          "frame": {
+            "x": 652,
+            "y": 592,
+            "w": 1076,
+            "h": 50
+          },
+          "color": "brand.text",
+          "fontSize": 40,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 150
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q5-2-text",
+          "type": "text",
+          "style": "body",
+          "content": "Elektrizität schenkt Zeit, und Zeit heißt Familie. Das Versprechen des Kapiteltitels: *entspannter*.",
+          "frame": {
+            "x": 652,
+            "y": 656,
+            "w": 1076,
+            "h": 52
+          },
+          "color": "brand.textMuted",
+          "fontSize": 25,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 210
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q5-3-flaeche",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 620,
+            "y": 752,
+            "w": 1140,
+            "h": 176
+          },
+          "fill": "brand.surface",
+          "radius": 6,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 180
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q5-3-balken",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 652,
+            "y": 752,
+            "w": 56,
+            "h": 4
+          },
+          "fill": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 180
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q5-3-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Kritisch",
+          "frame": {
+            "x": 652,
+            "y": 788,
+            "w": 1076,
+            "h": 50
+          },
+          "color": "brand.text",
+          "fontSize": 40,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 240
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q5-3-text",
+          "type": "text",
+          "style": "body",
+          "content": "Werbung, nicht Alltag: Elektroherde sind 1935 teuer. Das Rollenbild – Mutter am Herd – bleibt. Entspannter – aber für wen?",
+          "frame": {
+            "x": 652,
+            "y": 852,
+            "w": 1076,
+            "h": 52
+          },
+          "color": "brand.textMuted",
+          "fontSize": 25,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 300
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "quelle",
+          "type": "text",
+          "style": "caption",
+          "content": "Q5 · Deutsches Werbeplakat, um 1935 (S. 51) · Vergleich: Q6 Hudson Maxim 1910 („Neue Kraftquellen“) – die Energiefrage hinter dem Versprechen",
+          "frame": {
+            "x": 160,
+            "y": 964,
+            "w": 1600,
+            "h": 32
+          },
+          "color": "brand.textMuted",
+          "fontSize": 19,
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 300
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ],
+      "notes": "Plakat erst beschreiben lassen (Publikum fragen: Was seht ihr?). Klick: Karten. „Fünfzig Jahre nach Brandes ist Strom im Haushalt angekommen – als Werbeversprechen. Zeitersparnis wird verkauft, nicht Gleichberechtigung. Und woher der Strom kommt, fragt das Plakat nicht – Hudson Maxim fragte es 1910 schon.“"
+    },
+    {
+      "id": "fazit",
+      "master": "teil-2",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Fazit",
+          "frame": {
+            "x": 160,
+            "y": 170,
+            "w": 1200,
+            "h": 30
+          },
+          "color": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "headline",
+          "type": "text",
+          "style": "title",
+          "content": "Schneller, heller, entspannter?",
+          "frame": {
+            "x": 160,
+            "y": 216,
+            "w": 1600,
+            "h": 130
+          },
+          "match": "headline",
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "fazit-1-flaeche",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 160,
+            "y": 360,
+            "w": 500,
+            "h": 340
+          },
+          "fill": "brand.surface",
+          "radius": 6,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 0
+            },
+            "trigger": "click"
+          }
+        },
+        {
+          "id": "fazit-1-balken",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 196,
+            "y": 360,
+            "w": 56,
+            "h": 4
+          },
+          "fill": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 0
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "fazit-1-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Schneller – ja.",
+          "frame": {
+            "x": 196,
+            "y": 400,
+            "w": 428,
+            "h": 48
+          },
+          "color": "brand.text",
+          "fontSize": 38,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 60
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "fazit-1-text",
+          "type": "text",
+          "style": "body",
+          "content": "Bahn, Rad und Auto verkürzen Wege. Aber Fahrplan, Uhr und Fließband takten das Leben neu.",
+          "frame": {
+            "x": 196,
+            "y": 462,
+            "w": 428,
+            "h": 210
+          },
+          "color": "brand.textMuted",
+          "fontSize": 26,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 120
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "fazit-2-flaeche",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 710,
+            "y": 360,
+            "w": 500,
+            "h": 340
+          },
+          "fill": "brand.surface",
+          "radius": 6,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 100
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "fazit-2-balken",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 746,
+            "y": 360,
+            "w": 56,
+            "h": 4
+          },
+          "fill": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 100
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "fazit-2-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Heller – ja, aber.",
+          "frame": {
+            "x": 746,
+            "y": 400,
+            "w": 428,
+            "h": 48
+          },
+          "color": "brand.text",
+          "fontSize": 38,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 160
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "fazit-2-text",
+          "type": "text",
+          "style": "body",
+          "content": "Licht verdrängt die Nacht – zuerst in Metropolen, für die Oberschicht. Die Energiefrage bleibt bis heute (D1: Garzweiler).",
+          "frame": {
+            "x": 746,
+            "y": 462,
+            "w": 428,
+            "h": 210
+          },
+          "color": "brand.textMuted",
+          "fontSize": 26,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 220
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "fazit-3-flaeche",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 1260,
+            "y": 360,
+            "w": 500,
+            "h": 340
+          },
+          "fill": "brand.surface",
+          "radius": 6,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 200
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "fazit-3-balken",
+          "type": "shape",
+          "shape": "rect",
+          "frame": {
+            "x": 1296,
+            "y": 360,
+            "w": 56,
+            "h": 4
+          },
+          "fill": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 200
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "fazit-3-titel",
+          "type": "text",
+          "style": "heading",
+          "content": "Entspannter – für wen?",
+          "frame": {
+            "x": 1296,
+            "y": 400,
+            "w": 428,
+            "h": 48
+          },
+          "color": "brand.text",
+          "fontSize": 38,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 260
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "fazit-3-text",
+          "type": "text",
+          "style": "body",
+          "content": "Ein Werbeversprechen. Daneben Dopingtote, Unfälle, Pidolls „Faustrecht“ und Firmen, die am Tempo scheitern.",
+          "frame": {
+            "x": 1296,
+            "y": 462,
+            "w": 428,
+            "h": 210
+          },
+          "color": "brand.textMuted",
+          "fontSize": 26,
+          "build": {
+            "in": {
+              "preset": "rise",
+              "delay": 320
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "schluss",
+          "type": "text",
+          "style": "heading",
+          "content": "Das Fragezeichen im Titel bleibt – *bis heute.*",
+          "frame": {
+            "x": 160,
+            "y": 790,
+            "w": 1600,
+            "h": 70
+          },
+          "color": "brand.accent",
+          "fontSize": 44,
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "click"
+          }
+        }
+      ],
+      "notes": "Beide Sprechenden. Klick: drei Antworten. Zweiter Klick: Schlusssatz. „Schneller: ja, aber mit neuem Zeitdruck. Heller: ja, aber zuerst für wenige – und mit einer Energiefrage, die wir bis Garzweiler kennen. Entspannter: das hat die Werbung versprochen. Das Fragezeichen bleibt.“"
+    },
+    {
+      "id": "quellen",
+      "master": "teil-2",
+      "transition": {
+        "type": "blurDissolve"
+      },
+      "elements": [
+        {
+          "id": "kicker",
+          "type": "text",
+          "style": "label",
+          "content": "Danke · Fragen?",
+          "frame": {
+            "x": 160,
+            "y": 170,
+            "w": 1200,
+            "h": 30
+          },
+          "color": "brand.accent",
+          "build": {
+            "in": {
+              "preset": "fade"
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "headline",
+          "type": "text",
+          "style": "title",
+          "content": "Quellen.",
+          "frame": {
+            "x": 160,
+            "y": 216,
+            "w": 1600,
+            "h": 130
+          },
+          "match": "headline",
+          "build": {
+            "in": {
+              "preset": "blurRise"
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q-linie-1",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.surface",
+            "width": 1
+          },
+          "frame": {
+            "x": 160,
+            "y": 380,
+            "w": 760,
+            "h": 4
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine",
+              "duration": 600,
+              "delay": 0
+            },
+            "trigger": "afterPrevious"
+          }
+        },
+        {
+          "id": "q-key-1",
+          "type": "text",
+          "style": "label",
+          "content": "Schulbuch",
+          "frame": {
+            "x": 160,
+            "y": 402,
+            "w": 760,
+            "h": 28
+          },
+          "color": "brand.accent",
+          "fontSize": 17,
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 100
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q-val-1",
+          "type": "text",
+          "style": "caption",
+          "content": "Kapitel 1.4 „Schneller, heller, entspannter in die Zukunft? Mobilität, Elektrizität und Kommunikation“, S. 46–55",
+          "frame": {
+            "x": 160,
+            "y": 438,
+            "w": 760,
+            "h": 100
+          },
+          "fontSize": 21,
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 160
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q-linie-2",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.surface",
+            "width": 1
+          },
+          "frame": {
+            "x": 980,
+            "y": 380,
+            "w": 760,
+            "h": 4
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine",
+              "duration": 600,
+              "delay": 70
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q-key-2",
+          "type": "text",
+          "style": "label",
+          "content": "Q3",
+          "frame": {
+            "x": 980,
+            "y": 402,
+            "w": 760,
+            "h": 28
+          },
+          "color": "brand.accent",
+          "fontSize": 17,
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 170
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q-val-2",
+          "type": "text",
+          "style": "caption",
+          "content": "Georg Brandes, Berlin als deutsche Reichshauptstadt. Erinnerungen aus den Jahren 1877–1883. Neuaufl. Berlin 1989, S. 184. Übers. Peter Urban-Halle",
+          "frame": {
+            "x": 980,
+            "y": 438,
+            "w": 760,
+            "h": 100
+          },
+          "fontSize": 21,
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 230
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q-linie-3",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.surface",
+            "width": 1
+          },
+          "frame": {
+            "x": 160,
+            "y": 560,
+            "w": 760,
+            "h": 4
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine",
+              "duration": 600,
+              "delay": 140
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q-key-3",
+          "type": "text",
+          "style": "label",
+          "content": "Q5",
+          "frame": {
+            "x": 160,
+            "y": 582,
+            "w": 760,
+            "h": 28
+          },
+          "color": "brand.accent",
+          "fontSize": 17,
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 240
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q-val-3",
+          "type": "text",
+          "style": "caption",
+          "content": "„Mutter hat jetzt Zeit für uns, denn sie kocht elektrisch!“ Deutsches Werbeplakat um 1935",
+          "frame": {
+            "x": 160,
+            "y": 618,
+            "w": 760,
+            "h": 100
+          },
+          "fontSize": 21,
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 300
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q-linie-4",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.surface",
+            "width": 1
+          },
+          "frame": {
+            "x": 980,
+            "y": 560,
+            "w": 760,
+            "h": 4
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine",
+              "duration": 600,
+              "delay": 210
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q-key-4",
+          "type": "text",
+          "style": "label",
+          "content": "Q1 · Q2",
+          "frame": {
+            "x": 980,
+            "y": 582,
+            "w": 760,
+            "h": 28
+          },
+          "color": "brand.accent",
+          "fontSize": 17,
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 310
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q-val-4",
+          "type": "text",
+          "style": "caption",
+          "content": "„Eine galvanisierte Leiche“, britischer Cartoon 1836 · Plakat der Internationalen Elektrotechnischen Ausstellung Frankfurt 1891",
+          "frame": {
+            "x": 980,
+            "y": 618,
+            "w": 760,
+            "h": 100
+          },
+          "fontSize": 21,
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 370
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q-linie-5",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.surface",
+            "width": 1
+          },
+          "frame": {
+            "x": 160,
+            "y": 740,
+            "w": 760,
+            "h": 4
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine",
+              "duration": 600,
+              "delay": 280
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q-key-5",
+          "type": "text",
+          "style": "label",
+          "content": "Q7 · Q10",
+          "frame": {
+            "x": 160,
+            "y": 762,
+            "w": 760,
+            "h": 28
+          },
+          "color": "brand.accent",
+          "fontSize": 17,
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 380
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q-val-5",
+          "type": "text",
+          "style": "caption",
+          "content": "Musikerlebnis per Kabel und Kopfhörer, Zeitungsabbildung ca. 1880 · Werbeplakat der Fafnir-Werke Aachen, ca. 1920",
+          "frame": {
+            "x": 160,
+            "y": 798,
+            "w": 760,
+            "h": 100
+          },
+          "fontSize": 21,
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 440
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q-linie-6",
+          "type": "shape",
+          "shape": "line",
+          "stroke": {
+            "color": "brand.surface",
+            "width": 1
+          },
+          "frame": {
+            "x": 980,
+            "y": 740,
+            "w": 760,
+            "h": 4
+          },
+          "build": {
+            "in": {
+              "preset": "drawLine",
+              "duration": 600,
+              "delay": 350
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q-key-6",
+          "type": "text",
+          "style": "label",
+          "content": "Q8 · D1",
+          "frame": {
+            "x": 980,
+            "y": 762,
+            "w": 760,
+            "h": 28
+          },
+          "color": "brand.accent",
+          "fontSize": 17,
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 450
+            },
+            "trigger": "withPrevious"
+          }
+        },
+        {
+          "id": "q-val-6",
+          "type": "text",
+          "style": "caption",
+          "content": "Michael Freiherr von Pidoll, Der heutige Automobilismus. Ein Protest und Weckruf. Wien 1912 · Die Energiefrage heute: Garzweiler",
+          "frame": {
+            "x": 980,
+            "y": 798,
+            "w": 760,
+            "h": 100
+          },
+          "fontSize": 21,
+          "build": {
+            "in": {
+              "preset": "fade",
+              "delay": 510
+            },
+            "trigger": "withPrevious"
+          }
+        }
+      ],
+      "notes": "Bedanken, Fragen aufnehmen. Alle Quellen stammen aus dem Schulbuch, Kapitel 1.4 (S. 46–55)."
+    }
+  ]
+}
