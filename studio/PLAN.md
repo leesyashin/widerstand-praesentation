@@ -463,8 +463,9 @@ Jede Phase endet mit etwas, das du **wirklich benutzen** kannst.
   echtes Zusammenführen bei gleichzeitigen Änderungen (zuletzt gespeichert gewinnt, Konflikte werden gemeldet).
 
 ### Als Nächstes: Studio aufs Handy bringen ⏳ offen
-Der Code ist fertig (PR #6), es fehlt die Einrichtung und der Test im echten Leben:
-- [ ] PR #6 mergen (Entwurf → bereit → mergen).
+Der Code ist fertig (PR #6), es fehlt die Einrichtung und der Test im echten Leben. Die Schritte gehören jetzt zu
+Etappe 1 der Fertigstellung (`FERTIGSTELLUNG.md`):
+- [x] PR #6 mergen (Entwurf → bereit → mergen).
 - [ ] GitHub: Fine-grained Token anlegen – nur dieses Repo, „Contents: Read and write“, Ablauf z. B. 1 Jahr.
 - [ ] Vercel: Repo importieren, Root Directory `studio`, Environment Variables `GITHUB_TOKEN` und
       `STUDIO_PASSWORD` setzen, Deploy.
@@ -498,7 +499,7 @@ Der Code ist fertig (PR #6), es fehlt die Einrichtung und der Test im echten Leb
   Kino, Sachlich, Papier) plus deine Auswahl Nachtblau, Tiefsee, Moos, Bordeaux, Graphit & Gold, Leinen, Salbei. **Regel:** Neue Paletten werden Vincent immer zuerst
   als gerenderte Beispiel-Folien gezeigt; in die Bibliothek kommen nur die, die er auswählt.
 
-### Phase 8: das Animations-Paradies ⏳ 8a–8c fertig, 8d–8e geplant
+### Phase 8: das Animations-Paradies ⏳ 8a–8c fertig, 8d–8e ruhen bis nach Phase 9
 
 > Ziel: Studio kann jede Art von Bewegung – 1D, 2D, 2.5D, 3D, Partikel, Physik, Shader, generative Kunst – und bleibt
 > trotzdem ein ruhiger Editor. Claude baut die Animationen im Dateiformat, du feilst im Editor an Timing und Reihenfolge.
@@ -620,6 +621,28 @@ Zu jeder Phase: Schema (rückwärtskompatibel, alte Decks laufen unverändert), 
 
 **Bewusst nicht:** Video-/GIF-Export, Hochformate, Ton/Musik-Sync (laut deinen Antworten) – die spulbare Zeitleiste
 hält Video-Export aber weiter offen.
+
+### Phase 9: Fertigstellung ⏳ geplant
+
+> Ziel: Studio wird eine richtige Präsentations-App. Du baust ein Deck von der leeren Folie bis zum Vortrag auf
+> deinem Windows-Rechner, ohne JSON und ohne Umweg über Claude. Der vollständige Plan mit Befund, Grundsätzen und
+> Abnahme-Kriterien steht in **`FERTIGSTELLUNG.md`**.
+
+Anlass (Prüfung vom 9. November 2026): Die Engine ist weit, der Editor ist dünn. Im Text gehen nur fett und kursiv,
+eine Schriftart lässt sich nicht wählen, mehrere Elemente lassen sich nicht gemeinsam formatieren, es gibt weder
+Zoom noch Rechtsklick-Menü noch System-Zwischenablage, die Oberfläche ist eine macOS-Nachbildung, und es gibt keine
+automatischen Tests für die Bedienung. Deshalb gilt: **Editor vor Engine**, 8d und 8e ruhen.
+
+| # | Etappe | Inhalt in einem Satz |
+|---|---|---|
+| 1 | Fundament und Launch | Vercel-Launch mit Vorschau-Links, Bedien-Tests, Prüfung auf Linux und Windows, Befehls-Verzeichnis, drei Design-Richtungen zur Auswahl |
+| 2 | Eigenes Gesicht | Eigenes Designsystem aus dem Brand, neuer App-Rahmen mit Formatleiste, Menüleiste und einklappbaren Bereichen |
+| 3 | Text und Schrift | Neuer Text-Kern, Formatieren von Markierungen, Listen, mitwachsende Textfelder, freie Schriftwahl |
+| 4 | Arbeitsfläche und Auswahl | Zoom, Auswahl wie gewohnt, gemeinsames Bearbeiten, Rechtsklick, System-Zwischenablage, Windows-Kürzel |
+| 5 | Objekte und Funktionen | Farbwähler, Verläufe, Schatten, Formen, Zuschneiden, Icon-Suche, Platzhalter, Foliennummern |
+| 6 | Decks und Ausgabe | Decks verwalten, Deck-Einstellungen, PDF, Versionen, Export auch gehostet |
+| 7 | Windows-App | Installierbar, offline, Start per Doppelklick, schneller Start |
+| 8 | Abnahme und 1.0 | 30-Minuten-Test auf Windows, Hilfe, Doku |
 
 ---
 

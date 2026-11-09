@@ -52,6 +52,9 @@ ansehen – auf Überlappungen, Lesbarkeit, Abstände und Ränder achten. Bei An
   Szenen, Zeitleiste, kinetische Typo, Formwandel, Text auf Pfad, Daten-Magic-Move, Partikel, generative Muster,
   Shader-Looks, Physik (siehe unten). 8d (3D) und 8e (Bühne) folgen. Motion-Charakter laut Vincent: *alles erlaubt* (Motion-Stufen in `STYLE.md`) –
   für Schule/Uni (iPad am Beamer) aber leichtgewichtig bauen.
+- **Phase 9 „Fertigstellung“** (Plan in `FERTIGSTELLUNG.md`, vor Arbeit an der App lesen): Editor vor Engine.
+  8d und 8e ruhen, bis der Editor fertig ist – Text und Schrift, Auswahl, Zoom, Menüs, Windows, eigenes
+  Designsystem. Reihenfolge und Abnahme-Kriterien der Etappen stehen dort.
 
 ## Master-Folien, Textstile, Gruppen
 
